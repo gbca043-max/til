@@ -1,0 +1,2578 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TIL: rus tili noldan</title>
+<meta name="description" content="O‘zbek tilida so‘zlashuvchilar uchun rus tilini noldan o‘rganish: darslar, kartochkalar, uy vazifalari, imtihonlar.">
+<script>
+/* ===== GURUH REJIMI SOZLAMALARI (admin to‘ldiradi) =====
+   supabaseUrl: Supabase → Project Settings → API (Data API) → Project URL
+   supabaseKey: o‘sha joydagi "anon public" yoki "publishable" kalit (secret/service_role kalitini HECH QACHON qo‘ymang!)
+   users: kirish sahifasidagi tayyor ism tugmalari */
+window.TIL_CONFIG = {
+  supabaseUrl: "",
+  supabaseKey: "",
+  users: ["Yorqin", "Sardor", "Abdulhay"]
+};
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: telefon uchun bitta tor ustun, pastda tab-bar. Ranglar: Registon koshinlari (lojuvard + feruza), mukofotlar uchun za’faron. */
+:root{
+  --bg:#F2F4F9; --surface:#FFFFFF; --surface-2:#F7F8FC; --ink:#151E38; --muted:#5B6683; --line:#DDE2EE;
+  --lapis:#2342A3; --lapis-soft:#E6EBFA; --on-lapis:#FFFFFF;
+  --turq:#0F8279; --turq-soft:#DCF2EF;
+  --saffron:#B8740F; --saffron-soft:#FBEFD9;
+  --bad:#C0392F; --bad-soft:#FBE5E2; --good:#1A7F45; --good-soft:#DFF2E6;
+  --g-m:#2F5BD8; --g-f:#C23A6B; --g-n:#2A8A4A; --g-pl:#8A5A12;
+  --shadow:0 1px 2px rgba(21,30,56,.06),0 4px 16px rgba(21,30,56,.06);
+  --f-display:"Unbounded","Manrope",system-ui,sans-serif;
+  --f-body:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1222; --surface:#161D33; --surface-2:#1B2340; --ink:#E6EBF7; --muted:#9AA5C3; --line:#2A3456;
+  --lapis:#8EA6FF; --lapis-soft:#22305E; --on-lapis:#0D1222;
+  --turq:#45CFC3; --turq-soft:#123D3B;
+  --saffron:#F2B54C; --saffron-soft:#3D2E12;
+  --bad:#FF8A80; --bad-soft:#41201F; --good:#6DDC98; --good-soft:#163723;
+  --g-m:#8FB0FF; --g-f:#FF8DB4; --g-n:#7EDB9C; --g-pl:#E8B865;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1222; --surface:#161D33; --surface-2:#1B2340; --ink:#E6EBF7; --muted:#9AA5C3; --line:#2A3456;
+  --lapis:#8EA6FF; --lapis-soft:#22305E; --on-lapis:#0D1222;
+  --turq:#45CFC3; --turq-soft:#123D3B;
+  --saffron:#F2B54C; --saffron-soft:#3D2E12;
+  --bad:#FF8A80; --bad-soft:#41201F; --good:#6DDC98; --good-soft:#163723;
+  --g-m:#8FB0FF; --g-f:#FF8DB4; --g-n:#7EDB9C; --g-pl:#E8B865;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:0 110px}
+h1,h2,h3,h4{font-family:var(--f-display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--lapis)}
+:focus-visible{outline:3px solid var(--turq);outline-offset:2px}
+.tile-strip{height:8px;background:
+  linear-gradient(135deg,var(--lapis) 25%,transparent 25%) 0 0/16px 16px,
+  linear-gradient(225deg,var(--turq) 25%,transparent 25%) 0 0/16px 16px,
+  linear-gradient(45deg,var(--turq) 25%,transparent 25%) 0 0/16px 16px,
+  linear-gradient(315deg,var(--lapis) 25%,var(--lapis-soft) 25%) 0 0/16px 16px}
+
+/* top */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-block:14px 6px}
+.brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0}
+.brand svg{width:30px;height:30px;color:var(--lapis)}
+.brand b{font-family:var(--f-display);font-size:20px;font-weight:700;letter-spacing:.02em;display:block;text-align:left}
+.brand small{display:block;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:700;text-align:left;white-space:nowrap}
+.langs{display:flex;gap:6px}
+.lang{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 10px;font-size:13px;font-weight:800}
+.lang[aria-pressed="true"]{background:var(--lapis);border-color:var(--lapis);color:var(--on-lapis)}
+.lang.soon{color:var(--muted);border-style:dashed}
+
+/* bottom tab bar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:6px max(8px,calc(50% - 320px)) calc(6px + env(safe-area-inset-bottom,0px))}
+.tabbar button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;font-size:11.5px;font-weight:800;color:var(--muted);border-radius:10px;position:relative}
+.tabbar svg{width:22px;height:22px}
+.tabbar button[aria-current="page"]{color:var(--lapis);background:var(--lapis-soft)}
+.tabbar .cnt{position:absolute;top:2px;right:calc(50% - 22px);background:var(--bad);color:#fff;border-radius:999px;font-size:10px;min-width:17px;height:17px;display:grid;place-items:center;padding:0 4px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-block:10px 0}
+.stat{background:var(--surface);border-radius:14px;padding:10px;box-shadow:var(--shadow);min-width:0}
+.stat .v{font-family:var(--f-display);font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:5px}
+.stat .v svg{width:16px;height:16px;flex:none}
+.stat .l{font-size:11.5px;color:var(--muted);font-weight:700;line-height:1.25}
+.stat.streak .v{color:var(--saffron)} .stat.xp .v{color:var(--lapis)} .stat.lvl .v{color:var(--turq)} .stat.words .v{color:var(--good)}
+.goal{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:14px;padding:10px 14px;box-shadow:var(--shadow);margin-top:8px}
+.goal .gbar{flex:1;height:8px;border-radius:8px;background:var(--line);overflow:hidden}
+.goal .gbar i{display:block;height:100%;background:var(--saffron);border-radius:8px}
+.goal b{font-size:13px;white-space:nowrap}
+.goal span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.freeze{font-size:12.5px;color:var(--muted);margin-top:6px}
+
+.section-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-block:26px 10px}
+.section-h h2{font-size:15px;font-weight:700}
+.section-h span{font-size:13px;color:var(--muted)}
+
+/* today plan */
+.today{background:var(--lapis);color:var(--on-lapis);border-radius:18px;padding:16px;margin-top:14px;display:grid;gap:10px}
+.today h2{font-size:16px}
+.today .sub{font-size:13.5px;opacity:.9;margin:0}
+.todo{display:grid;gap:6px}
+.todo button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.14);color:inherit;font-weight:700;font-size:14.5px}
+:root[data-theme="dark"] .todo button{background:rgba(13,18,34,.18)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .todo button{background:rgba(13,18,34,.18)}}
+.todo button .ck{width:22px;height:22px;border-radius:50%;border:2px solid currentColor;flex:none;display:grid;place-items:center;font-size:13px}
+.todo button.done{opacity:.7}
+.todo button.done .ck{background:currentColor}
+.todo button.done .ck::after{content:"";width:8px;height:4px;border-left:2.5px solid var(--lapis);border-bottom:2.5px solid var(--lapis);transform:rotate(-45deg) translate(1px,-1px)}
+.todo button small{display:block;font-weight:600;opacity:.85;font-size:12.5px}
+.todo button span{min-width:0}
+
+/* level road */
+.road{position:relative;display:grid;gap:0;padding-left:4px}
+.lvl-h{display:flex;align-items:center;gap:10px;margin:18px 0 8px}
+.lvl-h .tag{font-family:var(--f-display);font-weight:700;font-size:14px;background:var(--turq);color:var(--surface);border-radius:10px;padding:4px 10px}
+.lvl-h.locked .tag{background:var(--line);color:var(--muted)}
+.lvl-h b{font-size:14px}
+.lvl-h span{font-size:12.5px;color:var(--muted);display:block;font-weight:600}
+.stop{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;position:relative;padding:6px 0;background:none;border:0;text-align:left;width:100%}
+.stop::before{content:"";position:absolute;left:21px;top:0;bottom:0;width:3px;background:var(--line)}
+.stop:first-of-type::before{top:50%}
+.stop.last::before{bottom:50%}
+.stop .dot{position:relative;z-index:1;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:15px;background:var(--surface);border:2.5px solid var(--line);color:var(--muted)}
+.stop.done .dot{background:var(--good);border-color:var(--good);color:var(--surface)}
+.stop.next .dot{background:var(--lapis);border-color:var(--lapis);color:var(--on-lapis);box-shadow:0 0 0 5px var(--lapis-soft)}
+.stop.part .dot{border-color:var(--turq);color:var(--turq)}
+.stop.exam .dot{border-radius:50%;border-color:var(--saffron);color:var(--saffron)}
+.stop.exam.done .dot{background:var(--saffron);color:var(--surface)}
+.stop .card{background:var(--surface);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow);min-width:0}
+.stop.next .card{outline:2px solid var(--lapis)}
+.stop h3{font-size:14px;font-weight:700}
+.stop .ru{font-size:12.5px;color:var(--muted)}
+.stop .meta{display:flex;gap:8px;align-items:center;margin-top:5px;font-size:12px;color:var(--muted);font-weight:700;flex-wrap:wrap}
+.stop .chev{width:18px;height:18px;color:var(--muted)}
+.bar{height:6px;border-radius:6px;background:var(--line);overflow:hidden;width:70px}
+.bar i{display:block;height:100%;background:var(--turq)}
+.locked-box{background:var(--surface-2);border:1.5px dashed var(--line);border-radius:14px;padding:12px 14px;font-size:13.5px;color:var(--muted)}
+.locked-box b{color:var(--ink)}
+.pill{font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;background:var(--surface-2);border:1px solid var(--line);white-space:nowrap}
+.pill.ok{background:var(--good-soft);color:var(--good);border-color:transparent}
+.pill.warn{background:var(--saffron-soft);color:var(--saffron);border-color:transparent}
+
+.cardbox{background:var(--surface);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)}
+.cardbox h3{font-size:15px;margin-bottom:4px}
+.cardbox p{margin:0 0 8px;font-size:14px;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.note{font-size:13px;color:var(--muted);background:var(--surface-2);border-radius:12px;padding:12px 14px;border:1px solid var(--line)}
+
+/* lesson */
+.back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:var(--muted);font-weight:800;font-size:14px;padding:8px 0 0}
+.back svg{width:18px;height:18px}
+.thead{margin-block:6px 12px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--turq);font-weight:800}
+.thead h1{font-size:23px;font-weight:700;margin-top:2px}
+.thead p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.cando{display:grid;gap:4px;margin:10px 0 0;padding:0;list-style:none;font-size:13.5px}
+.cando li{display:flex;gap:8px;align-items:flex-start}
+.cando li::before{content:"";flex:none;width:16px;height:16px;margin-top:3px;border-radius:50%;background:var(--turq-soft);box-shadow:inset 0 0 0 4px var(--turq-soft),inset 0 0 0 8px var(--turq)}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;background:var(--surface);padding:4px;border-radius:14px;box-shadow:var(--shadow);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.tabs.t3{grid-template-columns:repeat(3,1fr)}
+.tab{border:0;background:none;border-radius:10px;padding:8px 2px;font-size:12px;font-weight:800;color:var(--muted);min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px}
+.tab i{font-style:normal;font-size:10px;line-height:1;color:var(--good)}
+.tab[aria-selected="true"]{background:var(--lapis-soft);color:var(--lapis)}
+.panel{margin-top:16px}
+
+/* gender */
+.g-m{color:var(--g-m)} .g-f{color:var(--g-f)} .g-n{color:var(--g-n)} .g-pl{color:var(--g-pl)}
+.gtag{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;border:1.5px solid currentColor;vertical-align:middle;font-family:var(--f-body);letter-spacing:0}
+
+/* flashcards */
+.deckinfo{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:700;margin-bottom:10px;font-variant-numeric:tabular-nums;gap:8px;flex-wrap:wrap}
+.fc{perspective:1200px;height:340px;cursor:pointer}
+.fc-inner{position:relative;width:100%;height:100%;transition:transform .5s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}
+.fc.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;background:var(--surface);box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;gap:10px;border:1.5px solid var(--line);overflow:auto}
+.fc-face.back{transform:rotateY(180deg);background:var(--surface-2)}
+.fc-word{font-family:var(--f-display);font-size:clamp(24px,7vw,34px);font-weight:700;line-height:1.2;overflow-wrap:anywhere}
+.fc-tr{font-size:14px;color:var(--muted);font-weight:700}
+.fc-uz{font-size:clamp(20px,6vw,26px);font-weight:800;color:var(--turq)}
+.fc-ex{font-size:15.5px;font-weight:700}
+.fc-ex i{display:block;color:var(--muted);font-style:normal;font-size:14px;font-weight:500;margin-top:2px}
+.fc-hint{font-size:12px;color:var(--muted);font-weight:700}
+.box-dots{display:flex;gap:4px}
+.box-dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.box-dots i.on{background:var(--turq)}
+.spk{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:8px 14px;background:var(--lapis-soft);color:var(--lapis);font-weight:800;font-size:14px;text-decoration:none}
+.spk svg{width:18px;height:18px;flex:none}
+.spk.sm{padding:6px 10px;font-size:12.5px}
+.spk.alt{background:var(--turq-soft);color:var(--turq)}
+.spk.playing{outline:2px solid var(--turq)}
+.spkrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.grade{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.btn{border:0;border-radius:14px;padding:13px 12px;font-weight:800;font-size:15px;background:var(--surface);box-shadow:var(--shadow);text-decoration:none;color:inherit;display:inline-block;text-align:center}
+.btn.primary{background:var(--lapis);color:var(--on-lapis)}
+.btn.bad{background:var(--bad-soft);color:var(--bad)}
+.btn.mid{background:var(--saffron-soft);color:var(--saffron)}
+.btn.good{background:var(--good-soft);color:var(--good)}
+.btn.ghost{background:transparent;box-shadow:none;border:1.5px solid var(--line)}
+.btn.wide{width:100%;margin-top:12px}
+.btn.sm{padding:8px 12px;font-size:13.5px;border-radius:10px}
+.btn small{display:block;font-size:11px;font-weight:700;opacity:.85}
+.btn:disabled{opacity:.45;cursor:default}
+.empty{text-align:center;background:var(--surface);border-radius:20px;padding:28px 20px;box-shadow:var(--shadow)}
+.empty h3{font-size:18px;margin-bottom:6px}
+.empty p{color:var(--muted);margin:0 0 6px}
+
+/* questions */
+.qmeta{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);font-weight:800;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.qprog{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-bottom:14px}
+.qprog i{display:block;height:100%;background:var(--lapis);transition:width .3s}
+.qcard{background:var(--surface);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+.qkind{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--turq)}
+.qtext{font-size:19px;font-weight:800;margin:6px 0 14px;overflow-wrap:anywhere}
+.qtext small{display:block;font-size:14px;color:var(--muted);font-weight:600;margin-top:4px}
+.qtext .big{font-family:var(--f-display);font-size:28px;font-weight:700}
+.opts{display:grid;gap:8px}
+.opt{border:2px solid var(--line);background:var(--surface);border-radius:14px;padding:12px 14px;text-align:left;font-weight:700;font-size:15.5px;overflow-wrap:anywhere}
+.opt:hover:not(:disabled){border-color:var(--lapis)}
+.opt.right{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.opt:disabled{cursor:default}
+.tin{width:100%;border:2px solid var(--line);border-radius:14px;padding:13px 14px;font-size:18px;font-weight:700;background:var(--surface-2)}
+.tin:focus{border-color:var(--lapis);outline:none}
+.tin.right{border-color:var(--good);background:var(--good-soft)} .tin.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.built{min-height:56px;border:2px dashed var(--line);border-radius:14px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;margin-bottom:12px}
+.built.right{border-color:var(--good);border-style:solid} .built.wrong{border-color:var(--bad);border-style:solid}
+.bank{display:flex;flex-wrap:wrap;gap:6px}
+.tok{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 11px;font-weight:700;font-size:15.5px;box-shadow:0 1px 0 var(--line)}
+.tok.used{visibility:hidden}
+.built .tok{background:var(--lapis-soft);border-color:transparent;color:var(--lapis)}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.match .col{display:grid;gap:8px;align-content:start;min-width:0}
+.mt{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:10px;font-weight:700;font-size:14.5px;text-align:left;min-height:46px;overflow-wrap:anywhere}
+.mt.sel{border-color:var(--lapis);background:var(--lapis-soft)}
+.mt.done{border-color:transparent;background:var(--good-soft);color:var(--good);opacity:.7}
+.mt.err{border-color:var(--bad);background:var(--bad-soft)}
+.fb{margin-top:14px;border-radius:14px;padding:12px 14px;font-size:14.5px}
+.fb.good{background:var(--good-soft)} .fb.bad{background:var(--bad-soft)} .fb.mid{background:var(--saffron-soft)}
+.fb b{display:block} .fb.good b{color:var(--good)} .fb.bad b{color:var(--bad)} .fb.mid b{color:var(--saffron)}
+.fb i{font-style:normal;display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
+.result{text-align:center;background:var(--surface);border-radius:20px;padding:26px 20px;box-shadow:var(--shadow)}
+.result .big{font-family:var(--f-display);font-size:46px;font-weight:700;color:var(--lapis);font-variant-numeric:tabular-nums}
+.result p{color:var(--muted);margin:4px 0}
+
+/* cyrillic keyboard */
+.kbtoggle{margin-top:8px}
+.kb{margin-top:10px;display:grid;gap:5px;user-select:none}
+.kb .r{display:flex;gap:4px;justify-content:center}
+.kb button{flex:1;max-width:44px;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 0;font-weight:700;font-size:15px;box-shadow:0 1px 0 var(--line)}
+.kb button.w{max-width:none;flex:2;font-size:12.5px}
+.kb button:active{background:var(--lapis-soft)}
+
+/* grammar */
+.gram{background:var(--surface);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.gram h3{font-size:18px;margin-bottom:8px}
+.gram p{margin:0 0 12px;max-width:65ch}
+.gram h4{font-size:12.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--turq);margin:20px 0 8px;font-family:var(--f-body);font-weight:800}
+.cmp-wrap{overflow-x:auto}
+.cmp{width:100%;border-collapse:collapse;font-size:14.5px}
+.cmp th{text-align:left;font-size:12px;color:var(--muted);font-weight:800;padding:6px 8px;border-bottom:1.5px solid var(--line)}
+.cmp td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp td:first-child{color:var(--muted);width:44%}
+.cmp td button{border:0;background:none;color:var(--lapis);padding:0 0 0 4px;vertical-align:-4px}
+.cmp td button svg{width:17px;height:17px}
+mark{background:var(--saffron-soft);color:var(--saffron);font-weight:800;border-radius:4px;padding:0 3px}
+.mist{display:grid;gap:8px}
+.mi{border-radius:12px;padding:10px 12px;background:var(--surface-2);border:1px solid var(--line)}
+.mi .x{color:var(--bad);text-decoration:line-through;text-decoration-thickness:1.5px;font-weight:700}
+.mi .ok{color:var(--good);font-weight:800}
+.mi .why{font-size:13.5px;color:var(--muted);margin-top:3px}
+.tip{background:var(--turq-soft);border-radius:12px;padding:12px 14px;font-size:14.5px;margin-top:14px}
+.tip b{color:var(--turq)}
+
+/* dialogue */
+.dlg-tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:800;display:inline-flex;gap:6px;align-items:center;text-decoration:none;color:inherit}
+.chip svg{width:16px;height:16px}
+.chip[aria-pressed="true"]{border-color:var(--turq);color:var(--turq);background:var(--turq-soft)}
+.scene{font-size:13.5px;color:var(--muted);margin:0 0 12px}
+.lines{display:flex;flex-direction:column;gap:10px}
+.line{max-width:88%;display:flex;flex-direction:column;gap:3px;min-width:0}
+.line.b{align-self:flex-end;align-items:flex-end}
+.line .who{font-size:12px;font-weight:800;color:var(--muted)}
+.bubble{background:var(--surface);border-radius:16px 16px 16px 4px;padding:10px 12px;box-shadow:var(--shadow);display:flex;gap:10px;align-items:flex-start}
+.line.b .bubble{background:var(--lapis-soft);border-radius:16px 16px 4px 16px}
+.bubble .t{font-weight:700;min-width:0}
+.bubble .tr{display:block;font-weight:500;font-size:14px;color:var(--muted);margin-top:2px}
+.bubble button{border:0;background:none;color:var(--lapis);padding:2px;flex:none}
+.bubble button svg{width:20px;height:20px}
+.line.playing .bubble{outline:2px solid var(--turq)}
+.live{margin-top:18px}
+.live .row a{font-size:13.5px}
+
+/* homework */
+.hw{display:grid;gap:8px}
+.hwi{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;background:var(--surface);border:0;border-radius:16px;padding:12px 14px;text-align:left;box-shadow:var(--shadow);width:100%}
+.hwi .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--turq-soft);color:var(--turq)}
+.hwi .ic svg{width:20px;height:20px}
+.hwi.done .ic{background:var(--good-soft);color:var(--good)}
+.hwi b{display:block;font-size:14.5px}
+.hwi span{font-size:12.5px;color:var(--muted);display:block;line-height:1.35}
+.talkq{display:grid;gap:8px;counter-reset:q}
+.talkq li{list-style:none;background:var(--surface);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.talkq li b{display:block}
+.talkq li span{font-size:13.5px;color:var(--muted)}
+.talkq{padding:0;margin:0}
+.rec{display:grid;gap:10px}
+.rec .row{justify-content:center}
+.recdot{width:10px;height:10px;border-radius:50%;background:var(--bad);display:inline-block;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.3}}
+
+/* leaderboard */
+.lb{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.lb li{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;background:var(--surface);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow)}
+.lb li.me{outline:2px solid var(--lapis)}
+.lb .pos{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;background:var(--surface-2);color:var(--muted)}
+.lb li:nth-child(1) .pos{background:var(--saffron);color:var(--surface)}
+.lb li:nth-child(2) .pos{background:var(--turq-soft);color:var(--turq)}
+.lb li:nth-child(3) .pos{background:var(--lapis-soft);color:var(--lapis)}
+.lb .nm{min-width:0}
+.lb .nm b{display:block;overflow-wrap:anywhere}
+.lb .nm small{font-size:12px;color:var(--muted);display:flex;gap:5px;align-items:center}
+.lb .vl{font-family:var(--f-display);font-weight:700;font-size:18px;text-align:right;font-variant-numeric:tabular-nums}
+.lb .vl small{display:block;font-family:var(--f-body);font-size:11px;color:var(--muted);font-weight:700}
+.chip[aria-pressed="true"]{border-color:var(--lapis);color:var(--lapis);background:var(--lapis-soft)}
+
+/* dictionary */
+.search{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;font-size:15px;width:100%;min-width:0}
+.dtools{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:12px}
+.dtools select{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:10px;font-weight:700;font-size:14px;max-width:170px}
+.dict-wrap{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);margin-top:12px;overflow-x:auto}
+.dict{width:100%;border-collapse:collapse;font-size:14.5px}
+.dict th{text-align:left;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px;border-bottom:1.5px solid var(--line)}
+.dict td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.dict td.w{font-weight:800}
+.dict td.w small{display:block;font-weight:600;color:var(--muted);font-size:12px}
+.dict td.w button{border:0;background:none;color:var(--lapis);padding:0 4px 0 0;vertical-align:-4px}
+.dict td.w button svg{width:18px;height:18px}
+.kdot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--line)}
+.kdot.l{background:var(--saffron)} .kdot.k{background:var(--good)}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin-top:8px;flex-wrap:wrap;align-items:center}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+
+/* alphabet */
+.letters{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.letter{background:var(--surface);border:2px solid transparent;border-radius:14px;padding:10px 8px;text-align:center;box-shadow:var(--shadow)}
+.letter .L{font-family:var(--f-display);font-size:26px;font-weight:700;line-height:1.1}
+.letter .s{font-size:13px;font-weight:800;color:var(--turq)}
+.letter .w{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.letter.false{border-color:var(--saffron)}
+.letter.false .s{color:var(--saffron)}
+.letter.sign .s{color:var(--muted)}
+.lt-detail{margin-top:12px}
+
+/* certificate */
+.cert{position:relative;background:var(--surface);border-radius:20px;padding:28px 22px;box-shadow:var(--shadow);text-align:center;border:3px solid var(--saffron);overflow:hidden}
+.cert::before,.cert::after{content:"";position:absolute;left:0;right:0;height:10px;background:
+  linear-gradient(135deg,var(--lapis) 25%,transparent 25%) 0 0/16px 16px,
+  linear-gradient(225deg,var(--turq) 25%,transparent 25%) 0 0/16px 16px,
+  linear-gradient(45deg,var(--turq) 25%,transparent 25%) 0 0/16px 16px,
+  linear-gradient(315deg,var(--lapis) 25%,var(--lapis-soft) 25%) 0 0/16px 16px}
+.cert::before{top:0} .cert::after{bottom:0}
+.cert .k{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.cert h2{font-size:26px;margin:10px 0 4px;color:var(--lapis)}
+.cert .name{font-family:var(--f-display);font-size:22px;margin:12px 0}
+.cert .lv{font-family:var(--f-display);font-size:54px;color:var(--saffron);line-height:1}
+.cert p{color:var(--muted);margin:6px 0;font-size:14px}
+
+/* profile */
+.field{display:grid;gap:6px;margin-top:10px}
+.field label{font-size:13px;font-weight:800;color:var(--muted)}
+.field input,.field textarea,.field select{border:1.5px solid var(--line);background:var(--surface-2);border-radius:12px;padding:10px 12px;font-size:15px;width:100%}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14.5px;font-weight:700}
+.switch:last-child{border-bottom:0}
+.switch input{width:22px;height:22px;accent-color:var(--lapis);flex:none}
+.prose{font-size:14.5px}
+.prose p,.prose li{max-width:65ch}
+.prose h3{font-size:16px;margin:18px 0 6px}
+.prose ul,.prose ol{padding-left:20px;margin:6px 0}
+.cefr{width:100%;border-collapse:collapse;font-size:13.5px}
+.cefr td,.cefr th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.cefr th{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+.toasts{position:fixed;left:0;right:0;bottom:calc(76px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:50;padding-inline:16px}
+.toast{background:var(--ink);color:var(--bg);border-radius:14px;padding:10px 16px;font-weight:800;font-size:14px;box-shadow:var(--shadow);max-width:440px;animation:tin .25s ease-out}
+.toast.gold{background:var(--saffron);color:#1A1204}
+.toast.small{font-size:12.5px;font-weight:700;padding:7px 12px;opacity:.92}
+@keyframes tin{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion: reduce){.fc-inner,.qprog i{transition:none}.toast,.recdot{animation:none}}
+@media (max-width:400px){.stat .v{font-size:16px}.stat{padding:9px 8px}.tab{font-size:11px}.stats{gap:6px}}
+
+</style>
+</head>
+<body>
+<div class="tile-strip" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="top">
+    <button class="brand" id="brand" aria-label="Bosh sahifa">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 1l3.9 5.7 6.7-1.3-1.3 6.7L31 16l-5.7 3.9 1.3 6.7-6.7-1.3L16 31l-3.9-5.7-6.7 1.3 1.3-6.7L1 16l5.7-3.9-1.3-6.7 6.7 1.3z"/><circle cx="16" cy="16" r="5.2" fill="var(--bg)"/></svg>
+      <span><b>TIL</b><small id="brandSub">rus tili · noldan</small></span>
+    </button>
+    <div class="langs" id="langs" role="group" aria-label="O‘rganiladigan til"></div>
+  </header>
+  <main id="app"></main>
+</div>
+<nav class="tabbar" id="nav" aria-label="Bo‘limlar"></nav>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script>
+/* Rus alifbosi: harf | lotincha o‘qilishi | turi | misol so‘z | misol tarjimasi | izoh
+   turi: same = o‘zbek lotinidagi kabi ko‘rinadi va o‘qiladi
+         false = tanish ko‘rinadi, lekin boshqacha o‘qiladi (eng xavfli!)
+         new = yangi shakl
+         sign = tovushi yo‘q belgi */
+window.TIL = window.TIL || {};
+TIL.ruAlphabet = {
+  intro: "Rus yozuvi kirill alifbosida. Unda 33 ta harf bor. Agar o‘zbek kirill yozuvini bilsangiz, harflarning ko‘pi sizga tanish. Eng muhimi: ba’zi harflar lotin harflariga o‘xshaydi, lekin boshqacha o‘qiladi. Masalan, <b>Р</b> bu «r», <b>Н</b> bu «n», <b>С</b> bu «s».",
+  letters: `А а|a|same|ма'ма|ona|
+Б б|b|new|банк|bank|
+В в|v|false|вода'|suv|Lotin B ga o‘xshaydi, lekin «v» o‘qiladi.
+Г г|g|new|го'род|shahar|
+Д д|d|new|дом|uy|
+Е е|ye / e|false|нет|yo‘q|So‘z boshida va unlidan keyin «ye», undoshdan keyin «e» (oldingi undoshni yumshatadi).
+Ё ё|yo|new|самолёт|samolyot|Ё doim urg‘uli. Ko‘pincha nuqtalarsiz Е deb yoziladi.
+Ж ж|j|new|журна'л|jurnal|«jurnal»dagi j kabi, «jon»dagi emas.
+З з|z|new|зову'т|ismi (...deb chaqiradi)|3 raqamiga o‘xshaydi.
+И и|i|false|и'мя|ism|Teskari N ga o‘xshaydi, lekin «i» o‘qiladi.
+Й й|y|new|чай|choy|Qisqa «y». Doim unlidan keyin keladi.
+К к|k|same|ко'фе|qahva|
+Л л|l|new|ле'то|yoz|
+М м|m|same|мя'со|go‘sht|
+Н н|n|false|нет|yo‘q|Lotin H ga o‘xshaydi, lekin «n» o‘qiladi.
+О о|o|same|молоко'|sut|Urg‘usiz O «a» kabi eshitiladi: молоко = «malako».
+П п|p|new|па'па|dada|
+Р р|r|false|рука'|qo‘l|Lotin P ga o‘xshaydi, lekin «r» o‘qiladi.
+С с|s|false|сок|sharbat|Lotin C ga o‘xshaydi, lekin «s» o‘qiladi.
+Т т|t|same|там|u yerda|
+У у|u|false|у'тро|tong|Lotin Y ga o‘xshaydi, lekin «u» o‘qiladi.
+Ф ф|f|new|фо'то|surat|
+Х х|x|false|хлеб|non|Lotin X ga o‘xshaydi, o‘zbekcha «x» kabi o‘qiladi.
+Ц ц|ts|new|центр|markaz|
+Ч ч|ch|new|чай|choy|
+Ш ш|sh|new|шко'ла|maktab|
+Щ щ|sh’|new|ещё|yana|Yumshoq va uzunroq «sh».
+Ъ ъ|ajratish|sign|подъе'зд|kirish yo‘lagi (podyezd)|Tovushi yo‘q. O‘zbekchadagi tutuq belgisi (’) kabi ajratadi.
+Ы ы|ı|new|ты|sen|O‘zbekcha «qiz»dagi qattiq «i». Tilni orqaga tortib ayting.
+Ь ь|yumshatish|sign|день|kun|Tovushi yo‘q. Oldingi undoshni yumshatadi.
+Э э|e|new|э'то|bu|
+Ю ю|yu|new|ю'бка|yubka|
+Я я|ya|new|я|men|`,
+  /* O‘qish mashqi uchun qo‘shimcha so‘zlar */
+  reading: `Москва'|Moskva
+Ташке'нт|Toshkent
+Самарка'нд|Samarqand
+такси'|taksi
+метро'|metro
+банк|bank
+парк|park
+до'ктор|doktor
+рестора'н|restoran
+магази'н|do‘kon
+телефо'н|telefon
+интерне'т|internet
+футбо'л|futbol
+ла'мпа|lampa
+компью'тер|kompyuter
+у'лица|ko‘cha
+шко'ла|maktab
+хлеб|non
+вода'|suv
+чай|choy
+да|ha
+нет|yo‘q
+мир|dunyo; tinchlik
+сын|o‘g‘il
+жена'|xotin
+щи|shchi (karam sho‘rva)
+съесть|yeb qo‘ymoq
+ночь|tun
+юг|janub
+э'хо|aks-sado
+ёлка|archa
+цирк|sirk
+фильм|film
+му'зыка|musiqa
+студе'нт|talaba`
+};
+
+</script>
+<script>
+/* RUS TILI A1, 1–6-darslar.
+   words:  ruscha | o‘zbekcha | misol | misol tarjimasi | jins (m, f, n, pl; ixtiyoriy)
+           ruscha so‘zda ' belgisi urg‘uli unlidan keyin turadi: приве'т
+   dialog: a|ruscha|o‘zbekcha  yoki  b|...
+   test:   o[0] doim to‘g‘ri javob (ekranda aralashtiriladi)
+   talk:   suhbat uchun savollar: ruscha|o‘zbekcha */
+window.TIL = window.TIL || {};
+TIL.ruA1 = TIL.ruA1 || [];
+TIL.ruA1.push(
+{
+id:"tanishuv", title:"Salomlashish va tanishuv", ru:"Знако'мство",
+cando:["Salomlashib, xayrlasha olasiz","O‘zingizni tanishtira olasiz","Qayerdan ekaningizni ayta olasiz"],
+words:`здра'вствуйте|assalomu alaykum (rasmiy)|Здравствуйте! Как вас зовут?|Assalomu alaykum! Ismingiz nima?
+приве'т|salom (yaqinlarga)|Привет, Камила! Как дела?|Salom, Kamila! Ishlar qalay?
+до'брое у'тро|xayrli tong|Доброе утро! Как спали?|Xayrli tong! Qanday uxladingiz?
+до'брый день|xayrli kun|Добрый день! Чем могу помочь?|Xayrli kun! Qanday yordam bera olaman?
+до'брый ве'чер|xayrli kech|Добрый вечер, Ольга Петровна.|Xayrli kech, Olga Petrovna.
+до свида'ния|xayr (rasmiy)|Спасибо, до свидания!|Rahmat, xayr!
+пока'|xayr (yaqinlarga)|Пока, до завтра!|Xayr, ertagacha!
+спаси'бо|rahmat|Спасибо, всё хорошо.|Rahmat, hammasi yaxshi.
+пожа'луйста|iltimos; marhamat|Чай, пожалуйста.|Choy, iltimos.
+извини'те|kechirasiz|Извините, я не понимаю.|Kechirasiz, men tushunmayapman.
+да|ha|Да, я из Ташкента.|Ha, men Toshkentdanman.
+нет|yo‘q|Нет, я не студент.|Yo‘q, men talaba emasman.
+я|men|Я Азиз.|Men Azizman.
+ты|sen|Ты мой друг.|Sen mening do‘stimsan.
+вы|siz|Вы откуда?|Siz qayerdansiz?
+он|u (erkak)|Он мой брат.|U mening akam.
+она'|u (ayol)|Она врач.|U shifokor.
+мы|biz|Мы из Узбекистана.|Biz O‘zbekistondanmiz.
+они'|ular|Они мои друзья.|Ular mening do‘stlarim.
+меня' зову'т|mening ismim|Меня зовут Азиз.|Mening ismim Aziz.
+как вас зову'т?|ismingiz nima?|Извините, как вас зовут?|Kechirasiz, ismingiz nima?
+и'мя|ism|Какое красивое имя!|Qanday chiroyli ism!|n
+фами'лия|familiya|Напишите вашу фамилию.|Familiyangizni yozing.|f
+отку'да?|qayerdan?|Откуда вы?|Qayerdansiz?
+из|...dan (qayerdan)|Я из Самарканда.|Men Samarqanddanman.
+о'чень прия'тно|tanishganimdan xursandman|Очень приятно, Олег.|Tanishganimdan xursandman, Oleg.
+как дела'?|ishlar qalay?|Привет! Как дела?|Salom! Ishlar qalay?
+хорошо'|yaxshi|Всё хорошо, спасибо.|Hammasi yaxshi, rahmat.
+норма'льно|yaxshi, joyida|— Как дела? — Нормально.|— Ishlar qalay? — Joyida.
+пло'хо|yomon|Я плохо говорю по-русски.|Men ruscha yomon gapiraman.
+а вы?|siz-chi?|Я из Бухары. А вы?|Men Buxorodanman. Siz-chi?
+то'же|ham|Я тоже студент.|Men ham talabaman.
+друг|do‘st|Это мой друг Саша.|Bu mening do‘stim Sasha.|m
+подру'га|dugona, do‘st (qiz)|Это моя подруга Лена.|Bu mening dugonam Lena.|f
+говори'ть|gapirmoq|Вы говорите по-русски?|Ruscha gapirasizmi?
+понима'ть|tushunmoq|Я понимаю, но говорю плохо.|Tushunaman, lekin yomon gapiraman.
+по-ру'сски|ruscha|Я немного говорю по-русски.|Men ozgina ruscha gapiraman.
+немно'го|ozgina|Я знаю немного.|Men ozgina bilaman.`,
+grammar:{title:"«Men talabaman» → Я студент: «bo‘lmoq» fe’li yo‘q",
+intro:"O‘zbek tilida «men talaba<b>man</b>» deymiz: -man qo‘shimchasi «bo‘lmoq» ma’nosini beradi. Rus tilida hozirgi zamonda bu fe’l umuman <b>aytilmaydi</b>: shunchaki <b>Я студент</b> (Men talaba). Xursand bo‘ling: bu oson!",
+table:[["Men talaba<mark>man</mark>","Я студент"],["U shifokor","Он врач"],["Biz Toshkent<mark>danmiz</mark>","Мы <mark>из</mark> Ташкента"],["Mening ismim Aziz","<mark>Меня зовут</mark> Азиз"],["Siz qayerdan<mark>siz</mark>?","<mark>Откуда</mark> вы?"]],
+tip:"<b>ты va вы = sen va siz.</b> Bu xuddi o‘zbek tilidagidek: notanish, katta yoshli odamga va rahbarga <b>вы</b>, do‘stga, bolaga <b>ты</b>. Salomlashish ham shunday: kattalarga <b>Здравствуйте</b>, do‘stga <b>Привет</b>.",
+mistakes:[["Я есть студент.","Я студент.","Hozirgi zamonda «есть» (bo‘lmoq) aytilmaydi."],["Моё имя Азиз.","Меня зовут Азиз.","Grammatik xato emas, lekin ruslar deyarli doim «Меня зовут» deydi."],["Привет! (o‘qituvchiga)","Здравствуйте!","Kattalarga va notanishlarga rasmiy salom."]]},
+dialog:{scene:"Yangi tanishuv: ishdagi uchrashuvda.", a:"Олег", b:"Азиз", lines:`a|Здравствуйте! Меня зовут Олег. А как вас зовут?|Assalomu alaykum! Mening ismim Oleg. Sizning ismingiz nima?
+b|Здравствуйте! Меня зовут Азиз.|Assalomu alaykum! Mening ismim Aziz.
+a|Очень приятно. Вы откуда?|Tanishganimdan xursandman. Qayerdansiz?
+b|Я из Узбекистана, из Самарканда.|O‘zbekistondanman, Samarqanddan.
+a|О, Самарканд! Вы говорите по-русски?|O, Samarqand! Ruscha gapirasizmi?
+b|Да, немного. Я понимаю, но говорю плохо.|Ha, ozgina. Tushunaman, lekin yomon gapiraman.
+a|Нет, вы говорите хорошо!|Yo‘q, siz yaxshi gapiryapsiz!
+b|Спасибо!|Rahmat!`},
+test:[{q:"«Men talabaman» ruscha qanday?",o:["Я студент.","Я есть студент.","Я студентман."],e:"Rus tilida hozirgi zamonda «bo‘lmoq» aytilmaydi."},
+{q:"O‘qituvchingizga qanday salom berasiz?",o:["Здравствуйте!","Привет!","Пока!"],e:"Kattalarga rasmiy: Здравствуйте."},
+{q:"___ зовут Азиз.",o:["Меня","Я","Мой"],e:"Doim: Меня зовут..."},
+{q:"«Qayerdansiz?»",o:["Откуда вы?","Как вы?","Кто вы?"],e:"Откуда = qayerdan."},
+{q:"Я ___ Ташкента.",o:["из","в","на"],e:"из = ...dan."},
+{q:"Do‘stingiz bilan xayrlashish:",o:["Пока!","Здравствуйте!","Очень приятно!"],e:"Пока = xayr (norasmiy)."}],
+talk:`Как вас зовут?|Ismingiz nima?
+Откуда вы?|Qayerdansiz?
+Как дела?|Ishlar qalay?
+Вы говорите по-русски?|Ruscha gapirasizmi?
+Как зовут вашего друга?|Do‘stingizning ismi nima?`,
+phrases:["меня зовут","очень приятно","как дела","до свидания","я не понимаю"]
+},
+{
+id:"oila", title:"Oila", ru:"Семья'",
+cando:["Oilangiz haqida gapira olasiz","«Mening, sening» so‘zlarini jinsga qarab ishlata olasiz","Yoshingizni ayta olasiz"],
+words:`семья'|oila|У меня большая семья.|Mening katta oilam bor.|f
+ма'ма|ona, oyi|Моя мама врач.|Oyim shifokor.|f
+па'па|dada|Мой папа работает в банке.|Dadam bankda ishlaydi.|m
+мать|ona (rasmiy)|Его мать живёт в Ташкенте.|Uning onasi Toshkentda yashaydi.|f
+оте'ц|ota (rasmiy)|Мой отец инженер.|Otam muhandis.|m
+роди'тели|ota-ona|Мои родители живут в Фергане.|Ota-onam Farg‘onada yashaydi.|pl
+сын|o‘g‘il|Это мой сын Тимур.|Bu mening o‘g‘lim Temur.|m
+дочь|qiz (farzand)|Моя дочь учится в школе.|Qizim maktabda o‘qiydi.|f
+брат|aka; uka|У меня есть брат.|Mening akam (ukam) bor.|m
+сестра'|opa; singil|Моя сестра живёт в Москве.|Opam Moskvada yashaydi.|f
+ста'рший брат|aka|Мой старший брат водитель.|Akam haydovchi.|m
+мла'дший брат|uka|Мой младший брат студент.|Ukam talaba.|m
+муж|er (turmush o‘rtog‘i)|Мой муж работает в Москве.|Erim Moskvada ishlaydi.|m
+жена'|xotin, rafiqa|Это моя жена Малика.|Bu mening rafiqam Malika.|f
+ребёнок|bola|Ребёнок спит.|Bola uxlayapti.|m
+де'ти|bolalar|У вас есть дети?|Farzandlaringiz bormi?|pl
+де'душка|bobo|Мой дедушка старый, но весёлый.|Bobom keksa, lekin quvnoq.|m
+ба'бушка|buvi|Бабушка готовит плов.|Buvim palov pishiryapti.|f
+дя'дя|amaki; tog‘a|Мой дядя живёт в деревне.|Amakim qishloqda yashaydi.|m
+тётя|amma; xola|Моя тётя учитель.|Xolam o‘qituvchi.|f
+мой|mening (erkak jinsi)|Это мой брат.|Bu mening akam.
+моя'|mening (ayol jinsi)|Это моя сестра.|Bu mening opam.
+моё|mening (o‘rta jins)|Это моё фото.|Bu mening suratim.
+мои'|mening (ko‘plik)|Это мои дети.|Bular mening bolalarim.
+твой|sening|Это твой телефон?|Bu sening telefoningmi?
+его'|uning (erkakniki)|Его зовут Олег.|Uning ismi Oleg.
+её|uning (ayolniki)|Её зовут Анна.|Uning ismi Anna.
+наш|bizning|Наш дом здесь.|Bizning uyimiz shu yerda.
+ваш|sizning|Как зовут вашего сына?|O‘g‘lingizning ismi nima?
+у меня' есть|menda bor|У меня есть сестра.|Mening opam bor.
+ско'лько вам лет?|necha yoshdasiz?|Извините, сколько вам лет?|Kechirasiz, necha yoshdasiz?
+мне ... лет|men ... yoshdaman|Мне двадцать пять лет.|Men yigirma besh yoshdaman.
+жена'т|uylangan (erkak)|Мой брат женат.|Akam uylangan.
+за'мужем|turmushga chiqqan (ayol)|Моя сестра замужем.|Opam turmushga chiqqan.
+жить|yashamoq|Где живут ваши родители?|Ota-onangiz qayerda yashaydi?
+люби'ть|sevmoq, yaxshi ko‘rmoq|Я люблю мою семью.|Men oilamni yaxshi ko‘raman.`,
+grammar:{title:"Rus tilida so‘zlarning jinsi bor: мой, моя, моё, мои",
+intro:"O‘zbek tilida «mening» so‘zi o‘zgarmaydi: mening akam, mening opam. Rus tilida esa har bir ot <b>erkak</b>, <b>ayol</b> yoki <b>o‘rta</b> jinsda bo‘ladi va «mening» shunga moslashadi. Jinsni so‘z oxiridan bilish oson:<br>• undosh bilan tugasa: <b>erkak</b> jinsi → <b>мой</b> брат, мой дом<br>• <b>-а / -я</b> bilan tugasa: <b>ayol</b> jinsi → <b>моя</b> сестра, моя семья<br>• <b>-о / -е</b> bilan tugasa: <b>o‘rta</b> jins → <b>моё</b> имя, моё фото<br>• ko‘plik → <b>мои</b> дети",
+table:[["mening akam","<mark>мой</mark> брат"],["mening opam","<mark>моя</mark> сестра"],["mening ismim","<mark>моё</mark> имя"],["mening ota-onam","<mark>мои</mark> родители"],["mening dadam (!)","<mark>мой</mark> папа"]],
+tip:"<b>Istisno:</b> папа, дедушка, дядя -а/-я bilan tugaydi, lekin ular erkaklar, shuning uchun <b>мой папа, мой дедушка, мой дядя</b>. <br><b>Aka yoki uka?</b> Ruslar ikkalasini ham <b>брат</b> deydi. Aniqlashtirish kerak bo‘lsa: старший брат (aka), младший брат (uka).",
+mistakes:[["моя брат","мой брат","брат erkak jinsida."],["мой мама","моя мама","мама -а bilan tugaydi, ayol jinsi."],["моя папа","мой папа","Istisno: papa erkak."],["Я 25 лет.","Мне 25 лет.","Yosh «мне» bilan aytiladi: «menga 25 yil»."]]},
+dialog:{scene:"Hamkasbingizga telefoningizdagi oilaviy suratni ko‘rsatyapsiz.", a:"Анна", b:"Дильноза", lines:`a|Это ваша семья?|Bu sizning oilangizmi?
+b|Да. Это мой муж, его зовут Бахтиёр.|Ha. Bu mening erim, ismi Baxtiyor.
+a|А это ваши дети?|Bular sizning bolalaringizmi?
+b|Да, это мой сын и моя дочь.|Ha, bu o‘g‘lim va qizim.
+a|Сколько лет вашему сыну?|O‘g‘lingiz necha yoshda?
+b|Ему десять лет, а дочери пять.|U o‘n yoshda, qizim esa besh yoshda.
+a|Какая красивая семья!|Qanday chiroyli oila!`},
+test:[{q:"___ сестра живёт в Москве.",o:["Моя","Мой","Моё"],e:"сестра -а bilan tugaydi: ayol jinsi."},
+{q:"___ папа инженер.",o:["Мой","Моя","Моё"],e:"Istisno: папа erkak."},
+{q:"Это ___ имя.",o:["моё","мой","моя"],e:"имя o‘rta jinsda."},
+{q:"«Men 30 yoshdaman»",o:["Мне тридцать лет.","Я тридцать лет.","Меня тридцать лет."],e:"Yosh: Мне ... лет."},
+{q:"Это ___ дети.",o:["мои","мой","моя"],e:"Ko‘plik: мои."},
+{q:"«Mening akam bor»",o:["У меня есть брат.","Я есть брат.","Мой брат есть."],e:"bor = у меня есть."}],
+talk:`У вас большая семья?|Oilangiz kattami?
+Как зовут ваших родителей?|Ota-onangizning ismi nima?
+У вас есть братья и сёстры?|Aka-uka, opa-singillaringiz bormi?
+Где живёт ваша семья?|Oilangiz qayerda yashaydi?
+Сколько вам лет?|Necha yoshdasiz?`,
+phrases:["моя семья","мой брат","у меня есть","сколько вам лет","моя мама"]
+},
+{
+id:"raqamlar", title:"Raqamlar va narxlar", ru:"Чи'сла и це'ны",
+cando:["0 dan 1000 gacha sanay olasiz","Narx so‘rab, tushuna olasiz","Do‘konda pul to‘lay olasiz"],
+words:`оди'н|bir|У меня один брат.|Mening bitta akam bor.
+два|ikki|Два чая, пожалуйста.|Ikkita choy, iltimos.
+три|uch|Три часа.|Soat uch.
+четы'ре|to‘rt|У нас четыре комнаты.|Bizda to‘rtta xona bor.
+пять|besh|Пять минут.|Besh daqiqa.
+шесть|olti|Шесть дней.|Olti kun.
+семь|yetti|Семь часов вечера.|Kechki soat yetti.
+во'семь|sakkiz|Восемь человек.|Sakkiz kishi.
+де'вять|to‘qqiz|Девять рублей.|To‘qqiz rubl.
+де'сять|o‘n|Десять долларов.|O‘n dollar.
+оди'ннадцать|o‘n bir|Ему одиннадцать лет.|U o‘n bir yoshda.
+двена'дцать|o‘n ikki|Двенадцать месяцев.|O‘n ikki oy.
+два'дцать|yigirma|Мне двадцать лет.|Men yigirma yoshdaman.
+три'дцать|o‘ttiz|Тридцать рублей.|O‘ttiz rubl.
+со'рок|qirq|Сорок минут.|Qirq daqiqa.
+пятьдеся'т|ellik|Пятьдесят рублей.|Ellik rubl.
+сто|yuz|Сто долларов.|Yuz dollar.
+две'сти|ikki yuz|Двести рублей.|Ikki yuz rubl.
+пятьсо'т|besh yuz|Пятьсот рублей.|Besh yuz rubl.
+ты'сяча|ming|Тысяча рублей.|Ming rubl.|f
+ско'лько?|qancha? nechta?|Сколько?|Qancha?
+ско'лько сто'ит?|qancha turadi?|Сколько стоит эта сумка?|Bu sumka qancha turadi?
+рубль|rubl|Один рубль.|Bir rubl.|m
+де'ньги|pul|У меня нет денег.|Menda pul yo‘q.|pl
+цена'|narx|Какая цена?|Narxi qancha?|f
+до'рого|qimmat|Это очень дорого!|Bu juda qimmat!
+дёшево|arzon|Здесь дёшево.|Bu yerda arzon.
+ка'рта|karta|Можно картой?|Karta bilan bo‘ladimi?|f
+нали'чные|naqd pul|Только наличные.|Faqat naqd pul.|pl
+сда'ча|qaytim|Вот ваша сдача.|Mana qaytimingiz.|f
+магази'н|do‘kon|Магазин рядом.|Do‘kon yaqin.|m
+купи'ть|sotib olmoq|Я хочу купить телефон.|Telefon sotib olmoqchiman.
+да'йте|bering|Дайте, пожалуйста, воду.|Suv bering, iltimos.
+вот|mana|Вот, пожалуйста.|Mana, marhamat.
+ещё|yana|Ещё один, пожалуйста.|Yana bitta, iltimos.
+всё|hammasi|Это всё. Спасибо.|Shu hammasi. Rahmat.
+но'мер телефо'на|telefon raqami|Какой у вас номер телефона?|Telefon raqamingiz qanaqa?|m`,
+grammar:{title:"Sondan keyin so‘z o‘zgaradi: 1 рубль, 2 рубля, 5 рублей",
+intro:"O‘zbek tilida sondan keyin so‘z o‘zgarmaydi: bir rubl, ikki rubl, besh rubl. Rus tilida esa so‘z oxiri songa qarab o‘zgaradi. Qoida sonning <b>oxirgi raqamiga</b> qarab ishlaydi:<br>• <b>1</b> (21, 31...) → рубль, доллар<br>• <b>2, 3, 4</b> (22, 33, 44...) → рубл<b>я</b>, доллар<b>а</b><br>• <b>5–20</b>, 0 (25, 100...) → рубл<b>ей</b>, доллар<b>ов</b>",
+table:[["bir rubl","один <mark>рубль</mark>"],["uch rubl","три <mark>рубля</mark>"],["o‘n rubl","десять <mark>рублей</mark>"],["ikki dollar","два <mark>доллара</mark>"],["yuz dollar","сто <mark>долларов</mark>"],["yigirma bir yil","двадцать один <mark>год</mark>"]],
+tip:"<b>Esda tuting:</b> 11–14 doim «5» guruhida: одиннадцать рубл<b>ей</b>, двенадцать доллар<b>ов</b>. <br>Yosh ham shunday: 21 <b>год</b>, 22 <b>года</b>, 25 <b>лет</b>.",
+mistakes:[["пять рубль","пять рублей","5 dan keyin -ей."],["два рублей","два рубля","2, 3, 4 dan keyin -я."],["Сколько это стоит деньги?","Сколько это стоит?","«стоит» o‘zi narxni bildiradi."]]},
+dialog:{scene:"Bozorda meva sotib olish.", a:"Продавец", b:"Покупатель", lines:`b|Здравствуйте! Сколько стоят яблоки?|Assalomu alaykum! Olma qancha turadi?
+a|Сто пятьдесят рублей килограмм.|Bir kilosi bir yuz ellik rubl.
+b|Дайте, пожалуйста, два килограмма.|Ikki kilo bering, iltimos.
+a|Вот, пожалуйста. Что-нибудь ещё?|Mana, marhamat. Yana biror narsa?
+b|Нет, это всё. Можно картой?|Yo‘q, shu hammasi. Karta bilan bo‘ladimi?
+a|Нет, только наличные. Триста рублей.|Yo‘q, faqat naqd. Uch yuz rubl.
+b|Вот пятьсот.|Mana besh yuz.
+a|Ваша сдача: двести рублей. Спасибо!|Qaytimingiz: ikki yuz rubl. Rahmat!`},
+test:[{q:"Пять ___",o:["рублей","рубля","рубль"],e:"5 dan keyin -ей."},
+{q:"Три ___",o:["рубля","рублей","рубль"],e:"2, 3, 4 dan keyin -я."},
+{q:"«Bu qancha turadi?»",o:["Сколько это стоит?","Сколько это?","Как это стоит?"],e:"Сколько стоит = qancha turadi."},
+{q:"40 =",o:["сорок","четыреста","четырнадцать"],e:"сорок = qirq (istisno shakl)."},
+{q:"Двадцать один ___",o:["год","года","лет"],e:"Oxirgi raqam 1 → год."},
+{q:"«Qaytim»",o:["сдача","сумка","цена"],e:"сдача = qaytim."}],
+talk:`Сколько стоит хлеб в вашем городе?|Shahringizda non qancha turadi?
+Какой у вас номер телефона?|Telefon raqamingiz qanaqa?
+Что дорого и что дёшево в Узбекистане?|O‘zbekistonda nima qimmat, nima arzon?
+Вы платите картой или наличными?|Karta bilan to‘laysizmi yoki naqd?
+Что вы хотите купить?|Nima sotib olmoqchisiz?`,
+phrases:["сколько стоит","это дорого","можно картой","дайте пожалуйста","вот ваша сдача"]
+},
+{
+id:"ish", title:"Ish va kasb", ru:"Рабо'та",
+cando:["Kasbingiz va ishingiz haqida ayta olasiz","Fe’llarni hozirgi zamonda tuslay olasiz","Boshqalardan ishi haqida so‘ray olasiz"],
+words:`рабо'та|ish|Моя работа рядом.|Ishim yaqin.|f
+рабо'тать|ishlamoq|Я работаю в банке.|Men bankda ishlayman.
+де'лать|qilmoq|Что вы делаете?|Nima qilyapsiz?
+знать|bilmoq|Я знаю русский немного.|Men ruschani ozgina bilaman.
+ду'мать|o‘ylamoq|Я думаю, это хорошо.|Menimcha, bu yaxshi.
+чита'ть|o‘qimoq (kitob)|Я читаю новости.|Men yangiliklarni o‘qiyman.
+учи'ться|o‘qimoq (o‘qishda)|Я учусь в университете.|Men universitetda o‘qiyman.
+врач|shifokor|Моя сестра врач.|Opam shifokor.|m
+учи'тель|o‘qituvchi|Он учитель математики.|U matematika o‘qituvchisi.|m
+студе'нт|talaba (yigit)|Я студент.|Men talabaman.|m
+студе'нтка|talaba (qiz)|Она студентка.|U talaba.|f
+води'тель|haydovchi|Мой брат водитель такси.|Akam taksi haydovchisi.|m
+строи'тель|quruvchi|Он работает строителем.|U quruvchi bo‘lib ishlaydi.|m
+продаве'ц|sotuvchi|Продавец говорит быстро.|Sotuvchi tez gapiradi.|m
+по'вар|oshpaz|Мой отец повар.|Otam oshpaz.|m
+инжене'р|muhandis|Я инженер.|Men muhandisman.|m
+программи'ст|dasturchi|Программист работает дома.|Dasturchi uyda ishlaydi.|m
+ме'неджер|menejer|Менеджер в офисе.|Menejer ofisda.|m
+о'фис|ofis|Офис в центре.|Ofis markazda.|m
+заво'д|zavod|Он работает на заводе.|U zavodda ishlaydi.|m
+больни'ца|kasalxona|Она работает в больнице.|U kasalxonada ishlaydi.|f
+шко'ла|maktab|Дети в школе.|Bolalar maktabda.|f
+университе'т|universitet|Университет большой.|Universitet katta.|m
+компа'ния|kompaniya|Это большая компания.|Bu katta kompaniya.|f
+зарпла'та|maosh|Зарплата хорошая.|Maosh yaxshi.|f
+колле'га|hamkasb|Это мой коллега.|Bu mening hamkasbim.
+нача'льник|boshliq|Мой начальник строгий.|Boshlig‘im qattiqqo‘l.|m
+где?|qayerda?|Где вы работаете?|Qayerda ishlaysiz?
+кем вы рабо'таете?|kim bo‘lib ishlaysiz?|Кем вы работаете?|Kim bo‘lib ishlaysiz?
+сейча'с|hozir|Сейчас я не работаю.|Hozir ishlamayapman.
+мно'го|ko‘p|Я много работаю.|Men ko‘p ishlayman.
+ма'ло|kam|Я мало отдыхаю.|Men kam dam olaman.
+тру'дно|qiyin|Это трудно.|Bu qiyin.
+интере'сно|qiziq|Моя работа интересная. Мне интересно.|Ishim qiziq. Menga qiziq.
+не|emas; -ma-|Я не работаю.|Men ishlamayman.`,
+grammar:{title:"Fe’l tuslanishi: ishla-MAN → работа-Ю",
+intro:"Yaxshi xabar: rus fe’llari o‘zbek fe’llari kabi <b>shaxsga qarab qo‘shimcha oladi</b>. O‘zbekchada ishla<b>man</b>, ishla<b>san</b>, ishla<b>ydi</b>... Ruschada ham fe’l oxiri o‘zgaradi. -ать bilan tugaydigan fe’llar (работать, делать, знать, читать, думать) bir xil tuslanadi:",
+table:[["men ishla<mark>yman</mark>","я работа<mark>ю</mark>"],["sen ishla<mark>ysan</mark>","ты работа<mark>ешь</mark>"],["u ishla<mark>ydi</mark>","он / она работа<mark>ет</mark>"],["biz ishla<mark>ymiz</mark>","мы работа<mark>ем</mark>"],["siz ishla<mark>ysiz</mark>","вы работа<mark>ете</mark>"],["ular ishla<mark>ydi</mark>","они работа<mark>ют</mark>"]],
+tip:"<b>Inkor juda oson:</b> o‘zbekchada -ma- qo‘shimchasi (ishla<b>ma</b>yman), ruschada fe’l oldidan <b>не</b>: я <b>не</b> работаю. <br><b>Kasb bilan:</b> «Kim bo‘lib ishlaysiz?» = Кем вы работаете? Javob oddiy: Я врач / Я программист.",
+mistakes:[["Я работать в банке.","Я работаю в банке.","Fe’lni shaxsga moslang: я → -ю."],["Он работаю.","Он работает.","он → -ет."],["Я работаю не.","Я не работаю.","не fe’ldan oldin keladi."]]},
+dialog:{scene:"To‘yda yangi tanishuv.", a:"Сергей", b:"Бекзод", lines:`a|Бекзод, кем вы работаете?|Bekzod, kim bo‘lib ishlaysiz?
+b|Я программист. Я работаю в IT-компании.|Men dasturchiman. IT-kompaniyada ishlayman.
+a|Интересно! Вы работаете в офисе?|Qiziq! Ofisda ishlaysizmi?
+b|Нет, я работаю дома. А вы?|Yo‘q, uyda ishlayman. Siz-chi?
+a|Я врач, работаю в больнице.|Men shifokorman, kasalxonada ishlayman.
+b|Это трудно?|Bu qiyinmi?
+a|Да, я много работаю. Но я люблю мою работу.|Ha, ko‘p ishlayman. Lekin ishimni yaxshi ko‘raman.`},
+test:[{q:"Я ___ в банке.",o:["работаю","работает","работать"],e:"я → -ю."},
+{q:"Они ___ дома.",o:["работают","работаем","работаешь"],e:"они → -ют."},
+{q:"Что ты ___?",o:["делаешь","делает","делаю"],e:"ты → -ешь."},
+{q:"«Men ishlamayman»",o:["Я не работаю.","Я работаю не.","Не я работаю."],e:"не fe’ldan oldin."},
+{q:"«Kim bo‘lib ishlaysiz?»",o:["Кем вы работаете?","Кто вы работаете?","Где вы работаете?"],e:"Кем вы работаете?"},
+{q:"Мы ___ по-русски.",o:["читаем","читаете","читают"],e:"мы → -ем."}],
+talk:`Кем вы работаете или где вы учитесь?|Kim bo‘lib ishlaysiz yoki qayerda o‘qiysiz?
+Ваша работа интересная?|Ishingiz qiziqmi?
+Кем работают ваши родители?|Ota-onangiz kim bo‘lib ishlaydi?
+Вы много работаете?|Ko‘p ishlaysizmi?
+Кем вы хотите работать в России?|Rossiyada kim bo‘lib ishlamoqchisiz?`,
+phrases:["кем вы работаете","я работаю","моя работа","я не работаю","я учусь в университете"]
+},
+{
+id:"kun", title:"Kun tartibi va vaqt", ru:"Мой день",
+cando:["Soatni ayta olasiz va so‘ray olasiz","Kun tartibingiz haqida gapira olasiz","Hafta kunlarini bilasiz"],
+words:`у'тро|tong, ertalab|Утром я пью чай.|Ertalab choy ichaman.|n
+день|kun|Хороший день!|Yaxshi kun!|m
+ве'чер|kech, kechqurun|Вечером я дома.|Kechqurun uydaman.|m
+ночь|tun|Спокойной ночи!|Xayrli tun!|f
+сего'дня|bugun|Сегодня понедельник.|Bugun dushanba.
+за'втра|ertaga|Завтра я работаю.|Ertaga ishlayman.
+вчера'|kecha|Вчера был выходной.|Kecha dam olish kuni edi.
+понеде'льник|dushanba|В понедельник я работаю.|Dushanba kuni ishlayman.|m
+вто'рник|seshanba|Во вторник у меня урок.|Seshanba kuni darsim bor.|m
+среда'|chorshanba|Встреча в среду.|Uchrashuv chorshanbada.|f
+четве'рг|payshanba|До четверга!|Payshanbagacha!|m
+пя'тница|juma|В пятницу я иду в мечеть.|Juma kuni masjidga boraman.|f
+суббо'та|shanba|В субботу мы отдыхаем.|Shanba kuni dam olamiz.|f
+воскресе'нье|yakshanba|В воскресенье я дома.|Yakshanba kuni uydaman.|n
+выходны'е|dam olish kunlari|Что вы делаете в выходные?|Dam olish kunlari nima qilasiz?|pl
+неде'ля|hafta|Я работаю пять дней в неделю.|Haftada besh kun ishlayman.|f
+час|soat (vaqt birligi)|Один час.|Bir soat.|m
+мину'та|daqiqa|Подождите минуту!|Bir daqiqa kuting!|f
+кото'рый час?|soat necha?|Извините, который час?|Kechirasiz, soat necha?
+в семь часо'в|soat yettida|Я встаю в семь часов.|Soat yettida turaman.
+встава'ть|turmoq (o‘rindan)|Я встаю рано.|Men erta turaman.
+умыва'ться|yuvinmoq|Я умываюсь и одеваюсь.|Yuvinaman va kiyinaman.
+одева'ться|kiyinmoq|Дети одеваются.|Bolalar kiyinyapti.
+за'втракать|nonushta qilmoq|Мы завтракаем дома.|Uyda nonushta qilamiz.
+обе'дать|tushlik qilmoq|Я обедаю в час.|Soat birda tushlik qilaman.
+у'жинать|kechki ovqatlanmoq|Мы ужинаем в восемь.|Sakkizda kechki ovqat qilamiz.
+отдыха'ть|dam olmoq|Вечером я отдыхаю.|Kechqurun dam olaman.
+спать|uxlamoq|Я сплю восемь часов.|Sakkiz soat uxlayman.
+идти' домо'й|uyga bormoq|После работы я иду домой.|Ishdan keyin uyga boraman.
+ра'но|erta|Я встаю рано.|Men erta turaman.
+по'здно|kech|Уже поздно.|Allaqachon kech.
+всегда'|doim|Я всегда пью кофе.|Men doim qahva ichaman.
+обы'чно|odatda|Обычно я обедаю на работе.|Odatda ishda tushlik qilaman.
+иногда'|ba’zan|Иногда я работаю в субботу.|Ba’zan shanba kuni ishlayman.
+пото'м|keyin|Я завтракаю, потом иду на работу.|Nonushta qilaman, keyin ishga boraman.
+по'сле|...dan keyin|После обеда я работаю.|Tushlikdan keyin ishlayman.`,
+grammar:{title:"Vaqt: soat yetti-DA → В семь часов; -ся = o‘zbekcha -in-",
+intro:"O‘zbek tilida vaqt <b>-da</b> qo‘shimchasi bilan: soat yetti<b>da</b>, dushanba <b>kuni</b>. Rus tilida so‘z oldidan <b>в</b> qo‘yiladi: <b>в</b> семь часов, <b>в</b> понедельник. Kunlar oxiri ba’zan o‘zgaradi: среда → в сред<b>у</b>, пятница → в пятниц<b>у</b>, суббота → в суббот<b>у</b> (ayol jinsidagi -а → -у).<br><br><b>-ся qo‘shimchasi</b> o‘zbekchadagi o‘zlik nisbati kabi: yuv<b>in</b>moq = умывать<b>ся</b>, kiy<b>in</b>moq = одевать<b>ся</b>. Harakat o‘zingizga qaratilgan.",
+table:[["soat yetti<mark>da</mark>","<mark>в</mark> семь часов"],["dushanba <mark>kuni</mark>","<mark>в</mark> понедельник"],["juma <mark>kuni</mark>","<mark>в</mark> пятниц<mark>у</mark>"],["ertalab / kechqurun","утр<mark>ом</mark> / вечер<mark>ом</mark>"],["yuv<mark>in</mark>aman","умываю<mark>сь</mark>"],["kiy<mark>in</mark>ish","одевать<mark>ся</mark>"]],
+tip:"<b>Soat so‘zi ham sonlarga bo‘ysunadi:</b> 1 час, 2–4 час<b>а</b>, 5–12 час<b>ов</b>. Shuning uchun: в два часа, в восемь часов.<br><b>-ся yoki -сь?</b> Undoshdan keyin -ся (одеваться), unlidan keyin -сь (одеваюсь).",
+mistakes:[["в утро","утром","ertalab = утром (oldida в yo‘q)."],["в пятница","в пятницу","в + kun: -а → -у."],["Я умываю.","Я умываюсь.","O‘zingizni yuvsangiz, -сь kerak."]]},
+dialog:{scene:"Do‘stlar uchrashuvni kelishib olmoqda.", a:"Кирилл", b:"Шахзод", lines:`a|Шахзод, ты свободен в субботу?|Shahzod, shanba kuni bo‘shmisan?
+b|Утром нет, я работаю. А вечером свободен.|Ertalab yo‘q, ishlayman. Kechqurun esa bo‘shman.
+a|Отлично! Давай в шесть часов?|Zo‘r! Soat oltida bo‘ladimi?
+b|Хорошо. А где?|Yaxshi. Qayerda?
+a|В кафе в центре.|Markazdagi kafeda.
+b|Хорошо. До субботы!|Yaxshi. Shanbagacha!`},
+test:[{q:"Я встаю ___ семь часов.",o:["в","на","из"],e:"Vaqt: в + soat."},
+{q:"Встреча в ___.",o:["пятницу","пятница","пятнице"],e:"в + kun: -а → -у."},
+{q:"«Ertalab»",o:["утром","в утро","утро"],e:"утром = ertalab."},
+{q:"Я ___ в семь утра.",o:["умываюсь","умываю","умыться"],e:"O‘zingizni yuvasiz: -сь."},
+{q:"В восемь ___",o:["часов","часа","час"],e:"5–12 → часов."},
+{q:"«Soat necha?»",o:["Который час?","Сколько час?","Где час?"],e:"Который час?"}],
+talk:`Во сколько вы встаёте?|Soat nechada turasiz?
+Что вы делаете утром?|Ertalab nima qilasiz?
+Где вы обычно обедаете?|Odatda qayerda tushlik qilasiz?
+Что вы делаете в выходные?|Dam olish kunlari nima qilasiz?
+Какой ваш любимый день недели?|Haftaning qaysi kunini yaxshi ko‘rasiz?`,
+phrases:["который час","в семь часов","я встаю","в субботу","после работы"]
+},
+{
+id:"ovqat", title:"Ovqat va kafe", ru:"Еда'",
+cando:["Kafeda buyurtma bera olasiz","Nimani xohlashingizni ayta olasiz","Do‘konda oziq-ovqat so‘ray olasiz"],
+words:`еда'|ovqat|Еда очень вкусная.|Ovqat juda mazali.|f
+хлеб|non|Свежий хлеб.|Yangi non.|m
+вода'|suv|Я пью воду.|Men suv ichaman.|f
+чай|choy|Зелёный чай, пожалуйста.|Ko‘k choy, iltimos.|m
+ко'фе|qahva|Кофе горячий.|Qahva issiq.|m
+молоко'|sut|Молоко в холодильнике.|Sut muzlatkichda.|n
+сок|sharbat|Апельсиновый сок.|Apelsin sharbati.|m
+мя'со|go‘sht|Я ем мясо каждый день.|Men har kuni go‘sht yeyman.|n
+ры'ба|baliq|Я люблю рыбу.|Men baliqni yaxshi ko‘raman.|f
+ку'рица|tovuq|Суп с курицей.|Tovuqli sho‘rva.|f
+рис|guruch|Плов без риса? Нет!|Guruchsiz palovmi? Yo‘q!|m
+о'вощи|sabzavotlar|Свежие овощи.|Yangi sabzavotlar.|pl
+фру'кты|mevalar|Я ем фрукты каждый день.|Har kuni meva yeyman.|pl
+я'блоко|olma|Одно яблоко.|Bitta olma.|n
+карто'шка|kartoshka|Мясо с картошкой.|Kartoshkali go‘sht.|f
+яйцо'|tuxum|Два яйца.|Ikkita tuxum.|n
+сыр|pishloq|Хлеб с сыром.|Pishloqli non.|m
+са'хар|shakar|Чай без сахара.|Shakarsiz choy.|m
+соль|tuz|Дайте, пожалуйста, соль.|Tuzni bering, iltimos.|f
+суп|sho‘rva|Суп очень вкусный.|Sho‘rva juda mazali.|m
+сала'т|salat|Один салат, пожалуйста.|Bitta salat, iltimos.|m
+за'втрак|nonushta|Завтрак в восемь.|Nonushta sakkizda.|m
+обе'д|tushlik|Обед готов.|Tushlik tayyor.|m
+у'жин|kechki ovqat|Что на ужин?|Kechki ovqatga nima bor?|m
+есть|yemoq|Что вы будете есть?|Nima yeysiz?
+пить|ichmoq|Я пью чай.|Men choy ichaman.
+хоте'ть|xohlamoq|Я хочу кофе.|Men qahva xohlayman.
+мо'жно|mumkinmi; bo‘ladimi|Можно меню?|Menyu olsam bo‘ladimi?
+меню'|menyu|Вот меню.|Mana menyu.|n
+счёт|hisob (to‘lov)|Счёт, пожалуйста.|Hisobni bering, iltimos.|m
+вку'сно|mazali|Очень вкусно!|Juda mazali!
+халя'льный|halol|Здесь халяльное мясо?|Bu yerdagi go‘sht halolmi?
+без|...siz|Кофе без сахара.|Shakarsiz qahva.
+с|...bilan, ...li|Чай с молоком.|Sutli choy.
+кафе'|kafe|Пойдём в кафе.|Kafega boraylik.|n
+официа'нт|ofitsiant|Официант, пожалуйста!|Ofitsiant, iltimos!|m`,
+grammar:{title:"Nimani? suv-NI ichaman → пью вод-У",
+intro:"O‘zbek tilida «nimani?» savoliga javob beruvchi so‘zga <b>-ni</b> qo‘shiladi: suv<b>ni</b> ichaman. Rus tilida ham shunga o‘xshash qo‘shimcha bor (tushum kelishigi). Yaxshi xabar: u faqat <b>ayol jinsidagi</b> so‘zlarda ko‘rinadi:<br>• <b>-а → -у</b>: вода → Я пью вод<b>у</b>; рыба → Я люблю рыб<b>у</b><br>• <b>-я → -ю</b>: Таня → Я знаю Тан<b>ю</b><br>• Erkak va o‘rta jinsdagi narsalar <b>o‘zgarmaydi</b>: Я хочу чай, Я пью молоко.",
+table:[["suv<mark>ni</mark> ichaman","пью вод<mark>у</mark>"],["baliq<mark>ni</mark> yaxshi ko‘raman","люблю рыб<mark>у</mark>"],["kartoshka xohlayman","хочу картошк<mark>у</mark>"],["choy ichaman","пью чай (o‘zgarmaydi)"],["sut ichaman","пью молоко (o‘zgarmaydi)"]],
+tip:"<b>хотеть noto‘g‘ri tuslanadi:</b> я хоч<b>у</b>, ты хоч<b>ешь</b>, он хоч<b>ет</b>, мы хот<b>им</b>, вы хот<b>ите</b>, они хот<b>ят</b>. <br><b>есть va пить:</b> я ем, ты ешь, он ест / я пью, ты пьёшь, он пьёт.",
+mistakes:[["Я пью вода.","Я пью воду.","Ayol jinsi: -а → -у."],["Мясо с картошка.","Мясо с картошкой.","с (bilan) dan keyin so‘z o‘zgaradi. Hozircha tayyor ibora sifatida yodlang."],["Я хотеть кофе.","Я хочу кофе.","я → хочу."],["Кофе горячее.","Кофе горячий.","кофе erkak jinsida (istisno)."]]},
+dialog:{scene:"Kafeda buyurtma berish.", a:"Официант", b:"Мадина", lines:`a|Добрый день! Вот меню.|Xayrli kun! Mana menyu.
+b|Спасибо. У вас есть халяльное мясо?|Rahmat. Sizda halol go‘sht bormi?
+a|Да, конечно. Советую суп с курицей.|Ha, albatta. Tovuqli sho‘rvani maslahat beraman.
+b|Хорошо. Суп и салат, пожалуйста.|Yaxshi. Sho‘rva va salat, iltimos.
+a|Что будете пить?|Nima ichasiz?
+b|Зелёный чай без сахара.|Shakarsiz ko‘k choy.
+a|Что-нибудь ещё?|Yana biror narsa?
+b|Нет, спасибо. И потом счёт, пожалуйста.|Yo‘q, rahmat. Keyin hisobni ham, iltimos.`},
+test:[{q:"Я пью ___.",o:["воду","вода","воде"],e:"Ayol jinsi: -а → -у."},
+{q:"Я хочу ___.",o:["чай","чаю","чая"],e:"Erkak jinsi o‘zgarmaydi."},
+{q:"Мы ___ кофе.",o:["хотим","хочу","хочет"],e:"мы → хотим."},
+{q:"«Shakarsiz»",o:["без сахара","с сахаром","нет сахар"],e:"без = ...siz."},
+{q:"«Hisobni bering»",o:["Счёт, пожалуйста.","Деньги, пожалуйста.","Меню, пожалуйста."],e:"счёт = hisob."},
+{q:"Я люблю ___.",o:["рыбу","рыба","рыбы"],e:"рыба → рыбу."}],
+talk:`Что вы обычно едите на завтрак?|Nonushtaga odatda nima yeysiz?
+Какая ваша любимая еда?|Sevimli taomingiz qaysi?
+Вы пьёте чай или кофе?|Choy ichasizmi yoki qahva?
+Как готовить плов? Расскажите.|Palov qanday pishiriladi? Aytib bering.
+Что можно заказать в кафе?|Kafeda nima buyurtma qilish mumkin?`,
+phrases:["я хочу","счёт пожалуйста","очень вкусно","можно меню","без сахара"]
+}
+);
+
+</script>
+<script>
+/* RUS TILI A1, 7–12-darslar. Format: ru-a1-part1.js boshidagi izohga qarang. */
+window.TIL = window.TIL || {};
+TIL.ruA1 = TIL.ruA1 || [];
+TIL.ruA1.push(
+{
+id:"shahar", title:"Shahar va yo‘l so‘rash", ru:"Го'род",
+cando:["Joy qayerdaligini so‘ray olasiz","Yo‘l ko‘rsatmasini tushuna olasiz","«Qayerda?» savoliga javob bera olasiz"],
+words:`го'род|shahar|Москва большой город.|Moskva katta shahar.|m
+у'лица|ko‘cha|Я живу на этой улице.|Men shu ko‘chada yashayman.|f
+центр|markaz|Как доехать до центра?|Markazga qanday borsa bo‘ladi?|m
+банк|bank|Банк рядом.|Bank yaqin.|m
+апте'ка|dorixona|Где аптека?|Dorixona qayerda?|f
+ры'нок|bozor|На рынке дёшево.|Bozorda arzon.|m
+вокза'л|vokzal|Поезд на вокзале.|Poyezd vokzalda.|m
+аэропо'рт|aeroport|Такси до аэропорта.|Aeroportgacha taksi.|m
+метро'|metro|Я еду на метро.|Metroda ketyapman.|n
+остано'вка|bekat|Остановка автобуса здесь.|Avtobus bekati shu yerda.|f
+пло'щадь|maydon|Красная площадь.|Qizil maydon.|f
+парк|bog‘, park|Мы гуляем в парке.|Biz bog‘da sayr qilamiz.|m
+мече'ть|masjid|Мечеть недалеко.|Masjid uzoq emas.|f
+музе'й|muzey|Музей закрыт.|Muzey yopiq.|m
+гости'ница|mehmonxona|Гостиница в центре.|Mehmonxona markazda.|f
+туале'т|hojatxona|Извините, где туалет?|Kechirasiz, hojatxona qayerda?|m
+по'чта|pochta|Почта открыта до шести.|Pochta oltigacha ochiq.|f
+поли'ция|politsiya|Позвоните в полицию!|Politsiyaga qo‘ng‘iroq qiling!|f
+где?|qayerda?|Где метро?|Metro qayerda?
+здесь|bu yerda|Здесь можно курить?|Bu yerda chekish mumkinmi?
+там|u yerda|Банк там.|Bank u yerda.
+напра'во|o‘ngga|Идите направо.|O‘ngga yuring.
+нале'во|chapga|Потом налево.|Keyin chapga.
+пря'мо|to‘g‘riga|Идите прямо.|To‘g‘riga yuring.
+ря'дом|yonida, yaqinda|Аптека рядом с банком.|Dorixona bankning yonida.
+далеко'|uzoq|Это далеко?|Bu uzoqmi?
+бли'зко|yaqin|Нет, близко.|Yo‘q, yaqin.
+напро'тив|qarshisida|Кафе напротив парка.|Kafe bog‘ning qarshisida.
+светофо'р|svetofor|На светофоре налево.|Svetofordan chapga.|m
+перехо'д|o‘tish joyi|Подземный переход.|Yer osti o‘tish joyi.|m
+как пройти'...?|...ga qanday o‘tsa bo‘ladi?|Как пройти к метро?|Metroga qanday o‘tsa bo‘ladi?
+откры'то|ochiq|Магазин открыт? — Да, открыто.|Do‘kon ochiqmi? — Ha, ochiq.
+закры'то|yopiq|Сегодня закрыто.|Bugun yopiq.
+я не зде'шний|men bu yerlik emasman|Извините, я не здешний.|Kechirasiz, men bu yerlik emasman.`,
+grammar:{title:"Qayerda? bank-DA → в банк-Е",
+intro:"O‘zbek tilida joyni <b>-da</b> qo‘shimchasi bilan aytamiz: bank<b>da</b>, maktab<b>da</b>. Rus tilida ikki narsa kerak: oldida <b>в</b> yoki <b>на</b>, oxirida esa ko‘pincha <b>-е</b>:<br>• банк → <b>в</b> банк<b>е</b>; школа → <b>в</b> школ<b>е</b>; Москва → <b>в</b> Москв<b>е</b><br>• -ь, -ия bilan tugaganlar: -и: площадь → на площад<b>и</b>, Россия → в Росси<b>и</b><br>• метро, кафе, такси o‘zgarmaydi: в кафе, в метро.<br><br><b>в</b> = ichida (bino, shahar, mamlakat). <b>на</b> = ustida yoki ochiq joy va tadbir: на улице, на рынке, на работе, на вокзале.",
+table:[["bank<mark>da</mark>","<mark>в</mark> банк<mark>е</mark>"],["Moskva<mark>da</mark>","<mark>в</mark> Москв<mark>е</mark>"],["ko‘cha<mark>da</mark>","<mark>на</mark> улиц<mark>е</mark>"],["ish<mark>da</mark>","<mark>на</mark> работ<mark>е</mark>"],["Rossiya<mark>da</mark>","<mark>в</mark> Росси<mark>и</mark>"],["kafe<mark>da</mark>","<mark>в</mark> кафе (o‘zgarmaydi)"]],
+tip:"<b>Yodlash usuli:</b> на bilan keladigan so‘zlarni ro‘yxat qilib yodlang: на работе, на улице, на рынке, на вокзале, на почте, на площади, на заводе. Qolganlari deyarli doim в.",
+mistakes:[["в банк","в банке","Qayerda? → oxiriga -е."],["в работе","на работе","работа bilan на."],["в Россие","в России","-ия → -ии."]]},
+dialog:{scene:"Moskvada ko‘chada yo‘l so‘rash.", a:"Азиз", b:"Прохожий", lines:`a|Извините, где здесь аптека?|Kechirasiz, bu yerda dorixona qayerda?
+b|Аптека? Идите прямо, потом направо.|Dorixonami? To‘g‘riga yuring, keyin o‘ngga.
+a|Это далеко?|Bu uzoqmi?
+b|Нет, близко. Пять минут. Аптека рядом с банком.|Yo‘q, yaqin. Besh daqiqa. Dorixona bankning yonida.
+a|Направо на светофоре?|Svetofordan o‘nggami?
+b|Да, на светофоре направо.|Ha, svetofordan o‘ngga.
+a|Большое спасибо!|Katta rahmat!`},
+test:[{q:"Я работаю в ___.",o:["банке","банк","банка"],e:"Qayerda? → в банке."},
+{q:"Он ___ работе.",o:["на","в","из"],e:"работа bilan на."},
+{q:"Мы живём в ___.",o:["Москве","Москва","Москву"],e:"-а → -е."},
+{q:"«O‘ngga»",o:["направо","налево","прямо"],e:"направо = o‘ngga."},
+{q:"Я живу в ___.",o:["России","Россие","Россия"],e:"-ия → -ии."},
+{q:"«Bu uzoqmi?»",o:["Это далеко?","Это близко?","Где это?"],e:"далеко = uzoq."}],
+talk:`Где вы живёте?|Qayerda yashaysiz?
+Что есть рядом с вашим домом?|Uyingiz yonida nimalar bor?
+Как пройти от вашего дома до метро или до остановки?|Uyingizdan metro yoki bekatgacha qanday borsa bo‘ladi?
+Какое ваше любимое место в городе?|Shahardagi sevimli joyingiz qaysi?
+Ваш город большой или маленький?|Shahringiz kattami yoki kichik?`,
+phrases:["где здесь","идите прямо","это далеко","на работе","как пройти"]
+},
+{
+id:"uy", title:"Uy va kvartira", ru:"Дом и кварти'ра",
+cando:["Uyingizni tasvirlay olasiz","Ijaraga kvartira haqida so‘ray olasiz","«Bor» va «yo‘q» ni ayta olasiz"],
+words:`дом|uy; bino|Наш дом новый.|Bizning uyimiz yangi.|m
+кварти'ра|kvartira|Я снимаю квартиру.|Men kvartira ijaraga olaman.|f
+ко'мната|xona|В квартире две комнаты.|Kvartirada ikkita xona bor.|f
+ку'хня|oshxona|Кухня маленькая.|Oshxona kichik.|f
+ва'нная|vannaxona|Где ванная?|Vannaxona qayerda?|f
+спа'льня|yotoqxona|Спальня большая.|Yotoqxona katta.|f
+окно'|deraza|Откройте окно, пожалуйста.|Derazani oching, iltimos.|n
+дверь|eshik|Закройте дверь.|Eshikni yoping.|f
+стол|stol|Ключи на столе.|Kalitlar stol ustida.|m
+стул|stul|Возьмите стул.|Stul oling.|m
+крова'ть|karavot|Новая кровать.|Yangi karavot.|f
+дива'н|divan|Кот на диване.|Mushuk divanda.|m
+холоди'льник|muzlatkich|Холодильник не работает.|Muzlatkich ishlamayapti.|m
+шкаф|shkaf|Одежда в шкафу.|Kiyim shkafda.|m
+стира'льная маши'на|kir yuvish mashinasi|Есть стиральная машина?|Kir yuvish mashinasi bormi?|f
+ключ|kalit|Где мой ключ?|Kalitim qayerda?|m
+эта'ж|qavat|Я живу на пятом этаже.|Beshinchi qavatda yashayman.|m
+лифт|lift|Лифт не работает.|Lift ishlamayapti.|m
+сосе'д|qo‘shni|Мой сосед очень добрый.|Qo‘shnim juda mehribon.|m
+хозя'ин|uy egasi|Хозяин квартиры живёт рядом.|Kvartira egasi yaqinda yashaydi.|m
+а'дрес|manzil|Какой у вас адрес?|Manzilingiz qanaqa?|m
+большо'й|katta|Большой дом.|Katta uy.
+ма'ленький|kichik|Маленькая комната.|Kichik xona.
+но'вый|yangi|Новая квартира.|Yangi kvartira.
+ста'рый|eski; keksa|Старый дом.|Eski uy.
+чи'стый|toza|Квартира чистая.|Kvartira toza.
+гря'зный|iflos|Окно грязное.|Deraza iflos.
+удо'бный|qulay|Удобный диван.|Qulay divan.
+снима'ть кварти'ру|kvartira ijaraga olmoq|Мы снимаем квартиру.|Biz kvartira ijaraga olamiz.
+плати'ть|to‘lamoq|Я плачу тридцать тысяч в месяц.|Oyiga o‘ttiz ming to‘layman.
+в ме'сяц|oyiga|Сколько в месяц?|Oyiga qancha?
+у меня' нет|menda yo‘q|У меня нет машины.|Mening mashinam yo‘q.
+есть?|bormi?|Интернет есть?|Internet bormi?
+э'то|bu|Это кухня.|Bu oshxona.
+жить|yashamoq|Я живу один.|Men yolg‘iz yashayman.`,
+grammar:{title:"Menda bor / yo‘q → У меня есть / У меня нет",
+intro:"O‘zbek tilida «mening mashinam <b>bor</b>» yoki «menda ... bor» deymiz. Rus tilida ham juda o‘xshash: <b>У меня есть</b> машина (so‘zma-so‘z: «menda bor mashina»).<br><br>«Yo‘q» bo‘lsa: <b>У меня нет</b> + so‘z oxiri o‘zgaradi (qaratqich kelishigi):<br>• -а → <b>-ы</b> (к/г/х/ж/ш dan keyin <b>-и</b>): машина → нет машин<b>ы</b>, кухня → нет кухн<b>и</b><br>• undosh → <b>+а</b>: лифт → нет лифт<b>а</b>, балкон → нет балкон<b>а</b><br>• -о → <b>-а</b>: окно → нет окн<b>а</b>",
+table:[["menda mashina <mark>bor</mark>","у меня <mark>есть</mark> машина"],["menda mashina <mark>yo‘q</mark>","у меня <mark>нет</mark> машин<mark>ы</mark>"],["lift <mark>bormi</mark>?","лифт <mark>есть</mark>?"],["lift <mark>yo‘q</mark>","лифт<mark>а нет</mark>"],["sizda internet bormi?","<mark>у вас есть</mark> интернет?"]],
+tip:"<b>Kimda?</b> у меня (menda), у тебя (senda), у него (unda, erkak), у неё (unda, ayol), у нас (bizda), у вас (sizda), у них (ularda). <br><b>Prilagatellar</b> ham jinsga moslashadi: нов<b>ый</b> дом, нов<b>ая</b> квартира, нов<b>ое</b> окно, нов<b>ые</b> окна.",
+mistakes:[["У меня нет машина.","У меня нет машины.","нет dan keyin so‘z o‘zgaradi."],["Я есть машина.","У меня есть машина.","«bor» = у меня есть."],["новый квартира","новая квартира","квартира ayol jinsi: -ая."]]},
+dialog:{scene:"Telefonda ijaraga kvartira so‘rash.", a:"Вы", b:"Хозяйка", lines:`a|Здравствуйте! Я звоню насчёт квартиры.|Assalomu alaykum! Kvartira bo‘yicha qo‘ng‘iroq qilyapman.
+b|Да. Квартира однокомнатная, кухня большая.|Ha. Kvartira bir xonali, oshxonasi katta.
+a|Какой этаж? Лифт есть?|Nechanchi qavat? Lift bormi?
+b|Седьмой этаж. Лифт есть.|Yettinchi qavat. Lift bor.
+a|А стиральная машина есть?|Kir yuvish mashinasi bormi?
+b|Нет, стиральной машины нет. Но есть холодильник.|Yo‘q, kir yuvish mashinasi yo‘q. Lekin muzlatkich bor.
+a|Сколько стоит в месяц?|Oyiga qancha turadi?
+b|Тридцать пять тысяч рублей.|O‘ttiz besh ming rubl.`},
+test:[{q:"У меня ___ машина.",o:["есть","нет","это"],e:"bor = есть."},
+{q:"У меня нет ___.",o:["машины","машина","машину"],e:"нет + -ы."},
+{q:"___ квартира",o:["новая","новый","новое"],e:"квартира ayol jinsi."},
+{q:"«Sizda internet bormi?»",o:["У вас есть интернет?","Вы есть интернет?","Ваш интернет?"],e:"У вас есть...?"},
+{q:"В квартире нет ___.",o:["лифта","лифт","лифте"],e:"Undosh → +а."},
+{q:"___ окно",o:["большое","большой","большая"],e:"окно o‘rta jinsda."}],
+talk:`Вы живёте в доме или в квартире?|Hovli uyda yashaysizmi yoki kvartirada?
+Сколько комнат у вас дома?|Uyingizda nechta xona bor?
+Что есть на вашей кухне?|Oshxonangizda nimalar bor?
+Какая у вас любимая комната?|Sevimli xonangiz qaysi?
+Сколько стоит квартира в вашем городе?|Shahringizda kvartira qancha turadi?`,
+phrases:["у меня есть","у меня нет","какой этаж","снимать квартиру","сколько в месяц"]
+},
+{
+id:"transport", title:"Transport va safar", ru:"Тра'нспорт",
+cando:["Chipta sotib ola olasiz","Qayerga borishingizni ayta olasiz","Piyoda va transportda borishni farqlay olasiz"],
+words:`авто'бус|avtobus|Я еду на автобусе.|Avtobusda ketyapman.|m
+такси'|taksi|Вызовите такси.|Taksi chaqiring.|n
+по'езд|poyezd|Поезд в Москву.|Moskvaga poyezd.|m
+самолёт|samolyot|Самолёт в десять.|Samolyot soat o‘nda.|m
+маши'на|mashina|У брата новая машина.|Akamning yangi mashinasi bor.|f
+биле'т|chipta|Один билет до Казани.|Qozongacha bitta chipta.|m
+па'спорт|pasport|Ваш паспорт, пожалуйста.|Pasportingiz, iltimos.|m
+чемода'н|chamadon|Мой чемодан тяжёлый.|Chamadonim og‘ir.|m
+бага'ж|bagaj|Где получить багаж?|Bagajni qayerdan olsa bo‘ladi?|m
+ка'сса|kassa|Касса направо.|Kassa o‘ngda.|f
+вход|kirish|Вход здесь.|Kirish shu yerda.|m
+вы'ход|chiqish|Где выход?|Chiqish qayerda?|m
+ста'нция|stansiya|Следующая станция «Тверская».|Keyingi stansiya «Tverskaya».|f
+идти'|bormoq (piyoda)|Я иду на работу.|Ishga (piyoda) ketyapman.
+е'хать|bormoq (transportda)|Я еду в Москву.|Moskvaga ketyapman.
+лете'ть|uchmoq|Я лечу в Ташкент.|Toshkentga uchyapman.
+куда'?|qayerga?|Куда вы едете?|Qayerga ketyapsiz?
+туда'|u yoqqa|Как туда доехать?|U yerga qanday borsa bo‘ladi?
+сюда'|bu yoqqa|Идите сюда!|Bu yoqqa keling!
+ждать|kutmoq|Я жду автобус.|Avtobus kutyapman.
+опа'здывать|kechikmoq|Извините, я опаздываю.|Kechirasiz, kechikyapman.
+бы'стро|tez|Метро быстро.|Metro tez.
+ме'дленно|sekin|Говорите медленно, пожалуйста.|Sekinroq gapiring, iltimos.
+сле'дующий|keyingi|Следующая остановка — моя.|Keyingi bekat meniki.
+туда' и обра'тно|borish-qaytish|Билет туда и обратно.|Borish-qaytish chiptasi.
+пересе'дка|boshqa transportga o‘tish|Где пересадка?|Qayerda boshqa liniyaga o‘tiladi?|f
+доро'га|yo‘l|Дорога длинная.|Yo‘l uzoq.|f
+путеше'ствовать|sayohat qilmoq|Я люблю путешествовать.|Sayohat qilishni yaxshi ko‘raman.
+прие'хать|kelmoq (transportda)|Я приехал вчера.|Kecha keldim.
+на автобусе|avtobusda|Я езжу на работу на автобусе.|Ishga avtobusda qatnayman.
+пешко'м|piyoda|Я иду пешком.|Piyoda ketyapman.
+сто'ить|turmoq (narx)|Сколько стоит билет?|Chipta qancha turadi?`,
+grammar:{title:"Bormoq: идти (piyoda) va ехать (transportda); qayerga? → в Москв-У",
+intro:"O‘zbek tilida bitta «bormoq» fe’li bor. Rus tilida ikkita: <b>идти</b> (piyoda) va <b>ехать</b> (biror transportda). Ruslar bunga juda e’tibor beradi.<br><br><b>Qayerga?</b> O‘zbekchada <b>-ga</b>: Moskva<b>ga</b>. Ruschada <b>в / на</b> + tushum kelishigi (6-darsdagi -у!): в Москв<b>у</b>, на работ<b>у</b>. Erkak jinsidagi so‘zlar o‘zgarmaydi: в банк, в Ташкент.",
+table:[["men (piyoda) boraman","я <mark>иду</mark>, ты идёшь, он идёт, мы идём, вы идёте, они идут"],["men (transportda) boraman","я <mark>еду</mark>, ты едешь, он едет, мы едем, вы едете, они едут"],["Moskva<mark>ga</mark>","<mark>в</mark> Москв<mark>у</mark>"],["ish<mark>ga</mark>","<mark>на</mark> работ<mark>у</mark>"],["Toshkent<mark>ga</mark>","<mark>в</mark> Ташкент"],["Moskva<mark>da</mark> (qayerda?)","в Москв<mark>е</mark>"]],
+tip:"<b>Где? va Куда? ni adashtirmang:</b> Где ты? — В Москве (qayerda). Куда ты едешь? — В Москву (qayerga). O‘zbekchada ham ikki xil: -da va -ga.",
+mistakes:[["Я иду в Москву на поезде.","Я еду в Москву на поезде.","Transportda bo‘lsa ехать."],["Я еду в Москве.","Я еду в Москву.","Qayerga? → -у."],["Где вы едете?","Куда вы едете?","Yo‘nalish: куда."]]},
+dialog:{scene:"Vokzal kassasida chipta olish.", a:"Кассир", b:"Фарход", lines:`b|Здравствуйте! Один билет до Казани, пожалуйста.|Assalomu alaykum! Qozongacha bitta chipta, iltimos.
+a|На какое число?|Qaysi sanaga?
+b|На завтра. Туда и обратно.|Ertangi kunga. Borish-qaytish.
+a|Поезд в восемь утра или в десять вечера?|Poyezd ertalab soat sakkizdami yoki kechqurun o‘nda?
+b|В восемь утра. Сколько стоит?|Ertalab sakkizda. Qancha turadi?
+a|Пять тысяч рублей. Ваш паспорт, пожалуйста.|Besh ming rubl. Pasportingiz, iltimos.
+b|Вот, пожалуйста.|Mana, marhamat.`},
+test:[{q:"Я ___ в Москву на поезде.",o:["еду","иду","идёт"],e:"Transport → ехать."},
+{q:"Куда вы едете? — В ___.",o:["Москву","Москве","Москва"],e:"Qayerga? → -у."},
+{q:"Мы ___ пешком.",o:["идём","едем","едут"],e:"Piyoda → идти."},
+{q:"___ вы едете?",o:["Куда","Где","Откуда"],e:"Yo‘nalish: куда."},
+{q:"Я еду на ___.",o:["работу","работе","работа"],e:"Qayerga? → на работу."},
+{q:"«Sekinroq gapiring»",o:["Говорите медленно.","Говорите быстро.","Идите медленно."],e:"медленно = sekin."}],
+talk:`Как вы едете на работу или учёбу?|Ishga yoki o‘qishga qanday borasiz?
+Куда вы хотите поехать?|Qayerga bormoqchisiz?
+Вы любите путешествовать?|Sayohat qilishni yoqtirasizmi?
+Сколько стоит билет на самолёт из Ташкента в Москву?|Toshkentdan Moskvaga samolyot chiptasi qancha?
+Что вы берёте в дорогу?|Yo‘lga nimalarni olasiz?`,
+phrases:["куда вы едете","я иду","один билет","следующая остановка","я опаздываю"]
+},
+{
+id:"salomatlik", title:"Salomatlik", ru:"Здоро'вье",
+cando:["Nima og‘riyotganini ayta olasiz","Dorixonada dori so‘ray olasiz","Yordam chaqira olasiz"],
+words:`здоро'вье|salomatlik|Как ваше здоровье?|Salomatligingiz qalay?|n
+голова'|bosh|У меня болит голова.|Boshim og‘riyapti.|f
+живо'т|qorin|Болит живот.|Qornim og‘riyapti.|m
+зуб|tish|У меня болит зуб.|Tishim og‘riyapti.|m
+го'рло|tomoq|Горло болит.|Tomog‘im og‘riyapti.|n
+спина'|bel, orqa|Болит спина.|Belim og‘riyapti.|f
+рука'|qo‘l|Правая рука.|O‘ng qo‘l.|f
+нога'|oyoq|Нога болит.|Oyog‘im og‘riyapti.|f
+глаз|ko‘z|У меня болят глаза.|Ko‘zlarim og‘riyapti.|m
+у'хо|quloq|Болит ухо.|Qulog‘im og‘riyapti.|n
+се'рдце|yurak|Сердце болит.|Yuragim og‘riyapti.|n
+боле'ть|og‘rimoq|Что у вас болит?|Sizni nima bezovta qilyapti?
+температу'ра|isitma, harorat|У меня температура.|Isitmam bor.|f
+ка'шель|yo‘tal|У ребёнка кашель.|Bolada yo‘tal bor.|m
+на'сморк|tumov|Насморк и кашель.|Tumov va yo‘tal.|m
+просту'да|shamollash|Это простуда.|Bu shamollash.|f
+лека'рство|dori|Купите лекарство.|Dori sotib oling.|n
+табле'тка|tabletka|Одна таблетка три раза в день.|Kuniga uch marta bitta tabletka.|f
+реце'пт|retsept|Нужен рецепт?|Retsept kerakmi?|m
+поликли'ника|poliklinika|Я иду в поликлинику.|Poliklinikaga ketyapman.|f
+до'ктор|doktor|Мне нужен доктор.|Menga doktor kerak.|m
+больно'й|kasal|Я больной. / Я болею.|Men kasalman.
+здоро'вый|sog‘lom|Будьте здоровы!|Sog‘ bo‘ling!
+пло'хо|yomon|Мне плохо.|Ahvolim yomon.
+лу'чше|yaxshiroq|Мне уже лучше.|Endi yaxshiroqman.
+ну'жно|kerak|Вам нужно отдыхать.|Sizga dam olish kerak.
+вызва'ть|chaqirmoq|Вызовите врача!|Shifokor chaqiring!
+ско'рая по'мощь|tez yordam|Позвоните в скорую помощь!|Tez yordamga qo‘ng‘iroq qiling!|f
+помоги'те!|yordam bering!|Помогите, пожалуйста!|Yordam bering, iltimos!
+аллерги'я|allergiya|У меня аллергия на орехи.|Menda yong‘oqqa allergiya bor.|f
+страхо'вка|sug‘urta|У вас есть страховка?|Sug‘urtangiz bormi?|f
+пить|ichmoq (dori)|Пейте много воды.|Ko‘p suv iching.`,
+grammar:{title:"Boshim og‘riyapti → У меня болит голова",
+intro:"O‘zbek tilida egalik qo‘shimchasini qo‘shamiz: bosh<b>im</b> og‘riyapti. Rus tilida «mening boshim» demaymiz, balki <b>«menda og‘riyapti bosh»</b> deymiz: <b>У меня болит голова</b>.<br>• bitta narsa: <b>болит</b> (голова, зуб, живот)<br>• ko‘plik: <b>болят</b> (глаза, ноги, зубы)<br><br>Bu «у меня» 8-darsdagi «у меня есть» bilan bir xil. Boshqa shaxslar: у него болит..., у ребёнка болит...",
+table:[["bosh<mark>im</mark> og‘riyapti","<mark>у меня</mark> болит голова"],["tish<mark>im</mark> og‘riyapti","<mark>у меня</mark> болит зуб"],["ko‘zlar<mark>im</mark> og‘riyapti","<mark>у меня</mark> болят глаза"],["bolaning qorni og‘riyapti","<mark>у ребёнка</mark> болит живот"],["menga dori kerak","<mark>мне нужно</mark> лекарство"]],
+tip:"<b>Мне плохо / Мне лучше</b>: o‘zbekchadagi «menga yomon» kabi. Ahvol haqida doim <b>мне</b>: мне холодно (sovuqyapman), мне жарко (isib ketdim).<br><b>Favqulodda raqam:</b> Rossiyada <b>112</b> (yagona qutqaruv xizmati), tez yordam <b>103</b>.",
+mistakes:[["Моя голова болит.","У меня болит голова.","Grammatik to‘g‘ri, lekin ruslar «у меня» deydi."],["У меня болит глаза.","У меня болят глаза.","Ko‘plik → болят."],["Я плохо.","Мне плохо.","Ahvol: мне."]]},
+dialog:{scene:"Shifokor qabulida.", a:"Врач", b:"Отабек", lines:`a|Здравствуйте! Что у вас болит?|Assalomu alaykum! Sizni nima bezovta qilyapti?
+b|У меня болит голова и горло.|Boshim va tomog‘im og‘riyapti.
+a|Температура есть?|Isitma bormi?
+b|Да, тридцать восемь.|Ha, o‘ttiz sakkiz.
+a|Это простуда. Вам нужно отдыхать и пить много воды.|Bu shamollash. Sizga dam olish va ko‘p suv ichish kerak.
+b|А лекарство?|Dori-chi?
+a|Вот рецепт. Одна таблетка три раза в день.|Mana retsept. Kuniga uch marta bitta tabletka.
+b|Спасибо, доктор!|Rahmat, doktor!`},
+test:[{q:"У меня ___ голова.",o:["болит","болят","больно"],e:"Bitta narsa → болит."},
+{q:"У меня болят ___.",o:["глаза","голова","живот"],e:"болят → ko‘plik."},
+{q:"«Ahvolim yomon»",o:["Мне плохо.","Я плохо.","У меня плохо голова."],e:"Ahvol: мне."},
+{q:"«Tez yordam»",o:["скорая помощь","быстрая врач","такси"],e:"скорая помощь."},
+{q:"Что у вас ___?",o:["болит","болеть","боли"],e:"Что у вас болит?"},
+{q:"«Yordam bering!»",o:["Помогите!","Позвоните!","Подождите!"],e:"Помогите!"}],
+talk:`Что вы делаете, когда болеете?|Kasal bo‘lganingizda nima qilasiz?
+Как часто вы ходите к врачу?|Shifokorga qanchalik tez-tez borasiz?
+Что нужно делать, чтобы быть здоровым?|Sog‘lom bo‘lish uchun nima qilish kerak?
+Вы занимаетесь спортом?|Sport bilan shug‘ullanasizmi?
+Что вы скажете врачу, если у вас простуда?|Shamollasangiz, shifokorga nima deysiz?`,
+phrases:["у меня болит","мне плохо","мне нужно","вызовите врача","помогите"]
+},
+{
+id:"obhavo", title:"Ob-havo, kiyim, ranglar", ru:"Пого'да и оде'жда",
+cando:["Ob-havo haqida gapira olasiz","Kiyim va ranglarni ayta olasiz","Do‘konda kiyim so‘ray olasiz"],
+words:`пого'да|ob-havo|Какая сегодня погода?|Bugun ob-havo qanday?|f
+тепло'|iliq|Сегодня тепло.|Bugun iliq.
+хо'лодно|sovuq|На улице холодно.|Tashqarida sovuq.
+жа'рко|issiq|Летом в Ташкенте жарко.|Yozda Toshkentda issiq.
+дождь|yomg‘ir|Идёт дождь.|Yomg‘ir yog‘yapti.|m
+снег|qor|Идёт снег.|Qor yog‘yapti.|m
+со'лнце|quyosh|Светит солнце.|Quyosh charaqlayapti.|n
+ве'тер|shamol|Сильный ветер.|Kuchli shamol.|m
+гра'дус|daraja|Минус двадцать градусов.|Minus yigirma daraja.|m
+зима'|qish|Зима в Москве холодная.|Moskvada qish sovuq.|f
+весна'|bahor|Весной тепло.|Bahorda iliq.|f
+ле'то|yoz|Лето жаркое.|Yoz issiq.|n
+о'сень|kuz|Осенью идёт дождь.|Kuzda yomg‘ir yog‘adi.|f
+зимо'й|qishda|Зимой я ношу шапку.|Qishda telpak kiyaman.
+ле'том|yozda|Летом мы едем на море.|Yozda dengizga boramiz.
+оде'жда|kiyim|Тёплая одежда.|Issiq kiyim.|f
+ку'ртка|kurtka|Чёрная куртка.|Qora kurtka.|f
+пальто'|palto|Пальто дорогое.|Palto qimmat.|n
+руба'шка|ko‘ylak (erkaklar)|Белая рубашка.|Oq ko‘ylak.|f
+пла'тье|ko‘ylak (ayollar)|Красивое платье.|Chiroyli ko‘ylak.|n
+брю'ки|shim|Синие брюки.|Ko‘k shim.|pl
+о'бувь|poyabzal|Зимняя обувь.|Qishki poyabzal.|f
+ша'пка|telpak, shapka|Наденьте шапку!|Telpak kiying!|f
+носи'ть|kiyib yurmoq|Я ношу очки.|Men ko‘zoynak taqaman.
+разме'р|o‘lcham|Какой у вас размер?|O‘lchamingiz qanaqa?|m
+приме'рить|kiyib ko‘rmoq|Можно примерить?|Kiyib ko‘rsam bo‘ladimi?
+цвет|rang|Какой цвет?|Qaysi rang?|m
+кра'сный|qizil|Красная машина.|Qizil mashina.
+си'ний|ko‘k (to‘q)|Синее небо.|Ko‘k osmon.
+бе'лый|oq|Белый снег.|Oq qor.
+чёрный|qora|Чёрный чай.|Qora choy.
+зелёный|yashil|Зелёный чай.|Ko‘k choy (yashil choy).
+жёлтый|sariq|Жёлтое такси.|Sariq taksi.
+се'рый|kulrang|Серое пальто.|Kulrang palto.`,
+grammar:{title:"Sifatlar jinsga moslashadi: красный, красная, красное, красные",
+intro:"O‘zbek tilida sifat o‘zgarmaydi: qizil mashina, qizil ko‘ylak. Rus tilida sifat <b>otning jinsiga</b> moslashadi (2-darsdagi мой/моя/моё kabi):<br>• erkak: <b>-ый / -ий / -ой</b> → красн<b>ый</b> шарф, син<b>ий</b> костюм<br>• ayol: <b>-ая / -яя</b> → красн<b>ая</b> куртка, син<b>яя</b> куртка<br>• o‘rta: <b>-ое / -ее</b> → красн<b>ое</b> платье, син<b>ее</b> небо<br>• ko‘plik: <b>-ые / -ие</b> → красн<b>ые</b> брюки",
+table:[["qizil kurtka","красн<mark>ая</mark> куртка"],["qizil ko‘ylak (ayollar)","красн<mark>ое</mark> платье"],["qora palto","чёрн<mark>ое</mark> пальто"],["oq ko‘ylak (erkaklar)","бел<mark>ая</mark> рубашка"],["ko‘k shim","син<mark>ие</mark> брюки"]],
+tip:"<b>Ob-havo — so‘roqsiz gap:</b> «Холодно» (sovuq), «Жарко» (issiq): ega kerak emas. Tashqarida = на улице. <br><b>Yog‘ingarchilik «yuradi»:</b> идёт дождь, идёт снег (so‘zma-so‘z: yomg‘ir yuryapti).",
+mistakes:[["красный куртка","красная куртка","куртка ayol jinsi."],["Дождь падает.","Идёт дождь.","Ruslar «идёт дождь» deydi."],["Сегодня холодный.","Сегодня холодно.","Ob-havo uchun -о shakli."]]},
+dialog:{scene:"Kiyim do‘konida.", a:"Продавец", b:"Нигора", lines:`b|Здравствуйте! У вас есть тёплые куртки?|Assalomu alaykum! Issiq kurtkalaringiz bormi?
+a|Да, вот. Какой цвет вы хотите?|Ha, mana. Qaysi rangni xohlaysiz?
+b|Чёрную или серую.|Qora yoki kulrang.
+a|Какой у вас размер?|O‘lchamingiz qanaqa?
+b|Сорок шестой. Можно примерить?|Qirq oltinchi. Kiyib ko‘rsam bo‘ladimi?
+a|Конечно. Примерочная там.|Albatta. Kiyinish xonasi u yerda.
+b|Хорошая куртка! Сколько стоит?|Yaxshi kurtka! Qancha turadi?
+a|Восемь тысяч рублей. Зимой в Москве холодно, она очень тёплая.|Sakkiz ming rubl. Qishda Moskvada sovuq, u juda issiq.`},
+test:[{q:"___ куртка",o:["красная","красный","красное"],e:"куртка ayol jinsi."},
+{q:"___ платье",o:["белое","белый","белая"],e:"платье o‘rta jins."},
+{q:"Сегодня ___.",o:["холодно","холодный","холод есть"],e:"Ob-havo: -о."},
+{q:"«Qor yog‘yapti»",o:["Идёт снег.","Падает снег.","Есть снег."],e:"Идёт снег."},
+{q:"___ брюки",o:["синие","синий","синяя"],e:"брюки ko‘plikda."},
+{q:"«Kiyib ko‘rsam bo‘ladimi?»",o:["Можно примерить?","Можно купить?","Можно носить?"],e:"примерить = kiyib ko‘rmoq."}],
+talk:`Какая погода сегодня в вашем городе?|Bugun shahringizda ob-havo qanday?
+Какое ваше любимое время года? Почему?|Yilning sevimli fasli qaysi? Nega?
+Что вы носите зимой?|Qishda nima kiyasiz?
+Какой ваш любимый цвет?|Sevimli rangingiz qaysi?
+Где лучше покупать одежду: на рынке или в магазине?|Kiyimni qayerdan olgan yaxshi: bozordanmi yoki do‘kondan?`,
+phrases:["какая погода","идёт дождь","на улице холодно","можно примерить","какой размер"]
+},
+{
+id:"otgan", title:"Kecha nima qildingiz?", ru:"Вчера'",
+cando:["O‘tgan zamonda gapira olasiz","Dam olish kunlaringiz haqida aytib bera olasiz","Erkak va ayol shaklini farqlay olasiz"],
+words:`был|edi, bo‘ldi (erkak)|Вчера я был дома.|Kecha uyda edim.
+была'|edi, bo‘ldi (ayol)|Она была в Москве.|U Moskvada edi.
+бы'ли|edi (ko‘plik)|Мы были на свадьбе.|Biz to‘yda edik.
+де'лал|qildi (erkak)|Что ты делал вчера?|Kecha nima qilding?
+рабо'тала|ishladi (ayol)|Я работала весь день.|Kun bo‘yi ishladim.
+смотре'ть|ko‘rmoq (tomosha)|Я смотрел фильм.|Film ko‘rdim.
+ви'деть|ko‘rmoq|Я видел твоего брата.|Akangni ko‘rdim.
+слу'шать|tinglamoq|Мы слушали музыку.|Biz musiqa tingladik.
+звони'ть|qo‘ng‘iroq qilmoq|Мама звонила утром.|Oyim ertalab qo‘ng‘iroq qildi.
+писа'ть|yozmoq|Я писал сообщение.|Xabar yozdim.
+говори'ть|gapirmoq|Мы говорили по-русски.|Biz ruscha gaplashdik.
+ходи'ть|borib kelmoq (piyoda)|Я ходил в магазин.|Do‘konga borib keldim.
+е'здить|borib kelmoq (transportda)|Мы ездили в Самарканд.|Samarqandga borib keldik.
+купи'ть|sotib olmoq|Я купил телефон.|Telefon sotib oldim.
+гото'вить|tayyorlamoq, pishirmoq|Мама готовила плов.|Oyim palov pishirdi.
+учи'ть|o‘rganmoq, yodlamoq|Я учил новые слова.|Yangi so‘zlarni yodladim.
+встре'тить|uchratmoq|Я встретил друга.|Do‘stimni uchratdim.
+гуля'ть|sayr qilmoq|Мы гуляли в парке.|Bog‘da sayr qildik.
+фильм|film|Интересный фильм.|Qiziq film.|m
+кино'|kino|Мы ходили в кино.|Kinoga borib keldik.|n
+кни'га|kitob|Я читал книгу.|Kitob o‘qidim.|f
+сообще'ние|xabar|Я написал сообщение.|Xabar yozdim.|n
+сва'дьба|to‘y|Свадьба была большая.|To‘y katta bo‘ldi.|f
+весь день|kun bo‘yi|Весь день шёл дождь.|Kun bo‘yi yomg‘ir yog‘di.
+на про'шлой неде'ле|o‘tgan hafta|На прошлой неделе я был в Москве.|O‘tgan hafta Moskvada edim.
+в про'шлом году'|o‘tgan yili|В прошлом году я приехал в Россию.|O‘tgan yili Rossiyaga keldim.
+давно'|ancha oldin; ko‘pdan beri|Я давно не видел маму.|Oyimni ko‘rmaganimga ancha bo‘ldi.
+неда'вно|yaqinda|Я недавно купил машину.|Yaqinda mashina oldim.
+уже'|allaqachon, endi|Я уже поел.|Allaqachon ovqatlandim.
+ещё не|hali ...ma-|Я ещё не обедал.|Hali tushlik qilmadim.
+пото'м|keyin|Потом мы пили чай.|Keyin choy ichdik.
+сна'чала|avval|Сначала я позвонил маме.|Avval oyimga qo‘ng‘iroq qildim.`,
+grammar:{title:"O‘tgan zamon: ishla-DIM → работал / работала",
+intro:"O‘zbek tilida o‘tgan zamon <b>-di</b> bilan: ishla<b>dim</b>, ishla<b>ding</b>, ishla<b>di</b>. Rus tilida ham bitta qo‘shimcha bor: <b>-л</b>. Lekin u shaxsga emas, <b>jinsga</b> qarab o‘zgaradi:<br>• erkak: работа<b>л</b> (я, ты, он)<br>• ayol: работа<b>ла</b> (я, ты, она)<br>• ko‘plik va вы: работа<b>ли</b> (мы, вы, они)<br><br>Ya’ni gapiruvchi <b>ayol</b> bo‘lsa, doim <b>-ла</b> deydi: «Я была дома», «Я работала».",
+table:[["men ishla<mark>dim</mark> (yigit)","я работа<mark>л</mark>"],["men ishla<mark>dim</mark> (qiz)","я работа<mark>ла</mark>"],["u ishla<mark>di</mark> (erkak / ayol)","он работа<mark>л</mark> / она работа<mark>ла</mark>"],["biz ishla<mark>dik</mark>","мы работа<mark>ли</mark>"],["siz ishla<mark>dingiz</mark>","вы работа<mark>ли</mark>"],["men uyda e<mark>dim</mark>","я был / я был<mark>а</mark> дома"]],
+tip:"<b>Yasash oson:</b> noaniq fe’ldan -ть ni olib, -л qo‘shing: работа<s>ть</s> → работал, говори<s>ть</s> → говорил, смотре<s>ть</s> → смотрел. <br><b>ходил / ездил</b> = borib keldim (qaytib kelganingizni bildiradi).",
+mistakes:[["Я работал. (qiz aytsa)","Я работала.","Ayol gapirsa -ла."],["Мы был дома.","Мы были дома.","Ko‘plik → -ли."],["Вчера я работаю.","Вчера я работал.","Kecha → o‘tgan zamon."]]},
+dialog:{scene:"Dushanba ertalab ishda.", a:"Наташа", b:"Камол", lines:`a|Камол, привет! Как прошли выходные?|Kamol, salom! Dam olish kunlari qanday o‘tdi?
+b|Отлично! В субботу я был на свадьбе у друга.|Zo‘r! Shanba kuni do‘stimning to‘yida bo‘ldim.
+a|Здорово! А в воскресенье?|Ajoyib! Yakshanba-chi?
+b|Утром я спал, потом мы с братом гуляли в парке.|Ertalab uxladim, keyin akam bilan bog‘da sayr qildik.
+a|А я весь день смотрела сериалы.|Men esa kun bo‘yi serial ko‘rdim.
+b|Какой сериал ты смотрела?|Qaysi serialni ko‘rding?
+a|Русский, очень интересный. Я потом тебе расскажу!|Rus seriali, juda qiziq. Keyin aytib beraman!`},
+test:[{q:"Вчера я (qiz) ___ дома.",o:["была","был","были"],e:"Ayol → -ла."},
+{q:"Мы ___ фильм.",o:["смотрели","смотрел","смотрела"],e:"мы → -ли."},
+{q:"Он ___ в Москве.",o:["был","была","были"],e:"Erkak → был."},
+{q:"Вчера я ___ в магазин.",o:["ходил","хожу","ходить"],e:"O‘tgan zamon: ходил."},
+{q:"«Hali tushlik qilmadim»",o:["Я ещё не обедал.","Я уже обедал.","Я не ещё обедал."],e:"ещё не = hali ...ma-."},
+{q:"Вы ___ в Самарканде?",o:["были","был","была"],e:"вы → были."}],
+talk:`Что вы делали вчера?|Kecha nima qildingiz?
+Где вы были в выходные?|Dam olish kunlari qayerda bo‘ldingiz?
+Какой фильм вы смотрели недавно?|Yaqinda qaysi filmni ko‘rdingiz?
+Когда вы последний раз были на свадьбе?|Oxirgi marta qachon to‘yda bo‘lgansiz?
+Что нового вы узнали на этой неделе?|Bu hafta qanday yangilik bildingiz?`,
+phrases:["я был","я была","что ты делал","мы ходили в кино","на прошлой неделе"]
+}
+);
+
+</script>
+<script>
+/* Ovoz: avval odamlarning jonli yozuvlari, topilmasa sintez ovoz.
+   1) So‘zlar: Wikimedia Commons (Vikilug‘at yozuvlari "Ru-so‘z.ogg") va Lingua Libre ("LL-Q7737 (rus)-...").
+   2) Gaplar: Tatoeba (faqat ochiq litsenziyali yozuvlar).
+   3) Hech narsa topilmasa: brauzerning eng tabiiy rus ovozi. */
+window.TIL = window.TIL || {};
+TIL.audio = (function(){
+  const COMMONS = "https://commons.wikimedia.org/w/api.php";
+  const CACHE_KEY = "til.audio.v1";
+  let cache = {};
+  try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch(e) {}
+  const saveCache = () => { try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch(e) {} };
+  let offline = { commons:false, tatoeba:false };
+  let cur = null;          // hozir o‘ynayotgan Audio
+  let settings = { live:true, slow:false };
+
+  const plain = s => String(s).replace(/́/g,"").replace(/'/g,"").trim();
+  const keyOf = (lang,s) => lang + ":" + plain(s).toLowerCase();
+
+  function withTimeout(p, ms){
+    return Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")), ms))]);
+  }
+  async function getJSON(url, ms){
+    const r = await withTimeout(fetch(url, {mode:"cors"}), ms || 4000);
+    if (!r.ok) throw new Error("http " + r.status);
+    return r.json();
+  }
+
+  const canOgg = (()=>{ try { return !!document.createElement("audio").canPlayType('audio/ogg; codecs="vorbis"'); } catch(e){ return false; } })();
+
+  function pickFromInfo(info){
+    if (!info) return null;
+    const ders = info.derivatives || [];
+    const mp3 = ders.find(d => /audio\/mpeg/.test(d.type||""));
+    if (mp3) return mp3.src;
+    if (/\.(ogg|oga)$/i.test(info.url||"") && !canOgg) return (ders.find(d=>/audio/.test(d.type||""))||{}).src || null;
+    return info.url || null;
+  }
+
+  /* Bir nechta so‘zni bitta so‘rov bilan tekshirish (dars ochilganda) */
+  async function prefetchWords(lang, words){
+    if (!settings.live || offline.commons || lang !== "ru") return;
+    const todo = [];
+    words.forEach(w => {
+      const p = plain(w).toLowerCase();
+      if (!p || /[\s?!.,]/.test(p)) return;
+      if (cache[keyOf(lang,p)] !== undefined) return;
+      todo.push(p);
+    });
+    for (let i=0; i<todo.length; i+=40){
+      const chunk = todo.slice(i, i+40);
+      const titles = chunk.map(w => "File:Ru-" + w + ".ogg").join("|");
+      const url = COMMONS + "?action=query&format=json&origin=*&prop=videoinfo&viprop=url|derivatives&titles=" + encodeURIComponent(titles);
+      try {
+        const j = await getJSON(url, 6000);
+        const norm = {};
+        ((j.query||{}).normalized||[]).forEach(n => norm[n.to] = n.from);
+        const pages = (j.query||{}).pages || {};
+        const found = {};
+        Object.values(pages).forEach(pg => {
+          if (pg.missing !== undefined || !pg.videoinfo) return;
+          const src = pickFromInfo(pg.videoinfo[0]);
+          if (!src) return;
+          const t = (norm[pg.title] || pg.title).replace(/^File:Ru-/,"").replace(/\.ogg$/,"").replace(/_/g," ").toLowerCase();
+          found[t] = { src, by:"Wikimedia Commons", lic:"ochiq litsenziya", link:"https://commons.wikimedia.org/wiki/" + encodeURIComponent(pg.title.replace(/ /g,"_")) };
+        });
+        chunk.forEach(w => { cache[keyOf(lang,w)] = found[w] || (cache[keyOf(lang,w)] === undefined ? null : cache[keyOf(lang,w)]); });
+        saveCache();
+      } catch(e){ offline.commons = true; return; }
+    }
+  }
+
+  async function lookupLinguaLibre(w){
+    const q = 'intitle:"LL-Q7737 (rus)" intitle:"' + w + '"';
+    const url = COMMONS + "?action=query&format=json&origin=*&list=search&srnamespace=6&srlimit=20&srsearch=" + encodeURIComponent(q);
+    const j = await getJSON(url, 5000);
+    const hits = ((j.query||{}).search||[]).map(h=>h.title).filter(t => t.toLowerCase().endsWith("-" + w.toLowerCase() + ".wav"));
+    if (!hits.length) return null;
+    const title = hits[0];
+    const j2 = await getJSON(COMMONS + "?action=query&format=json&origin=*&prop=imageinfo&iiprop=url&titles=" + encodeURIComponent(title), 5000);
+    const pg = Object.values((j2.query||{}).pages||{})[0];
+    const u = pg && pg.imageinfo && pg.imageinfo[0] && pg.imageinfo[0].url;
+    if (!u) return null;
+    const m = title.match(/\(rus\)-(.+?)-/);
+    return { src:u, by:"Lingua Libre" + (m ? " · " + m[1] : ""), lic:"CC BY-SA 4.0", link:"https://commons.wikimedia.org/wiki/" + encodeURIComponent(title.replace(/ /g,"_")) };
+  }
+
+  async function lookupTatoeba(text){
+    const q = plain(text);
+    const url = "https://tatoeba.org/en/api_v0/search?from=rus&orphans=no&unapproved=no&has_audio=yes&query=" + encodeURIComponent('"' + q + '"');
+    const j = await getJSON(url, 5000);
+    const norm = s => plain(s).toLowerCase().replace(/[«»"“”.,!?—–-]/g,"").replace(/\s+/g," ").trim();
+    const want = norm(q);
+    for (const r of (j.results||[])){
+      if (norm(r.text) !== want) continue;
+      const au = (r.audios||[]).find(a => a.license && /^CC/i.test(a.license));
+      if (au) return { src:"https://tatoeba.org/audio/download/" + au.id, by:"Tatoeba · " + (au.author||""), lic:au.license, link:"https://tatoeba.org/ru/sentences/show/" + r.id };
+    }
+    return null;
+  }
+
+  async function resolve(lang, text){
+    if (!settings.live || lang !== "ru") return null;
+    const k = keyOf(lang, text);
+    if (cache[k]) return cache[k];
+    const p = plain(text).replace(/[«»"“”]/g,"");
+    const isWord = !/\s/.test(p) && p.length < 30;
+    if (isWord){
+      const w = p.toLowerCase().replace(/[?!.,]/g,"");
+      if (cache[k] === undefined) { await prefetchWords(lang, [w]); if (cache[k]) return cache[k]; }
+      if (!offline.commons && cache[k + "#ll"] === undefined){
+        try { const res = await lookupLinguaLibre(w); cache[k + "#ll"] = res ? 1 : 0; if (res) cache[k] = res; saveCache(); }
+        catch(e){ offline.commons = true; }
+      }
+    } else if (!offline.tatoeba && cache[k + "#tt"] === undefined){
+      try { const res = await lookupTatoeba(p); cache[k + "#tt"] = res ? 1 : 0; if (res) cache[k] = res; saveCache(); }
+      catch(e){ offline.tatoeba = true; }
+    }
+    return cache[k] || null;
+  }
+
+  /* --- sintez ovoz --- */
+  let voices = [];
+  function loadVoices(){ try { voices = speechSynthesis.getVoices(); } catch(e){ voices = []; } }
+  if ("speechSynthesis" in window){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  function bestVoice(langTag){
+    const base = langTag.slice(0,2);
+    const list = voices.filter(v => (v.lang||"").toLowerCase().startsWith(base));
+    const score = v => (/natural|neural|online/i.test(v.name) ? 40 : 0) + (/google/i.test(v.name) ? 20 : 0) + (/milena|yuri|katya|svetlana|dmitry|dariya/i.test(v.name) ? 15 : 0) + (v.localService ? 0 : 5);
+    return list.sort((a,b)=>score(b)-score(a))[0] || null;
+  }
+  function tts(text, langTag){
+    return new Promise(res => {
+      if (!("speechSynthesis" in window)) return res(false);
+      try {
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(plain(text));
+        u.lang = langTag; const v = bestVoice(langTag); if (v) u.voice = v;
+        u.rate = settings.slow ? 0.7 : 0.9;
+        u.onend = () => res(true); u.onerror = () => res(false);
+        speechSynthesis.speak(u);
+      } catch(e){ res(false); }
+    });
+  }
+
+  function stop(){
+    try { if (cur){ cur.pause(); cur = null; } } catch(e){}
+    try { speechSynthesis.cancel(); } catch(e){}
+  }
+
+  function playSrc(src){
+    return new Promise((res, rej) => {
+      const a = new Audio(src); cur = a;
+      a.playbackRate = settings.slow ? 0.8 : 1;
+      a.onended = () => res(true);
+      a.onerror = () => rej(new Error("audio"));
+      const p = a.play(); if (p && p.catch) p.catch(rej);
+    });
+  }
+
+  /* say(): matnni o‘qiydi; onSource(info) qaysi manbadan ekanini aytadi */
+  async function say(text, opts){
+    opts = opts || {};
+    const lang = opts.lang || "ru", tag = opts.tag || "ru-RU";
+    stop();
+    let info = null;
+    try { info = await withTimeout(resolve(lang, text), 7000); } catch(e){ info = null; }
+    if (info && info.src){
+      try { opts.onSource && opts.onSource(info); await playSrc(info.src); return info; }
+      catch(e){ /* sintezga o‘tamiz */ }
+    }
+    const s = { by:"Sintez ovoz (jonli yozuv topilmadi)", synth:true };
+    opts.onSource && opts.onSource(s);
+    await tts(text, tag);
+    return s;
+  }
+
+  return { say, stop, prefetchWords, plain, setSettings: s => Object.assign(settings, s), status: () => ({...offline}) };
+})();
+
+</script>
+<script>
+/* Guruh rejimi: Supabase orqali kirish (ism + PIN), umumiy reyting va duellar.
+   Sozlanmagan bo‘lsa, sayt oddiy rejimda (faqat shu brauzerda) ishlaydi.
+   Sahifada faqat ochiq (anon / publishable) kalit turadi; ma’lumotlarni RLS qoidalari himoya qiladi. */
+window.TIL = window.TIL || {};
+TIL.cloud = (function(){
+  const CFG = window.TIL_CONFIG || {};
+  const URL_ = (CFG.supabaseUrl || "").replace(/\/+$/, "");
+  const KEY = CFG.supabaseKey || "";
+  const configured = !!(URL_ && KEY && /^(https:\/\/|http:\/\/localhost)/.test(URL_));
+  const SKEY = "til.session.v1";
+  const DOMAIN = CFG.emailDomain || "til.example";
+  let session = null;
+  try { session = JSON.parse(localStorage.getItem(SKEY) || "null"); } catch(e){}
+  const saveSession = () => { try { session ? localStorage.setItem(SKEY, JSON.stringify(session)) : localStorage.removeItem(SKEY); } catch(e){} };
+
+  const slug = name => String(name).trim().toLowerCase().replace(/[‘’'`ʻʼ]/g, "").replace(/[^a-z0-9]+/g, "");
+  const emailOf = name => slug(name) + "@" + DOMAIN;
+
+  async function auth(grant, body){
+    const r = await fetch(URL_ + "/auth/v1/token?grant_type=" + grant, { method:"POST", headers:{ apikey:KEY, "Content-Type":"application/json" }, body:JSON.stringify(body) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { const e = new Error(j.error_description || j.msg || j.message || ("HTTP " + r.status)); e.status = r.status; throw e; }
+    session = { access_token:j.access_token, refresh_token:j.refresh_token, expires_at: Date.now() + (j.expires_in || 3600) * 1000, user:{ id:j.user.id, email:j.user.email } };
+    saveSession();
+    return session;
+  }
+  async function login(name, pin){
+    if (!slug(name)) throw new Error("Ismni kiriting");
+    return auth("password", { email: emailOf(name), password: String(pin).trim() });
+  }
+  function logout(){ session = null; saveSession(); }
+  async function token(){
+    if (!session) throw new Error("not logged in");
+    if (Date.now() > session.expires_at - 60000){
+      try { await auth("refresh_token", { refresh_token: session.refresh_token }); }
+      catch(e){ if (e.status === 400 || e.status === 401) { logout(); } throw e; }
+    }
+    return session.access_token;
+  }
+  async function rest(path, opts){
+    opts = opts || {};
+    const t = await token();
+    const r = await fetch(URL_ + "/rest/v1/" + path, { method: opts.method || "GET",
+      headers: Object.assign({ apikey:KEY, Authorization:"Bearer " + t, "Content-Type":"application/json" }, opts.headers || {}),
+      body: opts.body ? JSON.stringify(opts.body) : undefined });
+    if (!r.ok){ const j = await r.json().catch(() => ({})); throw new Error(j.message || ("HTTP " + r.status)); }
+    if (r.status === 204) return null;
+    const txt = await r.text(); return txt ? JSON.parse(txt) : null;
+  }
+
+  return {
+    configured, slug,
+    user: () => session && session.user,
+    login, logout,
+    myProfile: () => rest("profiles?select=*&id=eq." + session.user.id).then(a => a && a[0] || null),
+    profiles: () => rest("profiles?select=id,name,xp,week_xp,last_week_xp,week_key,today_xp,day,streak,words,lessons,a1_passed,weekly_score,last_seen&order=xp.desc"),
+    upsertProfile: p => rest("profiles?on_conflict=id", { method:"POST", headers:{ Prefer:"resolution=merge-duplicates,return=minimal" }, body: Object.assign({ id: session.user.id }, p) }),
+    duels: () => rest("duels?select=*&order=created_at.desc&limit=30"),
+    results: ids => ids.length ? rest("duel_results?select=*&duel_id=in.(" + ids.join(",") + ")") : Promise.resolve([]),
+    createDuel: d => rest("duels", { method:"POST", headers:{ Prefer:"return=representation" }, body: d }).then(a => a[0]),
+    submitResult: r => rest("duel_results", { method:"POST", headers:{ Prefer:"return=minimal" }, body: r })
+  };
+})();
+
+</script>
+<script>
+/* TIL: o‘zbek tilida so‘zlashuvchilar uchun til kursi. Hammasi brauzerda, server kerak emas. */
+(function(){
+"use strict";
+const $ = (s, r) => (r||document).querySelector(s);
+const $$ = (s, r) => Array.from((r||document).querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const sample = (a, n) => shuffle(a).slice(0, n);
+const app = $("#app");
+
+/* ---------- matn yordamchilari ---------- */
+const STRESS = "́";
+const stress = s => String(s).replace(/([аеиоуыэюяАЕИОУЫЭЮЯ])'/g, "$1" + STRESS);
+const plain = s => String(s).replace(/́/g,"").replace(/'/g,"");
+const normRu = s => plain(s).toLowerCase().replace(/ё/g,"е").replace(/[.,!?«»"“”:;()…]/g," ").replace(/[—–]/g," ").replace(/-/g,"").replace(/\s+/g," ").trim();
+function lev(a, b){
+  const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
+  let prev = Array.from({length:n+1}, (_,j)=>j);
+  for (let i=1;i<=m;i++){ const cur=[i]; for (let j=1;j<=n;j++){ cur[j]=Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+(a[i-1]===b[j-1]?0:1)); } prev=cur; }
+  return prev[n];
+}
+const TR = {а:"a",б:"b",в:"v",г:"g",д:"d",ж:"j",з:"z",и:"i",й:"y",к:"k",л:"l",м:"m",н:"n",о:"o",п:"p",р:"r",с:"s",т:"t",у:"u",ф:"f",х:"x",ц:"ts",ч:"ch",ш:"sh",щ:"sh",ъ:"’",ы:"i",ь:"",э:"e",ю:"yu",я:"ya",ё:"yo",е:"e"};
+function translit(s){
+  const t = plain(s); let out = "";
+  for (let i=0;i<t.length;i++){
+    const ch = t[i], lo = ch.toLowerCase(), prev = (t[i-1]||" ").toLowerCase();
+    let r;
+    if (lo === "е") r = (/[\sаеёиоуыэюяъь\-«"(]/.test(prev) || i===0) ? "ye" : "e";
+    else r = TR[lo] !== undefined ? TR[lo] : ch;
+    if (ch !== lo && r) r = r[0].toUpperCase() + r.slice(1);
+    out += r;
+  }
+  return out;
+}
+const todayStr = (d) => { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); };
+const addDays = (s, n) => { const d = new Date(s + "T12:00:00"); d.setDate(d.getDate()+n); return todayStr(d); };
+function weekKey(s){ const d = new Date((s||todayStr()) + "T12:00:00"); const day = (d.getDay()+6)%7; d.setDate(d.getDate()-day); return todayStr(d); }
+const fmtDate = s => { const [y,m,d] = s.split("-"); return d + "." + m + "." + y; };
+
+/* ---------- ikonkalar ---------- */
+const I = {
+  play:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
+  chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
+  fire:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s5 4.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 1-3.5S9 11 10.5 11C10.5 7 12 2 12 2z"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.5 7 .8-5.2 4.8 1.4 7L12 17.6 5.8 21l1.4-7L2 9.3l7-.8z"/></svg>',
+  road:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19c4-1 3-6 8-7s4-6 8-7"/><circle cx="4" cy="19" r="2"/><circle cx="20" cy="5" r="2"/></svg>',
+  cards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="14" rx="2"/><path d="M7 2h12a2 2 0 0 1 2 2v12"/></svg>',
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>',
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg>',
+  pen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  ear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5a6 6 0 0 1 12 0c0 4-4 4.5-4 8a3 3 0 0 1-6 0"/><path d="M10 8.5a2 2 0 0 1 4 0"/></svg>',
+  swap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 3 8l4 4"/><path d="M3 8h14"/><path d="m17 20 4-4-4-4"/><path d="M21 16H7"/></svg>',
+  puzzle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
+  chat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z"/></svg>',
+  video:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="m17 10 5-3v10l-5-3z"/></svg>',
+  trophy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>',
+  swords:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/><path d="M9.5 6.5 14 2h3v3l-4.5 4.5M5 14l4 4M7 17l-3 3M3 19l2 2"/></svg>',
+  stop:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
+  slow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg>'
+};
+
+/* ---------- kurs ma’lumotlari ---------- */
+const COURSES = {
+  ru:{ id:"ru", name:"Rus tili", short:"RU", tag:"ru-RU", lessons:TIL.ruA1 || [], alphabet:TIL.ruAlphabet },
+  de:{ id:"de", name:"Nemis tili", short:"DE", soon:true },
+  en:{ id:"en", name:"Ingliz tili", short:"EN", soon:true }
+};
+const LEVELS = [
+  { id:"A1", name:"A1 · Boshlang‘ich", desc:"Oddiy hayotiy vaziyatlar: tanishuv, do‘kon, yo‘l, shifokor.", words:"~450 so‘z" },
+  { id:"A2", name:"A2 · Elementar", desc:"Ish, ijara, hujjatlar, telefonda gaplashish, o‘tgan va kelasi zamon.", words:"~1000 so‘z", lessons:12 },
+  { id:"B1", name:"B1 · O‘rta", desc:"Mamlakatda mustaqil yashash, ishda uchrashuvlar, fikr bildirish.", words:"~2000–3000 so‘z", lessons:15 },
+  { id:"B2", name:"B2 · O‘rtadan yuqori", desc:"Filmlar (subtitr bilan), erkin suhbat, murakkab mavzular.", words:"~4000–5000 so‘z", lessons:15 }
+];
+const C = COURSES.ru;
+
+function parseWords(lesson){
+  return lesson.words.trim().split("\n").map((line, i) => {
+    const [ru, uz, ex, exUz, g] = line.split("|").map(s => (s||"").trim());
+    return { id: lesson.id + ":" + i, lesson: lesson.id, ru: stress(ru), plain: plain(ru), uz, ex: stress(ex||""), exUz: exUz||"", g: g||"" };
+  });
+}
+C.lessons.forEach((l, idx) => {
+  l.n = idx + 1;
+  l.ruTitle = stress(l.ru);
+  l.W = parseWords(l);
+  l.D = l.dialog.lines.trim().split("\n").map(s => { const [w, ru, uz] = s.split("|"); return { who:w, ru:ru.trim(), uz:(uz||"").trim() }; });
+  l.T = l.talk.trim().split("\n").map(s => { const [ru, uz] = s.split("|"); return { ru:ru.trim(), uz:(uz||"").trim() }; });
+});
+const ALL_WORDS = C.lessons.flatMap(l => l.W);
+const WORD = Object.fromEntries(ALL_WORDS.map(w => [w.id, w]));
+const LESSON = Object.fromEntries(C.lessons.map(l => [l.id, l]));
+const ALPHA = C.alphabet.letters.trim().split("\n").map(s => { const [L, lat, type, ex, exUz, note] = s.split("|"); return { L, lat, type, ex: stress(ex), exUz, note: note||"" }; });
+const READING = C.alphabet.reading.trim().split("\n").map(s => { const [ru, uz] = s.split("|"); return { ru: stress(ru), uz }; });
+
+/* ---------- holat (faqat shu brauzerda saqlanadi) ---------- */
+const CL = TIL.cloud, CFG = window.TIL_CONFIG || {};
+let KEY = (CL.configured && CL.user()) ? "til.state." + CL.user().id : "til.state.v1";
+const fresh = () => ({ name:"", xp:0, goal:50, days:{}, cards:{}, lessons:{}, alpha:{}, exams:{}, weekly:{}, settings:{ live:true, slow:false, translit:true }, created: todayStr() });
+function loadLocal(k){ try { const raw = localStorage.getItem(k); if (raw) return Object.assign(fresh(), JSON.parse(raw)); } catch(e){} return null; }
+let S = loadLocal(KEY) || fresh();
+S.settings = Object.assign(fresh().settings, S.settings || {});
+TIL.audio.setSettings(S.settings);
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} schedulePush(); };
+const LS = id => (S.lessons[id] = S.lessons[id] || { hw:{} });
+
+function addXP(n){
+  if (!n) return;
+  const t = todayStr(), before = S.days[t] || 0;
+  S.xp += n; S.days[t] = before + n; save();
+  if (before < S.goal && S.days[t] >= S.goal) toast("Kunlik maqsad bajarildi! Barakalla!", "gold");
+}
+function streak(){
+  let d = todayStr(), n = 0, usedWeeks = {}, guard = 0;
+  if (!S.days[d]) d = addDays(d, -1);
+  while (guard++ < 2000){
+    if (S.days[d]) { n++; d = addDays(d, -1); continue; }
+    const wk = weekKey(d);
+    const prev = addDays(d, -1);
+    if (!usedWeeks[wk] && S.days[prev]) { usedWeeks[wk] = d; d = prev; continue; }
+    break;
+  }
+  return { n, frozen: Object.values(usedWeeks) };
+}
+const freezeLeft = () => streak().frozen.some(d => weekKey(d) === weekKey()) ? 0 : 1;
+
+/* ---------- takrorlash (Leitner qutilari) ---------- */
+const BOX_DAYS = [0, 1, 2, 4, 8, 16, 32];
+const card = id => S.cards[id];
+function grade(id, ok, soft){
+  const c = S.cards[id] || (S.cards[id] = { box:0, due:todayStr(), r:0, w:0 });
+  if (ok){ c.r++; c.box = Math.min(6, c.box + (soft ? 0 : 1)); if (soft && c.box === 0) c.box = 1; }
+  else { c.w++; c.box = Math.max(0, Math.min(c.box - 2, 1)); }
+  c.due = addDays(todayStr(), BOX_DAYS[c.box]);
+  c.seen = 1; save();
+}
+const known = () => ALL_WORDS.filter(w => (S.cards[w.id]||{}).box >= 3).length;
+const learning = () => ALL_WORDS.filter(w => { const c = S.cards[w.id]; return c && c.box > 0 && c.box < 3; }).length;
+const dueCards = () => ALL_WORDS.filter(w => { const c = S.cards[w.id]; return c && c.seen && c.due <= todayStr(); });
+
+/* ---------- dars holati ---------- */
+const PARTS = ["cards","grammar","dialog","practice","hwOK"];
+const HW_PARTS = ["review","dict","trans","build","speak"];
+function lessonPct(l){ const st = S.lessons[l.id] || {}; return Math.round(PARTS.filter(p => st[p]).length / PARTS.length * 100); }
+function hwDone(l){ const h = (S.lessons[l.id]||{}).hw || {}; return HW_PARTS.every(p => h[p]); }
+function markPart(l, part){
+  const st = LS(l.id);
+  if (st[part]) return;
+  st[part] = true; save();
+  if (part === "practice") addXP(20);
+  if (PARTS.every(p => st[p])) { addXP(50); toast("«" + l.title + "» darsi tugadi! +50 XP", "gold"); }
+}
+function alphaDone(){ return !!(S.alpha.read && S.alpha.write); }
+function nextStop(){
+  if (!alphaDone()) return "alpha";
+  const l = C.lessons.find(l => lessonPct(l) < 100);
+  if (l) return l.id;
+  if (!(S.exams.A1||{}).passed) return "examA1";
+  return null;
+}
+const doneLessons = () => C.lessons.filter(l => lessonPct(l) === 100).length;
+
+/* ---------- toast ---------- */
+function toast(msg, cls){
+  const t = document.createElement("div"); t.className = "toast " + (cls||""); t.textContent = msg;
+  $("#toasts").appendChild(t); setTimeout(() => t.remove(), cls === "small" ? 2600 : 3200);
+}
+
+/* ---------- ovoz ---------- */
+let lastSrcToast = "";
+function speak(text, btn){
+  if (btn) btn.classList.add("playing");
+  return TIL.audio.say(text, { onSource: info => {
+    const msg = info.synth ? "Sintez ovoz" : "Jonli ovoz: " + info.by;
+    if (msg !== lastSrcToast) { toast(msg, "small"); lastSrcToast = msg; setTimeout(()=> lastSrcToast = "", 8000); }
+  }}).finally(() => btn && btn.classList.remove("playing"));
+}
+const yg = phrase => "https://youglish.com/pronounce/" + encodeURIComponent(plain(phrase)) + "/russian";
+const spkBtn = (text, label, cls) => `<button class="spk ${cls||""}" data-say="${esc(text)}">${I.play}${label ? "<span>" + label + "</span>" : ""}</button>`;
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-say]");
+  if (b){ e.stopPropagation(); speak(b.dataset.say, b); }
+}, true);
+
+/* ---------- genderni ko‘rsatish ---------- */
+const GN = { m:"erkak", f:"ayol", n:"o‘rta", pl:"ko‘plik" };
+const gTag = g => g ? `<span class="gtag g-${g}" title="${GN[g]} jinsi">${{m:"m",f:"f",n:"n",pl:"ko‘p"}[g]}</span>` : "";
+const wordHTML = w => `<span class="${w.g ? "g-" + w.g : ""}">${esc(w.ru)}</span>`;
+
+/* ---------- guruh: natijalarni bulutga yuborish ---------- */
+let pushT = null, guest = false;
+try { guest = localStorage.getItem("til.guest") === "1"; } catch(e){}
+function weekXP(wk){ let s = 0; for (let i=0;i<7;i++) s += S.days[addDays(wk, i)] || 0; return s; }
+const loginName = () => { const u = CL.user(); if (!u) return ""; const n = u.email.split("@")[0]; return n[0].toUpperCase() + n.slice(1); };
+function statsRow(){
+  const wk = weekKey(), t = todayStr();
+  return { name: S.name || loginName(), xp:S.xp, week_xp:weekXP(wk), last_week_xp:weekXP(addDays(wk, -7)), week_key:wk, today_xp:S.days[t] || 0, day:t,
+    streak:streak().n, words:known(), lessons:doneLessons(), a1_passed:!!(S.exams.A1||{}).passed, weekly_score:(S.weekly[wk]||{}).score ?? null, last_seen:new Date().toISOString(), state:S };
+}
+function schedulePush(){ if (!CL.configured || !CL.user()) return; clearTimeout(pushT); pushT = setTimeout(pushNow, 3000); }
+async function pushNow(){ clearTimeout(pushT); if (!CL.configured || !CL.user()) return; try { await CL.upsertProfile(statsRow()); } catch(e){ /* internet yo‘q: keyingi safar yuboriladi */ } }
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") pushNow(); });
+async function afterLogin(typed){
+  KEY = "til.state." + CL.user().id;
+  let cloud = null;
+  try { const p = await CL.myProfile(); if (p && p.state) cloud = Object.assign(fresh(), p.state); } catch(e){}
+  const cands = [cloud, loadLocal(KEY)].filter(Boolean);
+  if (!cands.length){ const g = loadLocal("til.state.v1"); if (g) cands.push(g); }
+  S = cands.sort((a, b) => b.xp - a.xp)[0] || fresh();
+  if (!S.name) S.name = typed.trim();
+  S.settings = Object.assign(fresh().settings, S.settings || {}); TIL.audio.setSettings(S.settings);
+  try { localStorage.removeItem("til.guest"); } catch(e){} guest = false;
+  save(); await pushNow();
+}
+
+/* ===================== NAVIGATSIYA ===================== */
+let route = { v:"home" };
+const history_ = [];
+function go(r, push){ if (push !== false) history_.push(route); route = r; TIL.audio.stop(); render(); window.scrollTo(0,0); }
+function back(){ route = history_.pop() || { v:"home" }; TIL.audio.stop(); render(); window.scrollTo(0,0); }
+
+function renderNav(){
+  const due = dueCards().length;
+  const items = [["home","Yo‘l",I.road],["review","Takrorlash",I.cards,due],["rank","Reyting",I.trophy],["dict","Lug‘at",I.book],["profile","Profil",I.user]];
+  $("#nav").hidden = route.v === "login";
+  $("#nav").innerHTML = items.map(([v, label, ic, cnt]) =>
+    `<button data-nav="${v}" ${(route.v === v || (v==="home" && !["review","dict","profile","rank","duel"].includes(route.v)) || (v==="rank" && route.v==="duel")) ? 'aria-current="page"' : ""}>${ic}${label}${cnt ? `<span class="cnt">${cnt > 99 ? "99+" : cnt}</span>` : ""}</button>`).join("");
+  $$("#nav button").forEach(b => b.onclick = () => { history_.length = 0; go({ v:b.dataset.nav }, false); });
+  $("#langs").innerHTML = Object.values(COURSES).map(c => `<button class="lang ${c.soon ? "soon" : ""}" aria-pressed="${c.id === "ru"}" data-lang="${c.id}" title="${c.name}">${c.short}</button>`).join("");
+  $$("#langs button").forEach(b => b.onclick = () => {
+    const c = COURSES[b.dataset.lang];
+    if (c.soon) toast(c.name + " rus kursidan keyin qo‘shiladi.");
+  });
+}
+$("#brand").onclick = () => { history_.length = 0; go({ v:"home" }, false); };
+
+function render(){
+  renderNav();
+  const v = route.v;
+  if (v === "home") return viewHome();
+  if (v === "lesson") return viewLesson();
+  if (v === "alpha") return viewAlpha();
+  if (v === "review") return viewReview();
+  if (v === "dict") return viewDict();
+  if (v === "profile") return viewProfile();
+  if (v === "exam") return viewExamIntro();
+  if (v === "weekly") return viewWeeklyIntro();
+  if (v === "cert") return viewCert();
+  if (v === "guide") return viewGuide();
+  if (v === "login") return viewLogin();
+  if (v === "rank") return viewRank();
+  if (v === "duel") return viewDuel();
+}
+const backBtn = (label) => `<button class="back" id="backBtn">${I.back}${label || "Orqaga"}</button>`;
+const bindBack = () => { const b = $("#backBtn"); if (b) b.onclick = back; };
+
+/* ===================== BOSH SAHIFA: YO‘L XARITASI ===================== */
+function viewHome(){
+  const st = streak(), t = todayStr(), todayXP = S.days[t] || 0;
+  const k = known(), dl = doneLessons(), nx = nextStop();
+  const nxL = nx && LESSON[nx];
+  const remain = C.lessons.length - dl + ((S.exams.A1||{}).passed ? 0 : 1);
+  const due = dueCards().length;
+  const wk = S.weekly[weekKey()];
+
+  /* Bugungi reja */
+  const todo = [];
+  if (nx === "alpha") todo.push({ t:"Rus alifbosini o‘rganing", s:"33 harf, o‘qish va yozish mashqi", go:{v:"alpha"}, done:false });
+  else if (nxL) {
+    const stp = S.lessons[nxL.id] || {};
+    const nextPart = PARTS.find(p => !stp[p]);
+    const PN = { cards:"So‘z kartochkalari", grammar:"Grammatika", dialog:"Dialog", practice:"Mashq (80% dan yuqori)", hwOK:"Uy vazifasi" };
+    todo.push({ t:`${nxL.n}-dars: ${nxL.title}`, s:"Keyingi qadam: " + PN[nextPart], go:{ v:"lesson", id:nxL.id, tab: nextPart === "hwOK" ? "hw" : nextPart }, done:false });
+  } else if (nx === "examA1") todo.push({ t:"A1 imtihonini topshiring", s:"30 savol, o‘tish bali 80%", go:{v:"exam"}, done:false });
+  todo.push({ t: due ? `${due} ta so‘zni takrorlang` : "Takrorlash", s: due ? "Unutmaslik uchun aynan bugun" : "Bugun takrorlanadigan so‘z yo‘q", go:{v:"review"}, done: !due && Object.keys(S.cards).length > 0 });
+  if (dl > 0 || Object.keys(S.lessons).length) todo.push({ t:"Haftalik nazorat", s: wk ? `Bu hafta: ${wk.score}%` : "Haftada bir marta, 15 savol", go:{v:"weekly"}, done: !!wk });
+
+  const road = [];
+  road.push(stopHTML({ id:"alpha", n:"А", title:"Alifbo", ru:"Кириллица · 33 harf", pct: (S.alpha.read?50:0) + (S.alpha.write?50:0), next: nx === "alpha" }));
+  C.lessons.forEach(l => road.push(stopHTML({ id:l.id, n:l.n, title:l.title, ru:l.ruTitle, pct:lessonPct(l), next: nx === l.id, words:l.W.length })));
+  const ex = S.exams.A1 || {};
+  road.push(stopHTML({ id:"examA1", n:"A1", title:"A1 imtihoni va sertifikat", ru: ex.best ? `Eng yaxshi natija: ${ex.best}%` : "30 savol · o‘tish bali 80%", pct: ex.passed ? 100 : 0, next: nx === "examA1", exam:true, last:true }));
+
+  app.innerHTML = `
+  <section class="stats" aria-label="Natijalar">
+    <div class="stat streak"><div class="v">${I.fire}${st.n}</div><div class="l">kun ketma-ket</div></div>
+    <div class="stat xp"><div class="v">${I.star}${S.xp}</div><div class="l">XP</div></div>
+    <div class="stat words"><div class="v">${k}</div><div class="l">so‘zni bilasiz</div></div>
+    <div class="stat lvl"><div class="v">${dl}/${C.lessons.length}</div><div class="l">dars (A1)</div></div>
+  </section>
+  <div class="goal"><b>Bugun</b><div class="gbar"><i style="width:${Math.min(100, todayXP / S.goal * 100)}%"></i></div><span>${todayXP} / ${S.goal} XP</span></div>
+  <div class="freeze">Seriyani saqlash: haftada bir kun o‘tkazib yuborsangiz ham seriya uzilmaydi. Bu hafta ${freezeLeft() ? "1 ta muzlatish bor" : "muzlatish ishlatildi"}.</div>
+
+  <section class="today">
+    <h2>${S.name ? esc(S.name) + ", bugungi reja" : "Bugungi reja"}</h2>
+    <p class="sub">${remain > 0 ? `A2 darajasigacha <b>${remain}</b> qadam qoldi.` : "A1 darajasi yakunlandi! A2 kursi tayyorlanmoqda."} Kuniga 30–60 daqiqa yetarli.</p>
+    <div class="todo">${todo.map((x,i) => `<button data-todo="${i}" class="${x.done ? "done" : ""}"><span class="ck"></span><span><b>${esc(x.t)}</b><small>${esc(x.s)}</small></span></button>`).join("")}</div>
+  </section>
+
+  <div class="section-h"><h2>Yo‘l xaritasi</h2><span>${k} / ${ALL_WORDS.length} so‘z</span></div>
+  <div class="lvl-h"><span class="tag">A1</span><div><b>${LEVELS[0].name}</b><span>${LEVELS[0].desc}</span></div></div>
+  <div class="road">${road.join("")}</div>
+  ${LEVELS.slice(1).map(L => `
+    <div class="lvl-h locked"><span class="tag">${L.id}</span><div><b>${L.name}</b><span>${L.desc} ${L.words}.</span></div></div>
+    <div class="locked-box"><b>${L.lessons} dars · tayyorlanmoqda.</b> A1 imtihonidan o‘tgach ochiladi.</div>`).join("")}
+  <p class="note" style="margin-top:22px">Taraqqiyotingiz faqat shu brauzerda saqlanadi. Boshqa telefonga o‘tmoqchi bo‘lsangiz, Profil bo‘limida «Taraqqiyotni ko‘chirish» kodidan foydalaning.</p>`;
+
+  $$("[data-todo]").forEach(b => b.onclick = () => go(todo[+b.dataset.todo].go));
+  $$("[data-stop]").forEach(b => b.onclick = () => {
+    const id = b.dataset.stop;
+    if (id === "alpha") go({ v:"alpha" });
+    else if (id === "examA1") go({ v:"exam" });
+    else go({ v:"lesson", id });
+  });
+}
+function stopHTML(o){
+  const cls = ["stop", o.pct >= 100 ? "done" : "", o.next ? "next" : "", o.pct > 0 && o.pct < 100 ? "part" : "", o.exam ? "exam" : "", o.last ? "last" : ""].join(" ");
+  return `<button class="${cls}" data-stop="${o.id}">
+    <span class="dot">${o.pct >= 100 && !o.exam ? "✓" : o.n}</span>
+    <span class="card"><h3>${esc(o.title)}</h3><span class="ru">${o.ru}</span>
+      <span class="meta">${o.pct >= 100 ? '<span class="pill ok">Tugadi</span>' : o.next ? '<span class="pill warn">Keyingi</span>' : ""}${!o.exam ? `<span class="bar"><i style="width:${o.pct}%"></i></span><span>${o.pct}%</span>` : ""}${o.words ? `<span>${o.words} so‘z</span>` : ""}</span>
+    </span>
+    <span class="chev">${I.chev}</span></button>`;
+}
+
+/* ===================== ALIFBO ===================== */
+function viewAlpha(){
+  const tab = route.tab || "letters";
+  app.innerHTML = `${backBtn("Yo‘l xaritasi")}
+  <div class="thead"><div class="eyebrow">Birinchi qadam</div><h1>Rus alifbosi</h1><p>Кириллица</p></div>
+  <div class="tabs t3" role="tablist">
+    ${[["letters","Harflar"],["read","O‘qish",S.alpha.read],["write","Yozish",S.alpha.write]].map(([k,l,d]) => `<button class="tab" role="tab" aria-selected="${tab===k}" data-tab="${k}">${l}${d ? "<i>✓</i>" : ""}</button>`).join("")}
+  </div><div class="panel" id="panel"></div>`;
+  bindBack();
+  $$("[data-tab]").forEach(b => b.onclick = () => { route.tab = b.dataset.tab; viewAlpha(); });
+  const P = $("#panel");
+  if (tab === "letters"){
+    P.innerHTML = `<p class="note">${C.alphabet.intro}</p>
+      <div class="legend"><span><span class="kdot k"></span>tanish</span><span><span class="kdot l"></span>aldamchi: ko‘rinishi tanish, o‘qilishi boshqa</span></div>
+      <div class="letters" style="margin-top:12px">${ALPHA.map((a,i) => `<button class="letter ${a.type}" data-l="${i}"><div class="L">${a.L}</div><div class="s">${esc(a.lat)}</div><div class="w">${a.ex}</div></button>`).join("")}</div>
+      <div id="ltd" class="lt-detail"></div>
+      <button class="btn primary wide" id="toRead">O‘qish mashqini boshlash</button>`;
+    $$("[data-l]").forEach(b => b.onclick = () => {
+      const a = ALPHA[+b.dataset.l];
+      $("#ltd").innerHTML = `<div class="cardbox"><h3>${a.L} — «${esc(a.lat)}»</h3><p>${a.note ? esc(a.note) : "O‘zbekchadagi kabi o‘qiladi."}</p>
+        <div class="row"><b style="font-size:20px">${a.ex}</b><span class="fc-tr">[${translit(a.ex)}]</span><span>— ${esc(a.exUz)}</span>${spkBtn(a.ex, "Tinglash", "sm")}</div></div>`;
+      $("#ltd").scrollIntoView({ block:"nearest", behavior:"smooth" });
+      speak(a.ex);
+    });
+    $("#toRead").onclick = () => { route.tab = "read"; viewAlpha(); };
+  }
+  if (tab === "read"){
+    const pool = READING.concat(ALPHA.map(a => ({ ru:a.ex, uz:a.exUz })));
+    const qs = sample(pool, 12).map(it => {
+      const right = translit(it.ru);
+      const opts = [right]; let guard = 0;
+      while (opts.length < 4 && guard++ < 50){ const o = translit(sample(pool,1)[0].ru); if (!opts.includes(o)) opts.push(o); }
+      return { kind:"choice", label:"Qanday o‘qiladi?", prompt:`<span class="big">${it.ru}</span><small>${esc(it.uz)}</small>`, audioAfter: it.ru, options: opts, answer: right };
+    });
+    runQuiz(P, { questions: qs, onFinish: (sc, n) => { const p = Math.round(sc/n*100); if (p >= 80 && !S.alpha.read){ S.alpha.read = true; save(); addXP(15); } return p >= 80 ? "O‘qish mashqi bajarildi!" : "80% kerak. Yana bir bor urinib ko‘ring."; }, retry: () => viewAlpha() });
+  }
+  if (tab === "write"){
+    const pool = READING.filter(r => plain(r.ru).length <= 8);
+    const qs = sample(pool, 8).map(it => ({ kind:"type", label:"Kirillda yozing", prompt:`<span class="big">${esc(translit(it.ru))}</span><small>${esc(it.uz)}</small>`, audio: it.ru, answer: it.ru }));
+    P.innerHTML = `<p class="note">Telefoningizda rus klaviaturasi bo‘lmasa, pastdagi «Klaviatura» tugmasini bosing. Uni o‘rnatish ham foydali: Sozlamalar → Til va klaviatura → Русский.</p><div id="q"></div>`;
+    runQuiz($("#q"), { questions: qs, onFinish: (sc, n) => { const p = Math.round(sc/n*100); if (p >= 80 && !S.alpha.write){ S.alpha.write = true; save(); addXP(15); } return p >= 80 ? "Yozish mashqi bajarildi!" : "80% kerak. Yana bir bor urinib ko‘ring."; }, retry: () => viewAlpha() });
+  }
+}
+
+/* ===================== DARS ===================== */
+const TABS = [["cards","So‘zlar"],["grammar","Grammatika"],["dialog","Dialog"],["practice","Mashq"],["hw","Uy vazifasi"]];
+function viewLesson(){
+  const l = LESSON[route.id]; const tab = route.tab || "cards"; const st = LS(l.id);
+  TIL.audio.prefetchWords("ru", l.W.map(w => w.plain));
+  app.innerHTML = `${backBtn("Yo‘l xaritasi")}
+  <div class="thead"><div class="eyebrow">${l.n}-dars · A1</div><h1>${esc(l.title)}</h1><p>${l.ruTitle}</p>
+    <ul class="cando">${l.cando.map(c => `<li>${esc(c)}</li>`).join("")}</ul></div>
+  <div class="tabs" role="tablist">${TABS.map(([k, lab]) => `<button class="tab" role="tab" aria-selected="${tab===k}" data-tab="${k}">${lab}${(k==="hw" ? hwDone(l) : st[k]) ? "<i>✓</i>" : ""}</button>`).join("")}</div>
+  <div class="panel" id="panel"></div>`;
+  bindBack();
+  $$("[data-tab]").forEach(b => b.onclick = () => { route.tab = b.dataset.tab; viewLesson(); });
+  const P = $("#panel");
+  ({ cards: lessonCards, grammar: lessonGrammar, dialog: lessonDialog, practice: lessonPractice, hw: lessonHW })[tab](P, l);
+}
+const nextTab = (l, cur) => { const i = TABS.findIndex(t => t[0] === cur); return TABS[i+1] ? `<button class="btn primary wide" data-next="${TABS[i+1][0]}">Keyingi: ${TABS[i+1][1]}</button>` : ""; };
+function bindNext(P){ $$("[data-next]", P).forEach(b => b.onclick = () => { route.tab = b.dataset.next; viewLesson(); window.scrollTo(0,0); }); }
+
+/* --- kartochkalar --- */
+function flashDeck(P, words, opts){
+  let i = 0, flipped = false;
+  const draw = () => {
+    if (i >= words.length){ P.innerHTML = `<div class="empty"><h3>Barakalla!</h3><p>${words.length} ta kartochka ko‘rildi.</p>${opts.doneHTML || ""}</div>`; opts.onDone && opts.onDone(P); return; }
+    const w = words[i], c = S.cards[w.id] || { box:0 };
+    P.innerHTML = `<div class="deckinfo"><span>${i+1} / ${words.length}</span><span>${opts.info || "Kartochkani bosing: tarjimasi chiqadi"}</span></div>
+    <div class="fc ${flipped ? "flipped" : ""}" id="fc" tabindex="0" role="button" aria-label="Kartochkani aylantirish">
+      <div class="fc-inner">
+        <div class="fc-face">
+          <div class="box-dots" title="Bilish darajasi">${[1,2,3,4,5,6].map(n => `<i class="${c.box >= n ? "on" : ""}"></i>`).join("")}</div>
+          <div class="fc-word">${wordHTML(w)} ${gTag(w.g)}</div>
+          ${S.settings.translit ? `<div class="fc-tr">[${esc(translit(w.ru))}]</div>` : ""}
+          <div class="spkrow">${spkBtn(w.ru, "Tinglash")}</div>
+          <div class="fc-hint">Ma’nosini eslang, keyin bosing</div>
+        </div>
+        <div class="fc-face back">
+          <div class="fc-uz">${esc(w.uz)}</div>
+          <div class="fc-word" style="font-size:20px">${wordHTML(w)}</div>
+          ${w.ex ? `<div class="fc-ex">${esc(w.ex)}<i>${esc(w.exUz)}</i></div>` : ""}
+          <div class="spkrow">${w.ex ? spkBtn(w.ex, "Misol", "sm") : ""}<a class="spk sm alt" href="${yg(w.plain)}" target="_blank" rel="noopener">${I.video}Videoda</a></div>
+        </div>
+      </div></div>
+    <div class="grade">
+      <button class="btn bad" data-g="0">Bilmayman<small>yana ko‘rsat</small></button>
+      <button class="btn mid" data-g="1">Qiynaldim<small>ertaga</small></button>
+      <button class="btn good" data-g="2">Bilaman<small>keyinroq</small></button>
+    </div>`;
+    const fc = $("#fc");
+    const flip = () => { flipped = !flipped; fc.classList.toggle("flipped", flipped); };
+    fc.onclick = e => { if (!e.target.closest("button,a")) flip(); };
+    fc.onkeydown = e => { if (e.key === " " || e.key === "Enter"){ e.preventDefault(); flip(); } };
+    if (!flipped && opts.autoplay !== false) speak(w.ru);
+    $$("[data-g]").forEach(b => b.onclick = () => {
+      const g = +b.dataset.g;
+      grade(w.id, g > 0, g === 1); addXP(1);
+      if (g === 0) words.push(w);
+      i++; flipped = false; draw();
+    });
+  };
+  draw();
+}
+function lessonCards(P, l){
+  P.innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:10px"><span class="fc-tr">${l.W.length} ta so‘z · rang = jins: <span class="g-m">erkak</span>, <span class="g-f">ayol</span>, <span class="g-n">o‘rta</span></span><button class="chip" id="listBtn">${I.book}Ro‘yxat</button></div><div id="deck"></div>`;
+  $("#listBtn").onclick = () => {
+    $("#deck").innerHTML = `<div class="dict-wrap"><table class="dict"><tbody>${l.W.map(w => `<tr><td class="w"><button data-say="${esc(w.ru)}" aria-label="Tinglash">${I.play}</button>${wordHTML(w)} ${gTag(w.g)}<small>${esc(translit(w.ru))}</small></td><td>${esc(w.uz)}</td></tr>`).join("")}</tbody></table></div>${nextTab(l, "cards")}`;
+    bindNext(P);
+  };
+  flashDeck($("#deck"), l.W.slice(), { onDone: (D) => { markPart(l, "cards"); D.insertAdjacentHTML("beforeend", nextTab(l, "cards")); bindNext(D); } });
+}
+
+/* --- grammatika --- */
+function lessonGrammar(P, l){
+  const g = l.grammar;
+  P.innerHTML = `<article class="gram">
+    <h3>${esc(g.title)}</h3><p>${g.intro}</p>
+    <h4>O‘zbekcha va ruscha</h4>
+    <div class="cmp-wrap"><table class="cmp"><thead><tr><th>O‘zbekcha</th><th>Ruscha</th></tr></thead><tbody>
+      ${g.table.map(([uz, ru]) => `<tr><td>${uz}</td><td>${ru}<button data-say="${esc(ru.replace(/<[^>]+>/g,""))}" aria-label="Tinglash">${I.play}</button></td></tr>`).join("")}
+    </tbody></table></div>
+    <div class="tip">${g.tip}</div>
+    <h4>O‘zbeklar ko‘p qiladigan xatolar</h4>
+    <div class="mist">${g.mistakes.map(([x, ok, why]) => `<div class="mi"><span class="x">${esc(x)}</span> → <span class="ok">${esc(ok)}</span><div class="why">${esc(why)}</div></div>`).join("")}</div>
+  </article>${nextTab(l, "grammar")}`;
+  markPart(l, "grammar");
+  bindNext(P);
+}
+
+/* --- dialog --- */
+function lessonDialog(P, l){
+  let showTr = true;
+  const draw = () => {
+    P.innerHTML = `<p class="scene">${esc(l.dialog.scene)}</p>
+    <div class="dlg-tools">
+      <button class="chip" id="playAll">${I.play}Hammasini tinglash</button>
+      <button class="chip" id="trBtn" aria-pressed="${showTr}">Tarjima</button>
+      <button class="chip" id="slowBtn" aria-pressed="${S.settings.slow}">${I.slow}Sekin</button>
+    </div>
+    <div class="lines">${l.D.map((d, i) => `<div class="line ${d.who}" data-i="${i}"><span class="who">${esc(d.who === "a" ? l.dialog.a : l.dialog.b)}</span>
+      <div class="bubble"><span class="t">${esc(d.ru)}${showTr ? `<span class="tr">${esc(d.uz)}</span>` : ""}</span><button data-say="${esc(d.ru)}" aria-label="Tinglash">${I.play}</button></div></div>`).join("")}</div>
+    <section class="live cardbox"><h3>Jonli nutqda eshiting</h3><p>Bu iboralarni haqiqiy odamlar YouTube videolarida qanday aytishini ko‘ring (YouGlish sayti, yangi oynada ochiladi).</p>
+      <div class="row">${l.phrases.map(p => `<a class="chip" href="${yg(p)}" target="_blank" rel="noopener">${I.video}${esc(p)}</a>`).join("")}</div></section>
+    ${nextTab(l, "dialog")}`;
+    $("#trBtn").onclick = () => { showTr = !showTr; draw(); };
+    $("#slowBtn").onclick = () => { S.settings.slow = !S.settings.slow; TIL.audio.setSettings(S.settings); save(); draw(); };
+    $("#playAll").onclick = async () => {
+      for (const el of $$(".line", P)){
+        if (!document.body.contains(el)) break;
+        el.classList.add("playing"); el.scrollIntoView({ block:"nearest", behavior:"smooth" });
+        await speak(l.D[+el.dataset.i].ru); el.classList.remove("playing");
+        await new Promise(r => setTimeout(r, 350));
+      }
+      markPart(l, "dialog");
+    };
+    bindNext(P);
+  };
+  draw();
+  setTimeout(() => markPart(l, "dialog"), 15000);
+}
+
+/* --- savol generatorlari --- */
+function distract(w, field, n, pool){
+  const out = new Set([w[field]]);
+  const cands = shuffle((pool || ALL_WORDS).filter(x => x[field] !== w[field] && x.id !== w.id));
+  for (const x of cands){ if (out.size > n) break; out.add(x[field]); }
+  return [...out];
+}
+function qVocab(w, type, pool){
+  if (type === "gender" && !w.g) type = "ru2uz";
+  pool = pool && pool.length >= 6 ? pool : ALL_WORDS;
+  if (type === "ru2uz") return { kind:"choice", word:w.id, label:"Tarjimasini toping", prompt:`<span class="big">${wordHTML(w)}</span>`, audio:w.ru, options:distract(w,"uz",3,pool), answer:w.uz };
+  if (type === "uz2ru") return { kind:"choice", word:w.id, label:"Ruschasini toping", prompt:esc(w.uz), options:distract(w,"ru",3,pool), answer:w.ru, audioAfter:w.ru };
+  if (type === "listen") return { kind:"choice", word:w.id, label:"Tinglang va toping", prompt:`<span class="fc-tr">Tugmani bosib tinglang</span>`, audio:w.ru, autoplay:true, options:distract(w,"uz",3,pool), answer:w.uz };
+  if (type === "type" && (w.plain.includes("...") || w.plain.length > 16)) type = "uz2ru";
+  if (type === "type") return { kind:"type", word:w.id, label:"Ruscha yozing", prompt:esc(w.uz), answer:w.ru, audioAfter:w.ru };
+  if (type === "gender"){
+    const ans = { m:"мой", f:"моя", n:"моё", pl:"мои" }[w.g];
+    return { kind:"choice", word:w.id, label:"«Mening» qaysi shakli?", prompt:`___ <span class="big" style="font-size:24px">${esc(w.ru)}</span><small>${esc(w.uz)}</small>`, options:["мой","моя","моё","мои"], keepOrder:true, answer:ans, explain: GN[w.g] + " jinsi" };
+  }
+}
+const nouns = ws => ws.filter(w => /^(m|f|n|pl)$/.test(w.g) && !/\s/.test(w.plain));
+const grammarQs = (l, n) => sample(l.test, n || l.test.length).map(t => ({ kind:"choice", label:"Grammatika", prompt:esc(t.q), options:t.o, answer:t.o[0], explain:t.e }));
+function sentencePool(l){
+  const ex = l.W.filter(w => w.ex && w.ex.split(" ").length >= 2 && w.ex.split(" ").length <= 8 && !w.ex.includes("—")).map(w => ({ ru:w.ex, uz:w.exUz }));
+  const dl = l.D.filter(d => d.ru.split(" ").length <= 9).map(d => ({ ru:d.ru, uz:d.uz }));
+  return { ex, dl };
+}
+
+/* --- mashq --- */
+function lessonPractice(P, l){
+  const st = LS(l.id);
+  const W = shuffle(l.W);
+  const qs = [];
+  W.slice(0,3).forEach(w => qs.push(qVocab(w, "ru2uz", l.W)));
+  W.slice(3,5).forEach(w => qs.push(qVocab(w, "uz2ru", l.W)));
+  W.slice(5,7).forEach(w => qs.push(qVocab(w, "listen", l.W)));
+  W.slice(7).filter(w => w.plain.length <= 12 && !w.plain.includes("...")).slice(0,2).forEach(w => qs.push(qVocab(w, "type", l.W)));
+  sample(nouns(l.W), 2).forEach(w => qs.push(qVocab(w, "gender")));
+  qs.push({ kind:"match", label:"Juftini toping", pairs: sample(l.W, 5).map(w => [w.ru, w.uz]) });
+  const all = shuffle(qs).concat(grammarQs(l, 5));
+  P.innerHTML = `<p class="note">${all.length} ta savol: so‘zlar, tinglash, yozish va grammatika. Darsni yopish uchun kamida <b>80%</b> kerak.${st.practiceBest ? ` Eng yaxshi natijangiz: <b>${st.practiceBest}%</b>.` : ""}</p><div id="q" style="margin-top:12px"></div>`;
+  runQuiz($("#q"), { questions: all, onFinish: (sc, n) => {
+    const p = Math.round(sc/n*100); st.practiceBest = Math.max(st.practiceBest||0, p); save();
+    if (p >= 80) markPart(l, "practice");
+    return p >= 80 ? "Mashq bajarildi! Endi uy vazifasi." : "80% gacha yetmadi. So‘zlarni takrorlab, yana urinib ko‘ring.";
+  }, retry: () => viewLesson(), extra: () => p => p >= 80 ? nextTab(l, "practice") : "" , bindExtra: bindNext });
+}
+
+/* --- uy vazifasi --- */
+const HW_INFO = {
+  review:{ t:"Takrorlash", s:"Shu dars va oldingi darslardagi unutilayotgan so‘zlar", ic:I.cards },
+  dict:{ t:"Diktant", s:"Tinglang va kirillda yozing", ic:I.ear },
+  trans:{ t:"Tarjima", s:"O‘zbekchadan ruschaga yozing", ic:I.pen },
+  build:{ t:"Gap tuzish", s:"So‘zlardan to‘g‘ri gap yig‘ing", ic:I.puzzle },
+  speak:{ t:"Aktyordan keyin takrorlang", s:"Tinglang, ovozingizni yozib, solishtiring", ic:I.mic }
+};
+function lessonHW(P, l){
+  const st = LS(l.id); st.hw = st.hw || {};
+  const part = route.hw;
+  if (!part){
+    P.innerHTML = `<p class="note">Uy vazifasini sayt o‘zi tekshiradi. 5 qismning hammasini bajaring. Oxiridagi savollarni do‘stlaringiz bilan suhbatda muhokama qiling.</p>
+    <div class="hw" style="margin-top:12px">${HW_PARTS.map(p => `<button class="hwi ${st.hw[p] ? "done" : ""}" data-hw="${p}"><span class="ic">${HW_INFO[p].ic}</span><span><b>${HW_INFO[p].t}</b><span>${HW_INFO[p].s}</span></span>${st.hw[p] ? '<span class="pill ok">Bajarildi</span>' : I.chev.replace("<svg", '<svg width="18" height="18"')}</button>`).join("")}</div>
+    <div class="section-h"><h2>Suhbat uchun savollar</h2><span>do‘stlar bilan</span></div>
+    <ol class="talkq">${l.T.map(q => `<li><span><b>${esc(q.ru)}</b><span>${esc(q.uz)}</span></span>${spkBtn(q.ru, "", "sm")}</li>`).join("")}</ol>
+    <p class="note" style="margin-top:10px">Avval har bir savolga o‘zingiz ovoz chiqarib, 2–3 gap bilan javob bering. Keyin uchrashuvda bir-biringizga shu savollarni bering.</p>`;
+    $$("[data-hw]").forEach(b => b.onclick = () => { route.hw = b.dataset.hw; viewLesson(); });
+    return;
+  }
+  const finish = () => {
+    if (!st.hw[part]) { st.hw[part] = true; addXP(10); save(); }
+    if (HW_PARTS.every(p => st.hw[p]) && !st.hwOK){ markPart(l, "hwOK"); toast("Uy vazifasi to‘liq bajarildi!", "gold"); }
+  };
+  const head = `<button class="back" id="hwBack">${I.back}Uy vazifasi</button><h3 style="margin:8px 0 12px;font-size:17px">${HW_INFO[part].t}</h3>`;
+  P.innerHTML = head + '<div id="q"></div>';
+  $("#hwBack").onclick = () => { route.hw = null; viewLesson(); };
+  const Q = $("#q");
+  const done = (sc, n) => { const p = Math.round(sc/n*100); if (p >= 70) finish(); return p >= 70 ? "Bajarildi!" : "70% kerak. Yana bir bor urinib ko‘ring."; };
+  const backHW = () => { route.hw = null; viewLesson(); };
+  const { ex, dl } = sentencePool(l);
+  if (part === "review"){
+    const idx = C.lessons.indexOf(l);
+    const earlier = C.lessons.slice(0, idx).flatMap(x => x.W).filter(w => S.cards[w.id]).sort((a,b) => (S.cards[a.id].box - S.cards[b.id].box) || (S.cards[a.id].due < S.cards[b.id].due ? -1 : 1)).slice(0, 5);
+    const words = shuffle(sample(l.W, 10 - earlier.length).concat(earlier));
+    const types = ["ru2uz","uz2ru","listen","type"];
+    const qs = words.map((w, i) => qVocab(w, w.plain.length > 14 && types[i%4] === "type" ? "uz2ru" : types[i%4], l.W));
+    runQuiz(Q, { questions: qs, onFinish: done, retry: () => viewLesson(), after: backHW });
+  }
+  if (part === "dict"){
+    const qs = sample(ex.concat(dl).filter(s => s.ru.split(" ").length <= 6), 4).map(s => ({ kind:"type", label:"Diktant", prompt:`<span class="fc-tr">Tinglang va yozing. Kerak bo‘lsa, bir necha marta tinglang.</span>`, audio:s.ru, autoplay:true, answer:s.ru, explain:s.uz, sentence:true }));
+    runQuiz(Q, { questions: qs, onFinish: done, retry: () => viewLesson(), after: backHW });
+  }
+  if (part === "trans"){
+    const qs = sample(ex.filter(s => s.ru.split(" ").length <= 6), 4).map(s => ({ kind:"type", label:"Ruschaga tarjima qiling", prompt:esc(s.uz), answer:s.ru, audioAfter:s.ru, sentence:true, selfCheck:true }));
+    runQuiz(Q, { questions: qs, onFinish: done, retry: () => viewLesson(), after: backHW });
+  }
+  if (part === "build"){
+    const qs = sample(dl.concat(ex).filter(s => s.ru.split(" ").length >= 3), 4).map(s => ({ kind:"build", label:"Gap tuzing", prompt:esc(s.uz), answer:s.ru, audioAfter:s.ru }));
+    runQuiz(Q, { questions: qs, onFinish: done, retry: () => viewLesson(), after: backHW });
+  }
+  if (part === "speak") speakPractice(Q, sample(l.D, 3).map(d => d.ru), () => { finish(); backHW(); });
+}
+
+/* --- gapirish: tinglash, yozib olish, solishtirish --- */
+function speakPractice(Q, lines, onDone){
+  let i = 0, rec = null, url = null, chunks = [];
+  const canRec = !!(navigator.mediaDevices && window.MediaRecorder);
+  const draw = (state) => {
+    if (i >= lines.length){ Q.innerHTML = `<div class="result"><div class="big">✓</div><p>Gapirish mashqi bajarildi.</p><button class="btn primary wide" id="ok">Uy vazifasiga qaytish</button></div>`; $("#ok").onclick = onDone; return; }
+    const s = lines[i];
+    Q.innerHTML = `<div class="qmeta"><span>${i+1} / ${lines.length}</span></div>
+    <div class="qcard rec"><div class="qkind">1. Tinglang · 2. Yozib oling · 3. Solishtiring</div>
+      <div class="qtext">${esc(s)}<small>${S.settings.translit ? esc(translit(s)) : ""}</small></div>
+      <div class="row">${spkBtn(s, "Asl ovoz")}
+        ${canRec ? (state === "rec" ? `<button class="btn bad sm" id="stopRec">${'<span class="recdot"></span>'} To‘xtatish</button>` : `<button class="btn primary sm" id="startRec">${I.mic} Ovozimni yozish</button>`) : ""}
+        ${url ? `<button class="spk alt" id="mine">${I.play}<span>Mening ovozim</span></button>` : ""}</div>
+      ${!canRec ? `<p class="fc-tr">Bu brauzerda ovoz yozib bo‘lmaydi. Asl ovozni tinglab, ovoz chiqarib 3 marta takrorlang.</p>` : ""}
+      <p class="fc-tr" id="recMsg"></p>
+      <div class="grade" style="grid-template-columns:1fr 1fr"><button class="btn mid" id="again">Yana urinaman</button><button class="btn good" id="next">O‘xshadi, keyingisi</button></div>
+    </div>`;
+    if (state !== "rec" && !url) speak(s);
+    const sr = $("#startRec"), sp = $("#stopRec");
+    if (sr) sr.onclick = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+        chunks = []; rec = new MediaRecorder(stream);
+        rec.ondataavailable = e => chunks.push(e.data);
+        rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); if (url) URL.revokeObjectURL(url); url = URL.createObjectURL(new Blob(chunks, { type: rec.mimeType || "audio/webm" })); draw("done"); new Audio(url).play().catch(()=>{}); };
+        rec.start(); draw("rec");
+      } catch(e){ $("#recMsg").textContent = "Mikrofonga ruxsat berilmadi. Ovoz chiqarib takrorlang va o‘zingiz baholang."; }
+    };
+    if (sp) sp.onclick = () => rec && rec.state !== "inactive" && rec.stop();
+    const m = $("#mine"); if (m) m.onclick = () => new Audio(url).play().catch(()=>{});
+    $("#again").onclick = () => { url = null; draw(); };
+    $("#next").onclick = () => { addXP(3); i++; url = null; draw(); };
+  };
+  draw();
+}
+
+/* ===================== VIKTORINA DVIGATELI ===================== */
+let kbOpen = false;
+const KB_ROWS = ["йцукенгшщзхъ","фывапролджэ","ячсмитьбю"];
+function keyboardHTML(){
+  return `<button class="chip kbtoggle" id="kbT" aria-pressed="${kbOpen}">⌨ Klaviatura</button>
+  <div class="kb" id="kb" ${kbOpen ? "" : "hidden"}>${KB_ROWS.map(r => `<div class="r">${[...r].map(ch => `<button type="button" data-k="${ch}">${ch}</button>`).join("")}</div>`).join("")}
+  <div class="r"><button type="button" class="w" data-k="ё">ё</button><button type="button" class="w" data-k=" ">bo‘sh joy</button><button type="button" class="w" data-k="⌫">⌫ o‘chirish</button></div></div>`;
+}
+function bindKeyboard(input){
+  const T = $("#kbT"); if (!T) return;
+  T.onclick = () => { kbOpen = !kbOpen; $("#kb").hidden = !kbOpen; T.setAttribute("aria-pressed", kbOpen); };
+  $$("#kb [data-k]").forEach(b => b.onclick = () => {
+    const k = b.dataset.k; if (input.disabled) return;
+    const s = input.selectionStart ?? input.value.length, e = input.selectionEnd ?? input.value.length;
+    if (k === "⌫"){ if (s === e && s > 0) { input.value = input.value.slice(0, s-1) + input.value.slice(e); input.setSelectionRange(s-1, s-1); } else { input.value = input.value.slice(0, s) + input.value.slice(e); input.setSelectionRange(s, s); } }
+    else { input.value = input.value.slice(0, s) + k + input.value.slice(e); input.setSelectionRange(s+1, s+1); }
+  });
+}
+
+function runQuiz(root, cfg){
+  const qs = cfg.questions.filter(Boolean);
+  let i = 0, score = 0;
+  const draw = () => {
+    if (i >= qs.length){
+      const p = Math.round(score / qs.length * 100);
+      const msg = cfg.onFinish ? cfg.onFinish(score, qs.length) : "";
+      const extra = cfg.extra ? cfg.extra()(p) : "";
+      root.innerHTML = `<div class="result"><div class="big">${p}%</div><p>${score} / ${qs.length} to‘g‘ri</p><p><b>${esc(msg || "")}</b></p>
+        <div class="row" style="justify-content:center;margin-top:12px">${cfg.after ? '<button class="btn primary" id="afterBtn">Davom etish</button>' : ""}<button class="btn ghost" id="retryBtn">Qayta boshlash</button></div></div>${extra}`;
+      const rb = $("#retryBtn", root); if (rb) rb.onclick = cfg.retry || (() => { i = 0; score = 0; draw(); });
+      const ab = $("#afterBtn", root); if (ab) ab.onclick = cfg.after;
+      if (cfg.bindExtra) cfg.bindExtra(root);
+      renderNav();
+      return;
+    }
+    const q = qs[i];
+    root.innerHTML = `<div class="qmeta"><span>${i+1} / ${qs.length}</span><span>${score} to‘g‘ri</span></div>
+      <div class="qprog"><i style="width:${i / qs.length * 100}%"></i></div>
+      <div class="qcard"><div class="qkind">${esc(q.label || "")}</div>
+        <div class="qtext">${q.prompt || ""}</div>
+        ${q.audio ? `<div class="row" style="margin:-4px 0 14px">${spkBtn(q.audio, "Tinglash", "sm")}${q.sentence ? spkBtn(q.audio, "Sekin", "sm alt slowone") : ""}</div>` : ""}
+        <div id="body"></div><div id="fb"></div></div>`;
+    $$(".slowone", root).forEach(b => b.addEventListener("click", e => { e.stopPropagation(); const prev = S.settings.slow; TIL.audio.setSettings({ slow:true }); speak(q.audio, b).finally(() => TIL.audio.setSettings({ slow:prev })); }, true));
+    if (q.audio && q.autoplay) setTimeout(() => speak(q.audio), 150);
+    const body = $("#body", root), fb = $("#fb", root);
+    const next = (ok, half) => {
+      if (ok) { score += 1; addXP(half ? 1 : 2); }
+      if (q.word) grade(q.word, ok, !!half);
+      const nb = document.createElement("button"); nb.className = "btn primary wide"; nb.textContent = i + 1 < qs.length ? "Davom etish" : "Natijani ko‘rish";
+      nb.onclick = () => { i++; draw(); }; fb.appendChild(nb); nb.focus({ preventScroll:true });
+      if (q.audioAfter) speak(q.audioAfter);
+    };
+    const feedback = (cls, title, body2) => { fb.innerHTML = `<div class="fb ${cls}"><b>${title}</b>${body2 ? `<i>${body2}</i>` : ""}</div>`; };
+
+    if (q.kind === "choice"){
+      const opts = q.keepOrder ? q.options : shuffle(q.options);
+      body.innerHTML = `<div class="opts">${opts.map(o => `<button class="opt" data-o="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
+      $$(".opt", body).forEach(b => b.onclick = () => {
+        const ok = b.dataset.o === q.answer;
+        $$(".opt", body).forEach(x => { x.disabled = true; if (x.dataset.o === q.answer) x.classList.add("right"); });
+        if (!ok) b.classList.add("wrong");
+        feedback(ok ? "good" : "bad", ok ? "To‘g‘ri!" : "Noto‘g‘ri. To‘g‘ri javob: " + esc(q.answer), q.explain ? esc(q.explain) : "");
+        next(ok);
+      });
+    }
+    if (q.kind === "type"){
+      body.innerHTML = `<form id="tf" autocomplete="off"><input class="tin" id="tin" lang="ru" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Kirillda yozing…" aria-label="Javob">
+        <button class="btn primary wide" type="submit">Tekshirish</button></form>${keyboardHTML()}`;
+      const inp = $("#tin", body); bindKeyboard(inp);
+      if (!kbOpen) setTimeout(() => inp.focus({ preventScroll:true }), 50);
+      $("#tf", body).onsubmit = e => {
+        e.preventDefault(); if (inp.disabled) return;
+        const a = normRu(inp.value), b = normRu(q.answer);
+        if (!a) return;
+        inp.disabled = true; $("#tf button", body).remove();
+        const d = lev(a, b), tol = b.length <= 6 ? 1 : Math.max(2, Math.round(b.length * 0.12));
+        if (a === b){ inp.classList.add("right"); feedback("good", "To‘g‘ri!", esc(q.answer) + (q.explain ? " — " + esc(q.explain) : "")); next(true); }
+        else if (d <= tol && /[а-я]/.test(a)){ inp.classList.add("right"); feedback("mid", "Deyarli to‘g‘ri! Imloga e’tibor bering:", esc(q.answer)); next(true, true); }
+        else {
+          inp.classList.add("wrong");
+          feedback("bad", "To‘g‘ri javob: " + esc(q.answer), (/[a-z]/i.test(a) ? "Lotin harflarida yozdingiz. Kirill harflaridan foydalaning. " : "") + (q.explain ? esc(q.explain) : ""));
+          if (q.selfCheck){
+            const sb = document.createElement("button"); sb.className = "btn ghost sm"; sb.style.marginTop = "8px"; sb.textContent = "Mening javobim ham to‘g‘ri (boshqa so‘zlar bilan)";
+            sb.onclick = () => { score += 1; addXP(1); sb.remove(); toast("Qabul qilindi. Javobni o‘zingiz tekshirdingiz."); };
+            fb.appendChild(sb);
+          }
+          next(false);
+        }
+      };
+    }
+    if (q.kind === "build"){
+      const toks = q.answer.split(" ");
+      const bank = shuffle(toks.map((t, k) => ({ t, k })));
+      const chosen = [];
+      body.innerHTML = `<div class="built" id="built" aria-label="Siz tuzgan gap"></div><div class="bank" id="bank">${bank.map(b => `<button class="tok" data-k="${b.k}">${esc(b.t)}</button>`).join("")}</div><button class="btn primary wide" id="chk" disabled>Tekshirish</button>`;
+      const built = $("#built", body), chk = $("#chk", body);
+      const redraw = () => { built.innerHTML = chosen.map((c, j) => `<button class="tok" data-j="${j}">${esc(c.t)}</button>`).join(""); $$("#bank .tok", body).forEach(b => b.classList.toggle("used", chosen.some(c => c.k === +b.dataset.k))); chk.disabled = chosen.length !== toks.length;
+        $$("[data-j]", built).forEach(b => b.onclick = () => { if (chk.dataset.done) return; chosen.splice(+b.dataset.j, 1); redraw(); }); };
+      $$("#bank .tok", body).forEach(b => b.onclick = () => { if (chk.dataset.done || b.classList.contains("used")) return; chosen.push(bank.find(x => x.k === +b.dataset.k)); redraw(); });
+      chk.onclick = () => {
+        chk.dataset.done = 1; chk.remove();
+        const ok = normRu(chosen.map(c => c.t).join(" ")) === normRu(q.answer);
+        built.classList.add(ok ? "right" : "wrong");
+        feedback(ok ? "good" : "bad", ok ? "To‘g‘ri!" : "To‘g‘ri tartib:", ok ? "" : esc(q.answer));
+        next(ok);
+      };
+    }
+    if (q.kind === "match"){
+      const L = shuffle(q.pairs.map((p, k) => ({ t:p[0], k }))), R = shuffle(q.pairs.map((p, k) => ({ t:p[1], k })));
+      let sel = null, errs = 0, left = q.pairs.length;
+      body.innerHTML = `<div class="match"><div class="col">${L.map(x => `<button class="mt" data-side="L" data-k="${x.k}">${esc(x.t)}</button>`).join("")}</div><div class="col">${R.map(x => `<button class="mt" data-side="R" data-k="${x.k}">${esc(x.t)}</button>`).join("")}</div></div>`;
+      $$(".mt", body).forEach(b => b.onclick = () => {
+        if (b.classList.contains("done")) return;
+        if (b.dataset.side === "L") speak(q.pairs[+b.dataset.k][0]);
+        if (!sel || sel.dataset.side === b.dataset.side){ $$(".mt.sel", body).forEach(x => x.classList.remove("sel")); sel = b; b.classList.add("sel"); return; }
+        if (sel.dataset.k === b.dataset.k){ [sel, b].forEach(x => { x.classList.remove("sel"); x.classList.add("done"); x.disabled = true; }); left--; sel = null;
+          if (!left){ const ok = errs <= 1; feedback(ok ? "good" : "bad", ok ? "Hammasi to‘g‘ri!" : `Tugadi, lekin ${errs} ta xato bilan.`); next(ok); } }
+        else { errs++; const a = sel, c = b; [a, c].forEach(x => x.classList.add("err")); setTimeout(() => [a, c].forEach(x => x.classList.remove("err","sel")), 500); sel = null; }
+      });
+    }
+  };
+  draw();
+}
+
+/* ===================== TAKRORLASH ===================== */
+function viewReview(){
+  const due = dueCards();
+  const seen = ALL_WORDS.filter(w => S.cards[w.id]);
+  app.innerHTML = `<div class="thead"><div class="eyebrow">Har kuni</div><h1>Takrorlash</h1><p>So‘z unutilay deganda qayta ko‘rsatiladi: 1, 2, 4, 8, 16, 32 kundan keyin.</p></div>
+    <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat"><div class="v">${due.length}</div><div class="l">bugun takrorlash</div></div>
+      <div class="stat words"><div class="v">${known()}</div><div class="l">yaxshi bilasiz</div></div>
+      <div class="stat lvl"><div class="v">${learning()}</div><div class="l">o‘rganilmoqda</div></div></div>
+    <div id="rv" style="margin-top:14px"></div>`;
+  const R = $("#rv");
+  if (!seen.length){ R.innerHTML = `<div class="empty"><h3>Hali so‘z yo‘q</h3><p>Birinchi darsdagi kartochkalarni ko‘ring. Shundan keyin so‘zlar shu yerda takrorlanadi.</p><button class="btn primary" id="go1">1-darsni ochish</button></div>`; $("#go1").onclick = () => go({ v:"lesson", id:C.lessons[0].id }); return; }
+  if (!due.length){ R.innerHTML = `<div class="empty"><h3>Bugungi takrorlash tugadi</h3><p>Ertaga yangi so‘zlar navbatga keladi. Xohlasangiz, eng qiyin so‘zlarni test qilib ko‘ring.</p><button class="btn primary" id="hard">Qiyin so‘zlar testi</button></div>`;
+    $("#hard").onclick = () => { const hard = seen.slice().sort((a,b) => (S.cards[a.id].box - S.cards[b.id].box) || (S.cards[b.id].w - S.cards[a.id].w)).slice(0, 10);
+      runQuiz(R, { questions: hard.map((w, i) => qVocab(w, ["uz2ru","listen","type","ru2uz"][i%4])), onFinish: () => "", retry: () => viewReview() }); };
+    return; }
+  R.innerHTML = `<div class="row"><button class="btn primary" id="mCards">Kartochkalar</button><button class="btn" id="mQuiz">Test shaklida</button></div><div id="rv2" style="margin-top:12px"></div>`;
+  const words = shuffle(due).slice(0, 30);
+  $("#mCards").onclick = () => flashDeck($("#rv2"), words.slice(), { info: "Takrorlash", onDone: () => renderNav() });
+  $("#mQuiz").onclick = () => runQuiz($("#rv2"), { questions: words.slice(0, 15).map((w, i) => qVocab(w, ["uz2ru","listen","type","ru2uz"][i%4])), onFinish: () => "", retry: () => viewReview() });
+  flashDeck($("#rv2"), words.slice(), { info:"Takrorlash", onDone: () => renderNav() });
+}
+
+/* ===================== LUG‘AT ===================== */
+function viewDict(){
+  app.innerHTML = `<div class="thead"><div class="eyebrow">A1</div><h1>Lug‘at</h1><p>${ALL_WORDS.length} ta so‘z va ibora. Ruscha, o‘zbekcha yoki lotincha o‘qilishi bo‘yicha qidiring.</p></div>
+  <div class="dtools"><input class="search" id="q" placeholder="Qidirish: дом, uy, dom…" aria-label="Qidirish"><select id="fl" aria-label="Dars"><option value="">Barcha darslar</option>${C.lessons.map(l => `<option value="${l.id}">${l.n}. ${esc(l.title)}</option>`).join("")}</select></div>
+  <div class="legend"><span><span class="kdot k"></span>bilasiz</span><span><span class="kdot l"></span>o‘rganilmoqda</span><span><span class="kdot"></span>yangi</span></div>
+  <div class="dict-wrap"><table class="dict"><thead><tr><th>Ruscha</th><th>O‘zbekcha</th><th></th></tr></thead><tbody id="dt"></tbody></table></div>`;
+  const draw = () => {
+    const q = $("#q").value.trim().toLowerCase(), f = $("#fl").value;
+    const nq = normRu(q);
+    const rows = ALL_WORDS.filter(w => (!f || w.lesson === f) && (!q || normRu(w.ru).includes(nq) || w.uz.toLowerCase().includes(q) || translit(w.ru).toLowerCase().includes(q))).slice(0, 200);
+    $("#dt").innerHTML = rows.map(w => { const c = S.cards[w.id]; const dc = c ? (c.box >= 3 ? "k" : "l") : ""; return `<tr><td class="w"><button data-say="${esc(w.ru)}" aria-label="Tinglash">${I.play}</button>${wordHTML(w)} ${gTag(w.g)}<small>${esc(translit(w.ru))}</small></td><td>${esc(w.uz)}</td><td><span class="kdot ${dc}"></span></td></tr>`; }).join("") || `<tr><td colspan="3">Hech narsa topilmadi.</td></tr>`;
+  };
+  $("#q").oninput = draw; $("#fl").onchange = draw; draw();
+}
+
+/* ===================== HAFTALIK NAZORAT VA IMTIHON ===================== */
+function studied(){ return C.lessons.filter(l => { const st = S.lessons[l.id]; return st && (st.cards || st.practice || st.grammar); }); }
+function viewWeeklyIntro(){
+  const wk = weekKey(), res = S.weekly[wk], ls = studied();
+  app.innerHTML = `${backBtn()}<div class="thead"><div class="eyebrow">Hafta: ${fmtDate(wk)} dan</div><h1>Haftalik nazorat</h1><p>O‘tilgan barcha mavzular bo‘yicha 15 savol. Haftada bir marta topshiriladi.</p></div><div id="w"></div>`;
+  bindBack();
+  const W = $("#w");
+  if (!ls.length){ W.innerHTML = `<div class="empty"><h3>Avval darslarni boshlang</h3><p>Nazorat o‘tilgan mavzulardan tuziladi.</p></div>`; return; }
+  if (res){ W.innerHTML = `<div class="result"><div class="big">${res.score}%</div><p>Bu haftalik natijangiz (${fmtDate(res.date)}). Keyingi nazorat dushanba kuni ochiladi.</p></div>${weeklyHistory()}`; return; }
+  W.innerHTML = `<div class="cardbox"><h3>Mavzular</h3><p>${ls.map(l => esc(l.title)).join(", ")}</p><button class="btn primary wide" id="st">Boshlash</button></div>${weeklyHistory()}`;
+  $("#st").onclick = () => {
+    const words = ls.flatMap(l => l.W);
+    const qs = shuffle(ls.flatMap(l => grammarQs(l))).slice(0, 8).concat(sample(words, 7).map((w, i) => qVocab(w, ["uz2ru","listen","type","ru2uz","uz2ru","listen","type"][i], words)));
+    runQuiz(W, { questions: shuffle(qs), onFinish: (sc, n) => { const p = Math.round(sc/n*100); S.weekly[wk] = { score:p, date:todayStr() }; save(); addXP(25); return p >= 80 ? "Zo‘r natija!" : "Xatolar bo‘lgan mavzularni takrorlang."; }, retry: () => viewWeeklyIntro() });
+  };
+}
+function weeklyHistory(){
+  const e = Object.entries(S.weekly).sort((a,b) => a[0] < b[0] ? 1 : -1).slice(0, 8);
+  if (!e.length) return "";
+  return `<div class="section-h"><h2>Oldingi haftalar</h2></div><div class="cardbox">${e.map(([k, v]) => `<div class="switch"><span>${fmtDate(k)} haftasi</span><span>${v.score}%</span></div>`).join("")}</div>`;
+}
+function viewExamIntro(){
+  const ex = S.exams.A1 || {}, dl = doneLessons();
+  app.innerHTML = `${backBtn()}<div class="thead"><div class="eyebrow">Daraja imtihoni</div><h1>A1 imtihoni</h1><p>30 savol: grammatika, so‘zlar, tinglash va yozish. O‘tish bali: 80%. O‘tsangiz, ismingiz yozilgan sertifikat olasiz va A2 yo‘li ochiladi.</p></div><div id="w"></div>`;
+  bindBack();
+  const W = $("#w");
+  W.innerHTML = `<div class="cardbox"><h3>${dl < C.lessons.length ? `Tavsiya: avval barcha darslarni tugating (${dl}/${C.lessons.length})` : "Barcha darslar tugadi. Omad!"}</h3>
+    <p>${ex.best ? `Eng yaxshi natijangiz: ${ex.best}%.` : "Imtihonni istalgan vaqtda topshirish mumkin."} ${ex.passed ? "Siz imtihondan o‘tgansiz." : ""}</p>
+    <div class="row"><button class="btn primary" id="st">Imtihonni boshlash</button>${ex.passed ? '<button class="btn" id="ce">Sertifikatni ko‘rish</button>' : ""}</div></div>`;
+  if ($("#ce")) $("#ce").onclick = () => go({ v:"cert" });
+  $("#st").onclick = () => {
+    const gq = shuffle(C.lessons.flatMap(l => grammarQs(l))).slice(0, 16);
+    const W2 = shuffle(ALL_WORDS);
+    const vq = W2.slice(0, 5).map(w => qVocab(w, "uz2ru")).concat(W2.slice(5, 9).map(w => qVocab(w, "listen")), W2.filter(w => w.plain.length <= 10).slice(0, 3).map(w => qVocab(w, "type")), sample(nouns(ALL_WORDS), 2).map(w => qVocab(w, "gender")));
+    const qs = shuffle(gq.concat(vq)).map(q => Object.assign(q, { word: undefined }));
+    runQuiz(W, { questions: qs, onFinish: (sc, n) => {
+      const p = Math.round(sc/n*100);
+      const e = S.exams.A1 = S.exams.A1 || {};
+      e.best = Math.max(e.best||0, p); e.tries = (e.tries||0) + 1;
+      if (p >= 80 && !e.passed){ e.passed = true; e.date = todayStr(); e.score = p; e.no = "TIL-RU-A1-" + Math.random().toString(36).slice(2, 8).toUpperCase(); addXP(100); }
+      save();
+      return p >= 80 ? "Tabriklaymiz! Siz A1 darajasini tasdiqladingiz." : "80% kerak. Xato qilgan mavzularingizni takrorlab, yana topshiring.";
+    }, retry: () => viewExamIntro(), after: () => go({ v: (S.exams.A1||{}).passed ? "cert" : "home" }) });
+  };
+}
+function viewCert(){
+  const e = S.exams.A1 || {};
+  app.innerHTML = `${backBtn()}<div id="w" style="margin-top:10px"></div>`;
+  bindBack();
+  const W = $("#w");
+  if (!e.passed){ W.innerHTML = `<div class="empty"><h3>Sertifikat hali yo‘q</h3><p>A1 imtihonidan 80% dan yuqori ball oling.</p></div>`; return; }
+  if (!S.name){
+    W.innerHTML = `<div class="cardbox"><h3>Sertifikatga ismingizni yozing</h3><div class="field"><label for="nm">Ism va familiya</label><input id="nm" autocomplete="name"></div><button class="btn primary wide" id="sv">Saqlash</button></div>`;
+    $("#sv").onclick = () => { const v = $("#nm").value.trim(); if (v){ S.name = v; save(); viewCert(); } };
+    return;
+  }
+  W.innerHTML = `<div class="cert"><div class="k">Sertifikat · Сертификат</div><h2>TIL</h2><p>Ushbu sertifikat egasi</p><div class="name">${esc(S.name)}</div>
+    <p>rus tili bo‘yicha</p><div class="lv">A1</div><p>darajasini imtihon orqali tasdiqladi</p>
+    <p><b>Natija: ${e.score}%</b> · ${fmtDate(e.date)}</p><p style="font-size:12px">№ ${e.no}</p></div>
+    <p class="note" style="margin-top:12px">Ekran rasmini olib, do‘stlaringizga yuboring. Bu sertifikat TIL saytida o‘qiganingizni ko‘rsatadi; davlat imtihoni o‘rnini bosmaydi.</p>`;
+}
+
+/* ===================== GURUH: KIRISH ===================== */
+function viewLogin(){
+  app.innerHTML = `<div class="thead"><div class="eyebrow">Guruh</div><h1>Kirish</h1><p>Ismingizni tanlang va PIN kodni kiriting. PIN kodni guruh admini beradi.</p></div>
+  <div class="cardbox"><form id="lf" autocomplete="on">
+    ${(CFG.users || []).length ? `<div class="row">${CFG.users.map(n => `<button type="button" class="chip" data-n="${esc(n)}">${esc(n)}</button>`).join("")}</div>` : ""}
+    <div class="field"><label for="ln">Ism (lotincha)</label><input id="ln" autocomplete="username" autocapitalize="words" required></div>
+    <div class="field"><label for="lp">PIN kod</label><input id="lp" type="password" inputmode="numeric" autocomplete="current-password" required></div>
+    <button class="btn primary wide" type="submit" id="lbtn">Kirish</button><p class="fc-tr" id="lerr" role="alert"></p></form></div>
+  <button class="btn ghost wide" id="guestBtn">Kirmasdan o‘qish (natijalar reytingga tushmaydi)</button>`;
+  $$("[data-n]").forEach(b => b.onclick = () => { $("#ln").value = b.dataset.n; $$("[data-n]").forEach(x => x.setAttribute("aria-pressed", x === b)); $("#lp").focus(); });
+  $("#lf").onsubmit = async e => {
+    e.preventDefault();
+    const n = $("#ln").value, p = $("#lp").value, btn = $("#lbtn");
+    btn.disabled = true; $("#lerr").textContent = "Tekshirilmoqda…";
+    try { await CL.login(n, p); await afterLogin(n); toast("Xush kelibsiz, " + (S.name || n) + "!"); history_.length = 0; go({ v:"home" }, false); }
+    catch(err){ btn.disabled = false; $("#lerr").textContent = err.status === 400 ? "Ism yoki PIN noto‘g‘ri. Adminga murojaat qiling." : "Ulanib bo‘lmadi: " + err.message + ". Internetni tekshiring."; }
+  };
+  $("#guestBtn").onclick = () => { try { localStorage.setItem("til.guest", "1"); } catch(e){} guest = true; go({ v:"home" }, false); };
+}
+
+/* ===================== GURUH: REYTING VA DUELLAR ===================== */
+const BOARDS = [["week","Hafta","XP"],["words","So‘zlar","so‘z"],["streak","Seriya","kun"],["lessons","Darslar","dars"],["xp","Jami","XP"]];
+let board = "week", rankCache = null;
+function adjust(p){
+  const wk = weekKey(), prev = addDays(wk, -7);
+  const week = p.week_key === wk ? p.week_xp : 0;
+  const last = p.week_key === wk ? p.last_week_xp : p.week_key === prev ? p.week_xp : 0;
+  const today = p.day === todayStr() && p.today_xp > 0;
+  const streakNow = (p.day === todayStr() || p.day === addDays(todayStr(), -1)) ? p.streak : 0;
+  return Object.assign({}, p, { week, last, today, streakNow });
+}
+async function loadRank(){
+  const [ps, ds] = await Promise.all([CL.profiles(), CL.duels()]);
+  const rs = await CL.results(ds.map(d => d.id));
+  rankCache = { ps: ps.map(adjust), ds, rs, at: Date.now() };
+  return rankCache;
+}
+function viewRank(){
+  if (!CL.configured){
+    app.innerHTML = `<div class="thead"><div class="eyebrow">Guruh</div><h1>Reyting</h1><p>Do‘stlar bilan musobaqa: kim ko‘proq o‘qidi, kim ko‘proq so‘z bildi.</p></div>
+    <div class="empty"><h3>Guruh rejimi hali sozlanmagan</h3><p>Admin saytga Supabase manzili va kalitini qo‘shgach, bu yerda reyting va duellar paydo bo‘ladi. Ko‘rsatma README faylida.</p></div>`;
+    return;
+  }
+  if (!CL.user()){
+    app.innerHTML = `<div class="thead"><div class="eyebrow">Guruh</div><h1>Reyting</h1></div><div class="empty"><h3>Reytingni ko‘rish uchun guruhga kiring</h3><p>Ism va PIN kodni admin beradi.</p><button class="btn primary" id="toLogin">Kirish</button></div>`;
+    $("#toLogin").onclick = () => go({ v:"login" });
+    return;
+  }
+  app.innerHTML = `<div class="thead"><div class="eyebrow">Guruh</div><h1>Reyting</h1><p>Haftalik reyting XP bo‘yicha: kim ko‘p mehnat qilsa, o‘sha g‘olib. Yangi boshlagan ham yuta oladi.</p></div><div id="rk"><div class="empty"><p>Yuklanmoqda…</p></div></div>`;
+  pushNow().then(loadRank).then(drawRank).catch(e => { const el = $("#rk"); if (el) el.innerHTML = `<div class="empty"><h3>Reytingni yuklab bo‘lmadi</h3><p>${esc(e.message)}. Internetni tekshirib, qayta oching.</p></div>`; });
+}
+function drawRank(){
+  const R = $("#rk"); if (!R || !rankCache) return;
+  const me = CL.user().id, { ps, ds, rs } = rankCache;
+  const val = p => ({ week:p.week, words:p.words, streak:p.streakNow, lessons:p.lessons, xp:p.xp })[board];
+  const rows = ps.slice().sort((a, b) => val(b) - val(a) || b.xp - a.xp);
+  const unit = BOARDS.find(b => b[0] === board)[2];
+  const champ = ps.slice().sort((a, b) => b.last - a.last)[0];
+  const goal = Math.max(1, ps.length) * 350, sum = ps.reduce((a, p) => a + p.week, 0);
+  const todayN = ps.filter(p => p.today).length;
+  const nameOf = id => (ps.find(p => p.id === id) || {}).name || "?";
+  const res = id => rs.filter(r => r.duel_id === id);
+  const mine = ds.filter(d => d.creator === me || d.opponent === me);
+  const duelRow = d => {
+    const other = d.creator === me ? d.opponent : d.creator;
+    const r = res(d.id), my = r.find(x => x.user_id === me), th = r.find(x => x.user_id === other);
+    let status;
+    if (!my) status = `<button class="btn sm primary" data-play="${d.id}">O‘ynash</button>`;
+    else if (!th) status = `<span class="pill">Siz: ${my.score}/10 · raqib kutilmoqda</span>`;
+    else { const win = my.score > th.score || (my.score === th.score && my.ms < th.ms); const draw = my.score === th.score && my.ms === th.ms;
+      status = `<span class="pill ${draw ? "" : win ? "ok" : "warn"}">${my.score}:${th.score} · ${draw ? "durang" : win ? "g‘alaba" : "mag‘lubiyat"}</span>`; }
+    return `<div class="switch"><span>${I.swords.replace("<svg", '<svg width="16" height="16" style="vertical-align:-3px"')} ${esc(nameOf(other))}<small class="fc-tr" style="display:block">${fmtDate(d.created_at.slice(0, 10))}</small></span>${status}</div>`;
+  };
+  R.innerHTML = `
+    ${champ && champ.last > 0 ? `<div class="today" style="margin-top:0"><h2>${I.trophy.replace("<svg", '<svg width="20" height="20" style="vertical-align:-4px"')} O‘tgan hafta g‘olibi: ${esc(champ.name)}</h2><p class="sub">${champ.last} XP. Bu hafta kim uni quvib o‘tadi?</p></div>` : ""}
+    <div class="goal" style="margin-top:12px"><b>Guruh maqsadi</b><div class="gbar"><i style="width:${Math.min(100, sum / goal * 100)}%"></i></div><span>${sum} / ${goal} XP</span></div>
+    <div class="freeze">Bu hafta hammamiz birga ${goal} XP to‘plashimiz kerak. Bugun ${todayN} / ${ps.length} kishi o‘qidi.</div>
+    <div class="tabs" style="grid-template-columns:repeat(5,1fr);margin-top:14px;position:static" role="tablist">${BOARDS.map(([k, l]) => `<button class="tab" role="tab" aria-selected="${board === k}" data-b="${k}">${l}</button>`).join("")}</div>
+    <ol class="lb">${rows.map((p, i) => `<li class="${p.id === me ? "me" : ""}"><span class="pos">${i + 1}</span><span class="nm"><b>${esc(p.name)}${p.id === me ? " (siz)" : ""}</b><small>${p.today ? '<span class="kdot k"></span> bugun o‘qidi' : '<span class="kdot"></span> bugun hali o‘qimadi'}${p.a1_passed ? " · A1 ✓" : ""}</small></span><span class="vl">${val(p)}<small>${unit}</small></span></li>`).join("")}</ol>
+    <div class="section-h"><h2>Duellar</h2><span>10 savol, bir xil test</span></div>
+    <div class="cardbox"><p>Do‘stingizni chaqiring: ikkalangizga bir xil 10 ta savol tushadi. Ko‘p to‘g‘ri javob bergan yutadi, teng bo‘lsa tezrog‘i.</p>
+      <div class="row">${ps.filter(p => p.id !== me).map(p => `<button class="chip" data-vs="${p.id}">${I.swords}${esc(p.name)}</button>`).join("") || '<span class="fc-tr">Guruhda boshqa a’zo hali yo‘q.</span>'}</div>
+      ${mine.length ? `<div style="margin-top:10px">${mine.map(duelRow).join("")}</div>` : ""}</div>
+    <button class="btn ghost wide" id="refresh">Yangilash</button>`;
+  $$("[data-b]").forEach(b => b.onclick = () => { board = b.dataset.b; drawRank(); });
+  $("#refresh").onclick = () => viewRank();
+  $$("[data-vs]").forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try {
+      const ls = studied().map(l => l.id);
+      const d = await CL.createDuel({ opponent: b.dataset.vs, seed: Math.floor(Math.random() * 2147483647), lessons: ls.length ? ls : [C.lessons[0].id] });
+      go({ v:"duel", d });
+    } catch(e){ b.disabled = false; toast("Duel yaratilmadi: " + e.message); }
+  });
+  $$("[data-play]").forEach(b => b.onclick = () => go({ v:"duel", d: ds.find(x => x.id === +b.dataset.play) }));
+}
+function seeded(seed){ let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function duelQuestions(d){
+  const R = Math.random; Math.random = seeded(d.seed);
+  try {
+    const ls = (d.lessons || []).map(id => LESSON[id]).filter(Boolean);
+    const pool = (ls.length ? ls : [C.lessons[0]]).flatMap(l => l.W);
+    return sample(pool, 10).map((w, i) => qVocab(w, ["ru2uz","uz2ru","listen","ru2uz","uz2ru"][i % 5], pool));
+  } finally { Math.random = R; }
+}
+function viewDuel(){
+  const d = route.d;
+  const opp = rankCache && (rankCache.ps.find(p => p.id === (d.creator === CL.user().id ? d.opponent : d.creator)) || {}).name;
+  app.innerHTML = `${backBtn("Reyting")}<div class="thead"><div class="eyebrow">Duel</div><h1>${opp ? "Siz va " + esc(opp) : "Duel"}</h1><p>10 savol. Vaqt ham hisoblanadi.</p></div><div id="q"></div>`;
+  bindBack();
+  const t0 = Date.now();
+  runQuiz($("#q"), { questions: duelQuestions(d), onFinish: (sc) => {
+    const ms = Date.now() - t0;
+    CL.submitResult({ duel_id: d.id, score: sc, ms }).then(() => toast("Natija yuborildi")).catch(e => toast("Natija yuborilmadi: " + e.message));
+    return `Vaqt: ${Math.round(ms / 1000)} soniya. Raqibingiz o‘ynagach, natija reytingda chiqadi.`;
+  }, after: () => { history_.length = 0; go({ v:"rank" }, false); }, retry: () => toast("Duelni faqat bir marta o‘ynash mumkin.") });
+}
+
+/* ===================== PROFIL ===================== */
+function viewProfile(){
+  const st = streak();
+  app.innerHTML = `<div class="thead"><div class="eyebrow">Profil</div><h1>${S.name ? esc(S.name) : "Sizning profilingiz"}</h1><p>${S.xp} XP · ${st.n} kun ketma-ket · ${known()} so‘z</p></div>
+  <div class="cardbox"><div class="field"><label for="nm">Ismingiz (sertifikat uchun)</label><input id="nm" value="${esc(S.name)}" autocomplete="name"></div>
+    <div class="field"><label for="gl">Kunlik maqsad</label><select id="gl">${[[20,"Yengil · 20 XP (~10 daq)"],[50,"Jiddiy · 50 XP (~30 daq)"],[100,"Kuchli · 100 XP (~60 daq)"]].map(([v, t]) => `<option value="${v}" ${S.goal === v ? "selected" : ""}>${t}</option>`).join("")}</select></div></div>
+  ${CL.configured ? `<div class="section-h"><h2>Guruh</h2></div><div class="cardbox">${CL.user() ? `<p>Siz guruhga <b>${esc(loginName())}</b> sifatida kirgansiz. Natijalaringiz reytingga va boshqa qurilmalarga yuboriladi.</p><button class="btn sm ghost" id="logout">Chiqish</button>` : `<p>Siz guruhga kirmagansiz. Natijalaringiz reytingga tushmaydi.</p><button class="btn sm primary" id="toLogin">Guruhga kirish</button>`}</div>` : ""}
+  <div class="section-h"><h2>Sozlamalar</h2></div>
+  <div class="cardbox">
+    <label class="switch">Jonli ovozlarni qidirish (internet kerak)<input type="checkbox" id="s_live" ${S.settings.live ? "checked" : ""}></label>
+    <label class="switch">Sekin talaffuz<input type="checkbox" id="s_slow" ${S.settings.slow ? "checked" : ""}></label>
+    <label class="switch">Lotincha o‘qilishini ko‘rsatish<input type="checkbox" id="s_tr" ${S.settings.translit ? "checked" : ""}></label>
+  </div>
+  <div class="section-h"><h2>Foydali</h2></div>
+  <div class="hw">
+    <button class="hwi" id="toGuide"><span class="ic">${I.road}</span><span><b>Qanday o‘qish kerak</b><span>Kunlik reja, darajalar, do‘stlar bilan mashg‘ulot</span></span>${I.chev.replace("<svg", '<svg width="18" height="18"')}</button>
+    <button class="hwi" id="toCert"><span class="ic">${I.star}</span><span><b>Sertifikat</b><span>${(S.exams.A1||{}).passed ? "A1 sertifikatingiz" : "A1 imtihonidan keyin"}</span></span>${I.chev.replace("<svg", '<svg width="18" height="18"')}</button>
+  </div>
+  <div class="section-h"><h2>Taraqqiyotni ko‘chirish</h2></div>
+  <div class="cardbox"><p>Boshqa telefon yoki kompyuterga o‘tish uchun kodni nusxalang va u yerda «Kodni kiritish» qismiga qo‘ying.</p>
+    <div class="row"><button class="btn sm" id="exp">Kodni olish</button><button class="btn sm ghost" id="imp">Kodni kiritish</button></div>
+    <div class="field" id="codeBox" hidden><textarea id="code" rows="4" spellcheck="false"></textarea><div class="row"><button class="btn sm primary" id="copy">Nusxalash</button><button class="btn sm primary" id="load" hidden>Yuklash</button></div></div></div>
+  <div class="section-h"><h2>Ovoz manbalari</h2></div>
+  <div class="cardbox prose"><p>Saytdagi ovozlar avvalo haqiqiy odamlarning ochiq litsenziyali yozuvlaridan olinadi:</p>
+    <ul><li><a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> (Vikilug‘at talaffuzlari) va <a href="https://lingualibre.org" target="_blank" rel="noopener">Lingua Libre</a>: so‘zlar, CC BY-SA.</li>
+    <li><a href="https://tatoeba.org" target="_blank" rel="noopener">Tatoeba</a>: gaplar, faqat ochiq litsenziyali yozuvlar (CC BY va boshqalar).</li>
+    <li><a href="https://youglish.com" target="_blank" rel="noopener">YouGlish</a>: iboralarning YouTube videolardagi jonli talaffuzi.</li></ul>
+    <p>Har bir yozuv ijro etilganda muallifi ekranda ko‘rsatiladi. Jonli yozuv topilmasa, brauzerning sintez ovozi ishlatiladi.</p></div>
+  <div class="section-h"><h2>Boshidan boshlash</h2></div>
+  <div class="cardbox"><p>Barcha natijalar o‘chiriladi.</p><button class="btn sm bad" id="rst">Taraqqiyotni o‘chirish</button><div id="rstC"></div></div>`;
+  $("#nm").onchange = e => { S.name = e.target.value.trim(); save(); };
+  $("#gl").onchange = e => { S.goal = +e.target.value; save(); };
+  $("#s_live").onchange = e => { S.settings.live = e.target.checked; TIL.audio.setSettings(S.settings); save(); };
+  $("#s_slow").onchange = e => { S.settings.slow = e.target.checked; TIL.audio.setSettings(S.settings); save(); };
+  $("#s_tr").onchange = e => { S.settings.translit = e.target.checked; save(); };
+  $("#toGuide").onclick = () => go({ v:"guide" });
+  if ($("#logout")) $("#logout").onclick = async () => { await pushNow(); CL.logout(); location.reload(); };
+  if ($("#toLogin")) $("#toLogin").onclick = () => go({ v:"login" });
+  $("#toCert").onclick = () => go({ v:"cert" });
+  $("#exp").onclick = () => { $("#codeBox").hidden = false; $("#code").value = btoa(unescape(encodeURIComponent(JSON.stringify(S)))); $("#copy").hidden = false; $("#load").hidden = true; $("#code").select(); };
+  $("#imp").onclick = () => { $("#codeBox").hidden = false; $("#code").value = ""; $("#copy").hidden = true; $("#load").hidden = false; $("#code").focus(); };
+  $("#copy").onclick = () => { const t = $("#code"); navigator.clipboard && navigator.clipboard.writeText(t.value).then(() => toast("Nusxalandi")).catch(() => { t.select(); toast("Belgilandi: nusxalang"); }); if (!navigator.clipboard){ t.select(); } };
+  $("#load").onclick = () => { try { const d = JSON.parse(decodeURIComponent(escape(atob($("#code").value.trim())))); S = Object.assign(fresh(), d); save(); toast("Taraqqiyot yuklandi"); viewProfile(); } catch(e){ toast("Kod noto‘g‘ri. To‘liq nusxalanganini tekshiring."); } };
+  $("#rst").onclick = () => { $("#rstC").innerHTML = `<p style="margin-top:10px"><b>Rostdan ham hammasini o‘chirasizmi?</b></p><div class="row"><button class="btn sm bad" id="rstY">Ha, o‘chirish</button><button class="btn sm ghost" id="rstN">Yo‘q</button></div>`;
+    $("#rstY").onclick = () => { S = fresh(); save(); toast("Taraqqiyot o‘chirildi"); go({ v:"home" }, false); };
+    $("#rstN").onclick = () => $("#rstC").innerHTML = ""; };
+}
+
+/* ===================== QO‘LLANMA ===================== */
+function viewGuide(){
+  app.innerHTML = `${backBtn()}<div class="thead"><div class="eyebrow">Qo‘llanma</div><h1>Qanday o‘qish kerak</h1><p>Rus tilida erkin gapirish uchun halol yo‘l xaritasi.</p></div>
+  <article class="cardbox prose">
+    <h3>Har kuni 30–60 daqiqa</h3>
+    <ol><li><b>10 daqiqa:</b> takrorlash (Takrorlash bo‘limi). Buni hech qachon o‘tkazib yubormang.</li>
+    <li><b>15–20 daqiqa:</b> yangi dars: so‘zlar, grammatika, dialog.</li>
+    <li><b>10 daqiqa:</b> mashq va uy vazifasi.</li>
+    <li><b>10–20 daqiqa:</b> tinglash: dialoglarni sekin va tez tinglang, «Videoda» tugmasi orqali jonli nutqni eshiting.</li></ol>
+    <h3>Darajalar: qayerga qancha vaqt</h3>
+    <div class="cmp-wrap"><table class="cefr"><thead><tr><th>Daraja</th><th>Nima qila olasiz</th><th>Taxminan</th></tr></thead><tbody>
+      <tr><td><b>A1</b></td><td>Tanishish, do‘kon, yo‘l so‘rash, shifokorga murojaat</td><td>2–3 oy</td></tr>
+      <tr><td><b>A2</b></td><td>Ish, ijara, telefonda oddiy suhbat</td><td>+3–4 oy</td></tr>
+      <tr><td><b>B1</b></td><td>Mamlakatda mustaqil yashash, ishdagi uchrashuvlar</td><td>+6–9 oy</td></tr>
+      <tr><td><b>B2</b></td><td>Filmlar subtitr bilan, erkin suhbat</td><td>+9–12 oy</td></tr>
+      <tr><td><b>C1</b></td><td>Filmlarni ona tilidagidek tushunish</td><td>2–3 yil kunlik mashg‘ulot</td></tr></tbody></table></div>
+    <p>Bu muddatlar har kuni shug‘ullansangiz to‘g‘ri. Hech bir ilova yolg‘iz o‘zi erkin gapirishga olib chiqmaydi. Kerakli uch narsa: <b>so‘z va grammatika</b> (bu sayt), <b>ko‘p tinglash va o‘qish</b>, <b>jonli suhbat</b>.</p>
+    <h3>Do‘stlar bilan mashg‘ulot</h3>
+    <ul><li>Haftasiga 1–2 marta uchrashing. Har bir uy vazifasi oxirida 5 ta suhbat savoli bor.</li>
+    <li>Rolli o‘yin: darsdagi dialogni rollarga bo‘lib o‘qing, keyin o‘z so‘zlaringiz bilan qayta o‘ynang.</li>
+    <li>Kim ko‘proq XP va seriya to‘pladi? Haftalik nazorat natijalarini solishtiring.</li></ul>
+    <h3>Rus tilini o‘rganishda o‘zbeklar uchun maslahatlar</h3>
+    <ul><li><b>Jins (мой / моя / моё)</b> — eng katta yangilik. Kartochkalardagi ranglarga e’tibor bering.</li>
+    <li><b>Kelishiklar</b> o‘zbekcha qo‘shimchalarga o‘xshaydi: -da → в ...е, -ni → ...у, -ga → в ...у. Darslarda har biri taqqoslangan.</li>
+    <li><b>Urg‘u</b> (´ belgisi) so‘z ma’nosini o‘zgartirishi mumkin. Urg‘usiz О «a» kabi o‘qiladi: молоко = «malako».</li></ul>
+  </article>`;
+  bindBack();
+}
+
+if (CL.configured && !CL.user() && !guest) route = { v:"login" };
+render();
+if (CL.user()) pushNow();
+})();
+
+</script>
+</body>
+</html>
