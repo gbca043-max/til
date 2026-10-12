@@ -387,6 +387,19 @@ mark{background:var(--saffron-soft);color:var(--saffron);font-weight:800;border-
 @keyframes tin{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion: reduce){.fc-inner,.qprog i{transition:none}.toast,.recdot{animation:none}}
 @media (max-width:400px){.stat .v{font-size:16px}.stat{padding:9px 8px}.tab{font-size:11px}.stats{gap:6px}}
+/* Ovozni to‘xtatish tugmasi */
+.stop-fab{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:60;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);font:700 15px/1 Manrope,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer}
+.stop-fab .sq,#playAll .sq{display:inline-block;width:11px;height:11px;border-radius:2px;background:currentColor}
+/* Videoda: pastdan chiqadigan oyna */
+.yg-sheet{position:fixed;inset:0;z-index:80;background:rgba(10,14,30,.55);display:flex;align-items:flex-end;justify-content:center}
+.yg-box{width:100%;max-width:640px;max-height:92vh;overflow:auto;background:var(--surface);color:var(--ink);border-radius:18px 18px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 30px rgba(0,0,0,.3)}
+.yg-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.yg-h small{display:block;color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.yg-h b{font-size:20px}
+.yg-x{border:0;background:var(--surface-2);color:var(--ink);width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer;flex:none}
+.yg-w{min-height:220px}
+.yg-note{font-size:12px;color:var(--muted);margin-top:10px}
+body.noscroll{overflow:hidden}
 
 </style>
 <script>
@@ -1276,6 +1289,930 @@ phrases:["я был","я была","что ты делал","мы ходили �
 
 </script>
 <script>
+/* Nemis talaffuzi: harf yoki birikma | o‘qilishi | turi | misol so‘z | misol tarjimasi | izoh | misolning o‘qilishi
+   turi: same = o‘zbek lotinidagi kabi o‘qiladi
+         false = tanish ko‘rinadi, lekin boshqacha o‘qiladi (eng xavfli!)
+         new = o‘zbek yozuvida yo‘q harf yoki birikma
+   reading: so‘z | tarjima | o‘qilishi (o‘zbek lotinida, taxminiy) */
+window.TIL = window.TIL || {};
+TIL.deAlphabet = {
+  intro: "Nemis yozuvi lotin alifbosida, shuning uchun harflar sizga tanish. Lekin ba’zilari o‘zbekchadagidan boshqacha o‘qiladi: <b>W</b> bu «v», <b>V</b> ko‘pincha «f», <b>Z</b> bu «ts», <b>J</b> bu «y». Yana to‘rtta yangi harf bor: <b>ä ö ü ß</b>. Eng muhimi, harf birikmalarini yodlang: <b>ei</b> = «ay», <b>ie</b> = «i», <b>eu</b> = «oy», <b>sch</b> = «sh». Nemis tilida so‘z deyarli yozilganidek o‘qiladi, qoidalarni bilsangiz bas.",
+  letters: `A a|a|same|Apfel|olma||apfel
+B b|b|same|Brot|non|So‘z oxirida «p» kabi: halb = «halp».|brot
+C c|k / ts|false|Café|kafe|Yolg‘iz kam uchraydi. Ko‘pincha ch, sch, ck birikmalarida keladi.|kafe
+D d|d|same|danke|rahmat|So‘z oxirida «t» kabi: Hund = «hunt».|danke
+E e|e|same|essen|ovqatlanmoq|So‘z oxiridagi e qisqa va kuchsiz: danke.|essen
+F f|f|same|Frau|ayol||frau
+G g|g|same|gut|yaxshi|Doim «gul»dagi kabi «g». So‘z oxirida «k»: Tag = «tak».|gut
+H h|h|same|Haus|uy|Unlidan keyin o‘qilmaydi, unlini cho‘zadi: gehen = «geen».|haus
+I i|i|same|Insel|orol||inzel
+J j|y|false|ja|ha|Lotin J ga o‘xshaydi, lekin «y» o‘qiladi.|ya
+K k|k|same|Kind|bola||kind
+L l|l|same|Lampe|chiroq||lampe
+M m|m|same|Mann|erkak||man
+N n|n|same|neun|to‘qqiz||noyn
+O o|o|same|Obst|meva||obst
+P p|p|same|Post|pochta||post
+Q q|kv|false|Quark|tvorog|Doim qu bo‘lib keladi va «kv» o‘qiladi.|kvark
+R r|r|false|rot|qizil|Tomoqda aytiladi, o‘zbekcha «g‘» ga yaqin. So‘z oxirida deyarli «a»: Vater = «fata».|rot
+S s|z / s|false|Sonne|quyosh|Unli oldidan «z»: Sonne = «zonne». So‘z oxirida «s»: Haus.|zonne
+T t|t|same|Tee|choy||te
+U u|u|same|Uhr|soat||ur
+V v|f|false|Vater|ota|Lotin V ga o‘xshaydi, lekin ko‘pincha «f» o‘qiladi.|fata
+W w|v|false|Wasser|suv|Ingliz «w» emas: doim «v».|vasser
+X x|ks|false|Taxi|taksi|O‘zbekcha x emas! «ks» o‘qiladi.|taksi
+Y y|ü|false|Typ|tur, xil|Kam uchraydi, «ü» kabi o‘qiladi.|tüp
+Z z|ts|false|Zeit|vaqt|Lotin Z ga o‘xshaydi, lekin «ts» o‘qiladi.|tsayt
+Ä ä|e|new|Käse|pishloq|«e» kabi o‘qiladi. Klaviaturada yo‘q bo‘lsa, «ae» deb yozing.|keze
+Ö ö|ö|new|schön|chiroyli|O‘zbekchada yo‘q tovush: lablarni «o» qilib, «e» deng (turkcha ö). Yozuvda «oe».|shön
+Ü ü|ü|new|Tür|eshik|Lablarni «u» qilib, «i» deng (turkcha ü). Yozuvda «ue».|tür
+ß|ss|new|Straße|ko‘cha|Ikki «s» kabi. Klaviaturada yo‘q bo‘lsa, «ss» deb yozing.|shtrasse
+ei|ay|false|drei|uch|ei doim «ay»: mein = «mayn».|dray
+ie|i (cho‘ziq)|false|Liebe|sevgi|ie doim cho‘ziq «i»: vier = «fia».|libe
+eu|oy|false|neu|yangi|eu va äu «oy» o‘qiladi: Häuser = «hoyzer».|noy
+au|au|same|Auto|mashina||auto
+ch|x / sh’|new|ich|men|a, o, u dan keyin o‘zbekcha «x»: Buch = «bux». Boshqa joyda yumshoq «sh’»: ich = «ish’».|ish’
+sch|sh|new|Schule|maktab|Uchta harf, bitta tovush «sh».|shule
+st / sp|sht / shp|false|Stadt|shahar|So‘z boshida: Stadt = «shtat», Sport = «shport».|shtat
+tsch|ch|new|Deutsch|nemischa|To‘rtta harf, bitta tovush «ch».|doych
+-er|a|false|Lehrer|o‘qituvchi|So‘z oxiridagi -er «a» ga o‘xshaydi: Lehrer = «lera».|lera
+-ig|ish’|false|zwanzig|yigirma|So‘z oxirida -ig yumshoq «ish’».|tsvantsish’`,
+  reading: `Hallo|salom|hallo
+Tschüss|xayr|chüs
+bitte|iltimos|bitte
+nein|yo‘q|nayn
+Deutschland|Germaniya|doychland
+Milch|sut|milsh’
+Buch|kitob|bux
+Kuchen|pirog|kuxen
+heute|bugun|hoyte
+viel|ko‘p|fil
+Zug|poyezd|tsuk
+Fleisch|go‘sht|flaysh
+sprechen|gapirmoq|shpresh’en
+Euro|yevro|oyro
+Mädchen|qiz bola|medsh’en
+vier|to‘rt|fia
+Wein|vino|vayn
+zwei|ikki|tsvay
+Woche|hafta|voxe
+Junge|o‘g‘il bola|yunge
+Brief|xat|brif
+Stuhl|stul|shtul
+Tisch|stol|tish
+Freund|do‘st|froynd
+Bahnhof|vokzal|banhof
+Kaffee|qahva|kafe
+Zimmer|xona|tsimma
+Schwester|opa-singil|shvesta`
+};
+
+</script>
+<script>
+/* NEMIS TILI A1, 1–6-darslar.
+   words:  nemischa | o‘zbekcha | misol | misol tarjimasi | jins (m, f, n, pl; faqat otlar uchun)
+           otlar artikl bilan va katta harf bilan yoziladi: der Vater, die Mutter, das Kind
+   dialog: a|nemischa|o‘zbekcha  yoki  b|...
+   test:   o[0] doim to‘g‘ri javob (ekranda aralashtiriladi)
+   talk:   suhbat uchun savollar: nemischa|o‘zbekcha */
+window.TIL = window.TIL || {};
+TIL.deA1 = TIL.deA1 || [];
+TIL.deA1.push(
+{
+id:"de-tanishuv", title:"Salomlashish va tanishuv", ru:"Kennenlernen",
+cando:["Salomlashib, xayrlasha olasiz","O‘zingizni tanishtira olasiz","Qayerdan ekaningizni va qayerda yashashingizni ayta olasiz"],
+words:`Hallo|salom|Hallo, ich bin Aziz.|Salom, men Azizman.
+Guten Morgen|xayrli tong|Guten Morgen, Frau Weber!|Xayrli tong, Veber xonim!
+Guten Tag|assalomu alaykum; xayrli kun (rasmiy)|Guten Tag! Wie heißen Sie?|Assalomu alaykum! Ismingiz nima?
+Guten Abend|xayrli kech|Guten Abend, Herr Müller.|Xayrli kech, Myuller janoblari.
+Auf Wiedersehen|xayr (rasmiy)|Danke, auf Wiedersehen!|Rahmat, xayr!
+Tschüss|xayr (yaqinlarga)|Tschüss, bis morgen!|Xayr, ertagacha!
+danke|rahmat|Danke, sehr gut.|Rahmat, juda yaxshi.
+bitte|iltimos; marhamat|Langsam, bitte!|Sekinroq, iltimos!
+Entschuldigung|kechirasiz|Entschuldigung, ich verstehe nicht.|Kechirasiz, tushunmayapman.
+ja|ha|Ja, ich komme aus Taschkent.|Ha, men Toshkentdanman.
+nein|yo‘q|Nein, ich heiße nicht Ali.|Yo‘q, mening ismim Ali emas.
+ich|men|Ich bin Aziz.|Men Azizman.
+du|sen|Du bist mein Freund.|Sen mening do‘stimsan.
+Sie|siz (hurmat shakli)|Woher kommen Sie?|Siz qayerdansiz?
+er|u (erkak)|Er ist mein Kollege.|U mening hamkasbim.
+sie|u (ayol); ular|Sie ist aus Hamburg.|U Gamburgdan.
+wir|biz|Wir kommen aus Usbekistan.|Biz O‘zbekistondanmiz.
+ihr|sizlar (yaqinlarga)|Woher kommt ihr?|Sizlar qayerdansizlar?
+sein|bo‘lmoq (-man, -san, -miz)|Wir sind aus Samarkand.|Biz Samarqanddanmiz.
+heißen|atalmoq; ismi ... bo‘lmoq|Ich heiße Aziz.|Mening ismim Aziz.
+Wie heißen Sie?|ismingiz nima? (rasmiy)|Entschuldigung, wie heißen Sie?|Kechirasiz, ismingiz nima?
+der Name|ism|Mein Name ist Aziz Karimov.|Mening ismim Aziz Karimov.|m
+der Vorname|ism (shaxsiy ism)|Mein Vorname ist Aziz.|Ismim Aziz.|m
+der Nachname|familiya|Wie ist Ihr Nachname?|Familiyangiz nima?|m
+der Herr|janob (erkakka murojaat)|Guten Tag, Herr Becker!|Assalomu alaykum, Bekker janoblari!|m
+die Frau|xonim (ayolga murojaat); ayol|Das ist Frau Schneider.|Bu Shnayder xonim.|f
+kommen|kelmoq|Ich komme aus Usbekistan.|Men O‘zbekistondanman.
+woher?|qayerdan?|Woher kommen Sie?|Qayerdansiz?
+aus|...dan (qayerdan)|Ich komme aus Buchara.|Men Buxorodanman.
+wohnen|yashamoq|Ich wohne in Berlin.|Men Berlinda yashayman.
+in|...da (qayerda)|Wir wohnen in München.|Biz Myunxenda yashaymiz.
+Freut mich!|tanishganimdan xursandman|Freut mich, Herr Schmidt!|Tanishganimdan xursandman, Shmidt janoblari!
+Wie geht es Ihnen?|ahvolingiz qalay? (rasmiy)|Guten Tag, Frau Klein! Wie geht es Ihnen?|Assalomu alaykum, Klayn xonim! Ahvolingiz qalay?
+Wie geht es dir?|ahvoling qalay?|Hallo Timur! Wie geht es dir?|Salom, Temur! Ahvoling qalay?
+gut|yaxshi|Danke, mir geht es gut.|Rahmat, ahvolim yaxshi.
+Und Ihnen?|o‘zingiz-chi?|Gut, danke. Und Ihnen?|Yaxshi, rahmat. O‘zingiz-chi?
+auch|ham|Ich wohne auch in Hamburg.|Men ham Gamburgda yashayman.
+sprechen|gapirmoq|Sprechen Sie Deutsch?|Nemischa gapirasizmi?
+verstehen|tushunmoq|Ich verstehe ein bisschen Deutsch.|Men nemischani ozgina tushunaman.
+Deutsch|nemis tili, nemischa|Ich lerne Deutsch in Berlin.|Men Berlinda nemis tilini o‘rganyapman.`,
+grammar:{title:"«Men Azizman» → Ich bin Aziz: sein fe’li",
+intro:"O‘zbek tilida «men Aziz<b>man</b>» deymiz: -man qo‘shimchasi «bo‘lmoq» ma’nosini beradi. Nemis tilida buning uchun alohida fe’l bor: <b>sein</b> (bo‘lmoq). U hech qachon tushib qolmaydi va noto‘g‘ri tuslanadi: ich <b>bin</b>, du <b>bist</b>, er/sie <b>ist</b>, wir <b>sind</b>, ihr <b>seid</b>, sie/Sie <b>sind</b>. Ism aytish uchun esa <b>heißen</b>: Ich heiße Aziz.<br><br><b>Savol tartibi:</b> so‘roq so‘zi (Wie? Woher? Wo?) birinchi, fe’l ikkinchi o‘rinda keladi: <b>Woher kommen</b> Sie?",
+table:[["Men Aziz<mark>man</mark>","Ich <mark>bin</mark> Aziz"],["Sen talaba<mark>san</mark>","Du <mark>bist</mark> Student"],["U Gamburg<mark>dan</mark>","Er <mark>ist</mark> <mark>aus</mark> Hamburg"],["Biz O‘zbekiston<mark>danmiz</mark>","Wir <mark>kommen aus</mark> Usbekistan"],["Siz qayerdan<mark>siz</mark>?","<mark>Woher</mark> kommen Sie?"],["Mening ismim Aziz","Ich <mark>heiße</mark> Aziz"]],
+tip:"<b>du va Sie = sen va siz.</b> Xuddi o‘zbek tilidagidek: notanish va katta yoshli odamga, idoralarda (Jobcenter, Ausländerbehörde) <b>Sie</b>, do‘stga, bolaga, oilaga <b>du</b>. Hurmat shakli <b>Sie</b> doim katta harf bilan yoziladi va fe’li «ular» (sie) bilan bir xil: Sie <b>sind</b>, Sie <b>kommen</b>. <br>Salomlashish ham shunday: rasmiy <b>Guten Tag</b>, do‘stga <b>Hallo</b>; xayrlashish: <b>Auf Wiedersehen</b> va <b>Tschüss</b>.",
+mistakes:[["Ich Aziz.","Ich bin Aziz.","Nemis tilida sein (bo‘lmoq) tushirib qoldirilmaydi."],["Woher Sie kommen?","Woher kommen Sie?","Savolda fe’l so‘roq so‘zidan keyin, 2-o‘rinda turadi."],["Ich komme von Usbekistan.","Ich komme aus Usbekistan.","Mamlakat va shahardan: aus."]]},
+dialog:{scene:"Berlindagi nemis tili kursida birinchi kun.", a:"Anna", b:"Aziz", lines:`a|Hallo! Ich heiße Anna. Und wie heißt du?|Salom! Mening ismim Anna. Isming nima?
+b|Hallo, Anna! Ich bin Aziz.|Salom, Anna! Men Azizman.
+a|Freut mich, Aziz! Woher kommst du?|Tanishganimdan xursandman, Aziz! Qayerdansan?
+b|Ich komme aus Usbekistan, aus Samarkand. Und du?|O‘zbekistondanman, Samarqanddan. Sen-chi?
+a|Ich komme aus Hamburg. Aber ich wohne jetzt in Berlin.|Men Gamburgdanman. Lekin hozir Berlinda yashayman.
+b|Ich wohne auch in Berlin.|Men ham Berlinda yashayman.
+a|Du sprichst schon gut Deutsch!|Sen allaqachon nemischa yaxshi gapirasan!
+b|Danke! Aber ich verstehe nur ein bisschen.|Rahmat! Lekin men faqat ozgina tushunaman.`},
+test:[{q:"«Men Azizman» nemischa qanday?",o:["Ich bin Aziz.","Ich Aziz.","Ich ist Aziz."],e:"sein: ich bin."},
+{q:"Woher ___ Sie?",o:["kommen","kommt","komme"],e:"Sie → kommen."},
+{q:"Du ___ aus Buchara.",o:["bist","bin","ist"],e:"du → bist."},
+{q:"O‘qituvchingizdan ismini so‘rang:",o:["Wie heißen Sie?","Wie heißt du?","Wer bist du?"],e:"Kattalarga hurmat shakli: Sie."},
+{q:"Ich komme ___ Usbekistan.",o:["aus","in","von"],e:"aus = ...dan (qayerdan)."},
+{q:"Do‘stingiz bilan xayrlashish:",o:["Tschüss!","Guten Tag!","Freut mich!"],e:"Tschüss = xayr (norasmiy)."}],
+talk:`Wie heißen Sie?|Ismingiz nima?
+Woher kommen Sie?|Qayerdansiz?
+Wo wohnen Sie?|Qayerda yashaysiz?
+Wie geht es Ihnen?|Ahvolingiz qalay?
+Sprechen Sie Deutsch?|Nemischa gapirasizmi?`,
+phrases:["ich heiße","freut mich","woher kommen Sie","auf Wiedersehen","ich verstehe nicht"]
+},
+{
+id:"de-oila", title:"Oila", ru:"Die Familie",
+cando:["Oilangiz haqida gapira olasiz","der, die, das va mein, meine so‘zlarini ishlata olasiz","Yoshingizni ayta olasiz"],
+words:`die Familie|oila|Meine Familie wohnt in Taschkent.|Oilam Toshkentda yashaydi.|f
+die Mutter|ona|Meine Mutter ist Lehrerin.|Onam o‘qituvchi.|f
+der Vater|ota|Mein Vater arbeitet in Hamburg.|Otam Gamburgda ishlaydi.|m
+die Mama|oyi, ona|Meine Mama kocht sehr gut.|Oyim juda yaxshi ovqat pishiradi.|f
+der Papa|dada|Mein Papa ist 60 Jahre alt.|Dadam 60 yoshda.|m
+die Eltern|ota-ona|Meine Eltern wohnen in Fergana.|Ota-onam Farg‘onada yashaydi.|pl
+der Sohn|o‘g‘il|Das ist mein Sohn Timur.|Bu mening o‘g‘lim Temur.|m
+die Tochter|qiz (farzand)|Meine Tochter geht in die Schule.|Qizim maktabga boradi.|f
+das Kind|bola, farzand|Das Kind spielt.|Bola o‘ynayapti.|n
+die Kinder|bolalar, farzandlar|Haben Sie Kinder?|Farzandlaringiz bormi?|pl
+der Bruder|aka; uka|Mein Bruder wohnt in München.|Akam Myunxenda yashaydi.|m
+die Schwester|opa; singil|Meine Schwester ist 20 Jahre alt.|Singlim 20 yoshda.|f
+die Geschwister|aka-uka, opa-singillar|Hast du Geschwister?|Aka-uka, opa-singillaring bormi?|pl
+der Mann|er; erkak|Mein Mann arbeitet in Berlin.|Erim Berlinda ishlaydi.|m
+die Frau|xotin, rafiqa; ayol|Das ist meine Frau Malika.|Bu mening rafiqam Malika.|f
+der Opa|bobo|Mein Opa ist 80 Jahre alt.|Bobom 80 yoshda.|m
+die Oma|buvi|Meine Oma kocht Plov.|Buvim palov pishiradi.|f
+der Onkel|amaki; tog‘a|Mein Onkel wohnt in Samarkand.|Amakim Samarqandda yashaydi.|m
+die Tante|amma; xola|Meine Tante hat drei Kinder.|Xolamning uchta farzandi bor.|f
+der Freund|do‘st (yigit)|Das ist mein Freund Jonas.|Bu mening do‘stim Yonas.|m
+die Freundin|dugona, do‘st (qiz)|Das ist meine Freundin Lena.|Bu mening dugonam Lena.|f
+das Foto|surat|Ist das dein Foto?|Bu sening suratingmi?|n
+mein|mening (der va das so‘zlar bilan)|Das ist mein Vater.|Bu mening otam.
+meine|mening (die va ko‘plik bilan)|Das sind meine Eltern.|Bular mening ota-onam.
+dein|sening (der, das)|Ist das dein Bruder?|Bu sening akangmi?
+deine|sening (die, ko‘plik)|Wie heißt deine Mutter?|Onangning ismi nima?
+Ihr / Ihre|sizning (hurmat shakli)|Wie heißt Ihr Sohn?|O‘g‘lingizning ismi nima?
+sein / seine|uning (erkakniki)|Seine Frau heißt Nodira.|Uning xotinining ismi Nodira.
+ihr / ihre|uning (ayolniki)|Ihr Mann ist Arzt.|Uning eri shifokor.
+unser / unsere|bizning|Unser Sohn ist fünf Jahre alt.|O‘g‘limiz besh yoshda.
+haben|ega bo‘lmoq; ...i bor|Ich habe zwei Kinder.|Mening ikkita farzandim bor.
+Wie alt sind Sie?|necha yoshdasiz?|Entschuldigung, wie alt sind Sie?|Kechirasiz, necha yoshdasiz?
+Ich bin ... Jahre alt.|men ... yoshdaman|Ich bin 25 Jahre alt.|Men 25 yoshdaman.
+verheiratet|uylangan; turmushga chiqqan|Mein Bruder ist verheiratet.|Akam uylangan.
+ledig|bo‘ydoq; turmush qurmagan|Ich bin noch ledig.|Men hali turmush qurmaganman.
+lieben|sevmoq|Ich liebe meine Familie.|Men oilamni sevaman.
+leben|yashamoq; hayot kechirmoq|Meine Eltern leben in Usbekistan.|Ota-onam O‘zbekistonda yashaydi.
+groß|katta|Meine Familie ist groß.|Oilam katta.
+klein|kichik|Unsere Wohnung ist klein.|Kvartiramiz kichik.
+wer?|kim?|Wer ist das?|Bu kim?`,
+grammar:{title:"der, die, das: nemis tilida so‘zlarning jinsi bor",
+intro:"O‘zbek tilida otlarning jinsi yo‘q: ota, ona, bola. Nemis tilida esa har bir ot oldida <b>artikl</b> turadi:<br>• <b>der</b> — erkak jinsi: der Vater, der Sohn<br>• <b>die</b> — ayol jinsi: die Mutter, die Familie<br>• <b>das</b> — o‘rta jins: das Kind, das Foto<br>• ko‘plik doim <b>die</b>: die Eltern, die Kinder<br>Odamlarda jins tabiiy, lekin narsalarda ko‘pincha mantiq yo‘q. Shuning uchun har bir otni <b>artikli bilan</b> yodlang, xuddi ism va familiya kabi.<br><br><b>«mening»</b> ham artiklga qaraydi: der, das → <b>mein</b>; die va ko‘plik → <b>mein<mark>e</mark></b>.",
+table:[["otam","<mark>der</mark> Vater → <mark>mein</mark> Vater"],["onam","<mark>die</mark> Mutter → <mark>meine</mark> Mutter"],["bolam","<mark>das</mark> Kind → <mark>mein</mark> Kind"],["ota-onam","<mark>die</mark> Eltern → <mark>meine</mark> Eltern"],["mening ikkita farzandim <mark>bor</mark>","Ich <mark>habe</mark> zwei Kinder"],["opang <mark>bor</mark>mi?","<mark>Hast</mark> du eine Schwester?"]],
+tip:"<b>Yodlash usuli:</b> kartochkalarga der so‘zlarni ko‘k, die so‘zlarni qizil, das so‘zlarni yashil rangda yozing. Ko‘p hollarda <b>-e</b> bilan tugaydigan so‘zlar <b>die</b> (die Tante, die Familie, die Schule).<br><b>haben</b> (bor bo‘lmoq): ich habe, du hast, er/sie hat, wir haben, ihr habt, sie/Sie haben. O‘zbekcha «mening akam <b>bor</b>» → nemischa «men akaga <b>egaman</b>»: Ich habe einen Bruder. (der so‘zlar bu yerda <b>einen</b> bo‘ladi, buni 6-darsda o‘rganamiz.)",
+mistakes:[["meine Vater","mein Vater","der Vater: mein (-e qo‘shilmaydi)."],["mein Mutter","meine Mutter","die Mutter: meine."],["Ich bin 25 Jahre.","Ich bin 25 Jahre alt.","Yoshni aytganda oxirida alt keladi."]]},
+dialog:{scene:"Hamkasbingizga telefondagi oilaviy suratni ko‘rsatyapsiz.", a:"Jonas", b:"Dilnoza", lines:`a|Dilnoza, ist das deine Familie?|Dilnoza, bu sening oilangmi?
+b|Ja. Das ist mein Mann, er heißt Bobur.|Ha. Bu mening erim, ismi Bobur.
+a|Und wer ist das?|Bu kim?
+b|Das sind meine Kinder: mein Sohn Timur und meine Tochter Laylo.|Bular farzandlarim: o‘g‘lim Temur va qizim Laylo.
+a|Wie alt sind sie?|Ular necha yoshda?
+b|Timur ist zehn und Laylo ist fünf Jahre alt.|Temur o‘n yoshda, Laylo esa besh yoshda.
+a|Hast du auch Geschwister?|Aka-uka, opa-singillaring ham bormi?
+b|Ja, ich habe drei Brüder. Sie wohnen in Usbekistan.|Ha, uchta akam-ukam bor. Ular O‘zbekistonda yashaydi.
+a|Eine große Familie! Sehr schön.|Katta oila! Juda chiroyli.`},
+test:[{q:"___ Mutter wohnt in Taschkent.",o:["Meine","Mein","Meinen"],e:"die Mutter → meine."},
+{q:"Das ist ___ Vater.",o:["mein","meine","meines"],e:"der Vater → mein."},
+{q:"___ Kind spielt.",o:["Das","Der","Die"],e:"Kind o‘rta jinsda: das Kind."},
+{q:"«Mening ikkita farzandim bor»",o:["Ich habe zwei Kinder.","Ich bin zwei Kinder.","Mein zwei Kinder."],e:"bor = haben."},
+{q:"Er ___ eine Schwester.",o:["hat","habt","haben"],e:"er → hat."},
+{q:"«Necha yoshdasiz?»",o:["Wie alt sind Sie?","Wie viel sind Sie?","Wie alt haben Sie?"],e:"Yosh: Wie alt sind Sie?"}],
+talk:`Ist Ihre Familie groß?|Oilangiz kattami?
+Wie heißen Ihre Eltern?|Ota-onangizning ismi nima?
+Haben Sie Geschwister?|Aka-uka, opa-singillaringiz bormi?
+Wo wohnt Ihre Familie?|Oilangiz qayerda yashaydi?
+Wie alt sind Sie?|Necha yoshdasiz?`,
+phrases:["meine Familie","mein Vater","ich habe","wie alt bist du","meine Eltern"]
+},
+{
+id:"de-raqamlar", title:"Raqamlar va narxlar", ru:"Zahlen und Preise",
+cando:["0 dan 100 gacha sanay olasiz","Narx so‘rab, tushuna olasiz","Do‘konda pul to‘lay olasiz"],
+words:`null|nol|Heute sind es null Grad.|Bugun havo nol daraja.
+eins|bir|Eins, zwei, drei, los!|Bir, ikki, uch, ketdik!
+zwei|ikki|Zwei Kaffee, bitte.|Ikkita qahva, iltimos.
+drei|uch|Ich habe drei Kinder.|Mening uchta farzandim bor.
+vier|to‘rt|Wir sind vier Personen.|Biz to‘rt kishimiz.
+fünf|besh|Das kostet fünf Euro.|Bu besh yevro turadi.
+sechs|olti|Ich arbeite sechs Tage.|Men olti kun ishlayman.
+sieben|yetti|Die Woche hat sieben Tage.|Haftada yetti kun bor.
+acht|sakkiz|Ich arbeite acht Stunden.|Men sakkiz soat ishlayman.
+neun|to‘qqiz|Mein Sohn ist neun.|O‘g‘lim to‘qqiz yoshda.
+zehn|o‘n|Ich warte zehn Minuten.|O‘n daqiqa kutaman.
+elf|o‘n bir|Mein Bruder ist elf Jahre alt.|Ukam o‘n bir yoshda.
+zwölf|o‘n ikki|Ein Jahr hat zwölf Monate.|Bir yilda o‘n ikki oy bor.
+dreizehn|o‘n uch|Ich wohne in Wohnung dreizehn.|Men o‘n uchinchi kvartirada yashayman.
+sechzehn|o‘n olti|Meine Tochter ist sechzehn.|Qizim o‘n olti yoshda.
+siebzehn|o‘n yetti|Er ist siebzehn Jahre alt.|U o‘n yetti yoshda.
+zwanzig|yigirma|Ich bin zwanzig Jahre alt.|Men yigirma yoshdaman.
+einundzwanzig|yigirma bir|Der Bus einundzwanzig fährt zum Bahnhof.|21-avtobus vokzalga boradi.
+dreißig|o‘ttiz|Die Jacke kostet dreißig Euro.|Kurtka o‘ttiz yevro turadi.
+fünfzig|ellik|Ich habe nur fünfzig Euro.|Menda faqat ellik yevro bor.
+hundert|yuz|Hundert Euro? Das ist teuer!|Yuz yevro? Bu qimmat!
+wie viel?|qancha?|Wie viel kostet das?|Bu qancha turadi?
+wie viele?|nechta?|Wie viele Kinder haben Sie?|Nechta farzandingiz bor?
+kosten|turmoq (narx)|Was kostet das Brot?|Non qancha turadi?
+der Euro|yevro|Ein Kaffee kostet drei Euro.|Bitta qahva uch yevro turadi.|m
+der Cent|sent|Das kostet neunzig Cent.|Bu to‘qson sent turadi.|m
+das Geld|pul|Ich habe wenig Geld.|Pulim kam.|n
+der Preis|narx|Der Preis ist gut.|Narxi yaxshi.|m
+teuer|qimmat|Das ist zu teuer!|Bu juda qimmat!
+billig|arzon|Hier ist alles billig.|Bu yerda hammasi arzon.
+zahlen|to‘lamoq|Kann ich mit Karte zahlen?|Karta bilan to‘lasam bo‘ladimi?
+bar|naqd|Ich zahle bar.|Naqd to‘layman.
+die Karte|karta (bank kartasi)|Mit Karte, bitte.|Karta bilan, iltimos.|f
+die Kasse|kassa|Bitte zahlen Sie an der Kasse.|Iltimos, kassada to‘lang.|f
+kaufen|sotib olmoq|Ich kaufe Brot und Milch.|Non va sut sotib olaman.
+der Supermarkt|supermarket|Wo ist der Supermarkt?|Supermarket qayerda?|m
+die Telefonnummer|telefon raqami|Wie ist Ihre Telefonnummer?|Telefon raqamingiz qanaqa?|f
+Das macht ...|jami ... bo‘ladi|Das macht zwölf Euro fünfzig.|Jami o‘n ikki yevro ellik sent bo‘ladi.
+noch|yana; hali|Noch etwas?|Yana biror narsa?
+Das ist alles.|shu hammasi|Nein, danke. Das ist alles.|Yo‘q, rahmat. Shu hammasi.`,
+grammar:{title:"21 = einundzwanzig («bir va yigirma») va ko‘plik",
+intro:"O‘zbek tilida «yigirma bir» deymiz: avval o‘nlik, keyin birlik. Nemis tilida 21 dan 99 gacha <b>teskari</b>: avval birlik, keyin <b>und</b> (va), keyin o‘nlik: <b>einundzwanzig</b> = «bir va yigirma». Hammasi bitta so‘z bo‘lib yoziladi.<br><br><b>Ko‘plik:</b> o‘zbek tilida hamma so‘zga <b>-lar</b> qo‘shiladi. Nemis tilida bir nechta yo‘l bor, shuning uchun otni ko‘pligi bilan birga yodlang:<br>• <b>-e</b>: der Tag → die Tag<b>e</b><br>• <b>-(e)n</b>: die Frau → die Frau<b>en</b><br>• <b>-er</b>: das Kind → die Kind<b>er</b><br>• <b>-s</b>: das Foto → die Foto<b>s</b><br>• o‘zgarmaydi: der Lehrer → die Lehrer<br>Ko‘plikning artikli doim <b>die</b>.<br><br><b>Diqqat:</b> o‘zbek tilida sondan keyin birlik keladi (ikki bola), nemis tilida esa <b>ko‘plik</b>: zwei Kind<b>er</b>.",
+table:[["yigirma bir","<mark>einund</mark>zwanzig (1 + 20)"],["o‘ttiz besh","<mark>fünfund</mark>dreißig (5 + 30)"],["ikki bola","zwei Kind<mark>er</mark>"],["uch kun","drei Tag<mark>e</mark>"],["ikki ayol","zwei Frau<mark>en</mark>"],["besh yevro","fünf <mark>Euro</mark> (o‘zgarmaydi)"]],
+tip:"<b>Istisnolar:</b> sech<b>zehn</b> (s tushadi), sieb<b>zehn</b> (en tushadi), drei<b>ßig</b> (ß bilan), lekin ein<b>und</b>zwanzig (eins emas). <br><b>Narx:</b> 2,50 € = zwei Euro fünfzig. Euro va Cent ko‘plikda o‘zgarmaydi. <br><b>Wie viel?</b> narx va sanalmaydigan narsalar uchun, <b>wie viele?</b> sanaladigan narsalar uchun: Wie viele Kinder?",
+mistakes:[["zwanzigeins","einundzwanzig","Avval birlik, keyin o‘nlik."],["zwei Kind","zwei Kinder","Sondan keyin ko‘plik shakli (o‘zbekchadan farqli)."],["fünf Euros","fünf Euro","Euro ko‘plikda o‘zgarmaydi."]]},
+dialog:{scene:"Myunxendagi bozorda meva-sabzavot sotib olish.", a:"Petra", b:"Jasur", lines:`b|Guten Tag! Wie viel kosten die Äpfel?|Assalomu alaykum! Olmalar qancha turadi?
+a|Ein Kilo kostet zwei Euro fünfzig.|Bir kilosi ikki yevro ellik sent.
+b|Zwei Kilo, bitte. Und was kosten die Tomaten?|Ikki kilo, iltimos. Pomidorlar-chi, qancha?
+a|Das Kilo drei Euro.|Kilosi uch yevro.
+b|Dann ein Kilo Tomaten, bitte.|Unda bir kilo pomidor, iltimos.
+a|Gern. Noch etwas?|Bajonidil. Yana biror narsa?
+b|Nein, danke. Das ist alles. Kann ich mit Karte zahlen?|Yo‘q, rahmat. Shu hammasi. Karta bilan to‘lasam bo‘ladimi?
+a|Ja, natürlich. Das macht acht Euro.|Ha, albatta. Jami sakkiz yevro.
+b|Danke schön! Auf Wiedersehen!|Katta rahmat! Xayr!`},
+test:[{q:"21 =",o:["einundzwanzig","zwanzigeins","zweiundeins"],e:"Avval birlik, keyin und, keyin o‘nlik."},
+{q:"«Ikki bola»",o:["zwei Kinder","zwei Kind","zwei Kinds"],e:"Sondan keyin ko‘plik: Kinder."},
+{q:"«Bu qancha turadi?»",o:["Wie viel kostet das?","Wie viele kostet das?","Was ist das Geld?"],e:"Narx: Wie viel kostet...?"},
+{q:"30 =",o:["dreißig","dreizig","dreizehn"],e:"30 = dreißig (ß bilan), 13 = dreizehn."},
+{q:"2,50 € qanday o‘qiladi?",o:["zwei Euro fünfzig","zwei Euros fünfzig","fünfzig zwei Euro"],e:"Euro o‘zgarmaydi, sent oxirida aytiladi."},
+{q:"«Qimmat»",o:["teuer","billig","bar"],e:"teuer = qimmat, billig = arzon."}],
+talk:`Wie viel kostet Brot in Ihrer Stadt?|Shahringizda non qancha turadi?
+Wie ist Ihre Telefonnummer?|Telefon raqamingiz qanaqa?
+Was ist in Deutschland teuer?|Germaniyada nima qimmat?
+Zahlen Sie bar oder mit Karte?|Naqd to‘laysizmi yoki karta bilan?
+Wo kaufen Sie ein?|Qayerdan xarid qilasiz?`,
+phrases:["wie viel kostet das","das ist zu teuer","mit Karte zahlen","das macht","das ist alles"]
+},
+{
+id:"de-ish", title:"Ish va kasb", ru:"Arbeit und Beruf",
+cando:["Kasbingiz va ishingiz haqida ayta olasiz","Fe’llarni hozirgi zamonda tuslay olasiz","Boshqalardan ishi haqida so‘ray olasiz"],
+words:`die Arbeit|ish|Meine Arbeit ist interessant.|Ishim qiziq.|f
+arbeiten|ishlamoq|Ich arbeite in Hamburg.|Men Gamburgda ishlayman.
+arbeiten als|... bo‘lib ishlamoq|Ich arbeite als Fahrer.|Men haydovchi bo‘lib ishlayman.
+der Beruf|kasb|Was sind Sie von Beruf?|Kasbingiz nima?|m
+der Job|ish (so‘zlashuvda)|Mein Job ist gut.|Ishim yaxshi.|m
+der Lehrer|o‘qituvchi (erkak)|Er ist Lehrer.|U o‘qituvchi.|m
+die Lehrerin|o‘qituvchi (ayol)|Meine Frau ist Lehrerin.|Xotinim o‘qituvchi.|f
+der Arzt|shifokor (erkak)|Der Arzt kommt gleich.|Shifokor hozir keladi.|m
+die Ärztin|shifokor (ayol)|Sie ist Ärztin in Köln.|U Kyolnda shifokor.|f
+der Student|talaba (yigit)|Ich bin Student in Berlin.|Men Berlinda talabaman.|m
+die Studentin|talaba (qiz)|Malika ist Studentin.|Malika talaba.|f
+der Fahrer|haydovchi|Mein Bruder ist Fahrer.|Akam haydovchi.|m
+der Koch|oshpaz (erkak)|Der Koch macht Plov.|Oshpaz palov tayyorlayapti.|m
+die Köchin|oshpaz (ayol)|Sie arbeitet als Köchin.|U oshpaz bo‘lib ishlaydi.|f
+die Pflegerin|hamshira, parvarishchi (ayol)|Sie arbeitet als Pflegerin im Krankenhaus.|U kasalxonada hamshira bo‘lib ishlaydi.|f
+der Verkäufer|sotuvchi (erkak)|Der Verkäufer ist sehr nett.|Sotuvchi juda xushmuomala.|m
+die Verkäuferin|sotuvchi (ayol)|Meine Schwester ist Verkäuferin.|Opam sotuvchi.|f
+der Ingenieur|muhandis|Ich bin Ingenieur.|Men muhandisman.|m
+der Programmierer|dasturchi|Er ist Programmierer und arbeitet zu Hause.|U dasturchi va uyda ishlaydi.|m
+der Mechaniker|mexanik|Mein Vater ist Mechaniker.|Otam mexanik.|m
+die Firma|firma, kompaniya|Die Firma ist in München.|Firma Myunxenda.|f
+das Büro|ofis, idora|Das Büro ist im Zentrum.|Ofis markazda.|n
+das Krankenhaus|kasalxona|Sie arbeitet im Krankenhaus.|U kasalxonada ishlaydi.|n
+die Schule|maktab|Die Kinder sind in der Schule.|Bolalar maktabda.|f
+die Universität|universitet|Die Universität ist sehr groß.|Universitet juda katta.|f
+der Kollege|hamkasb (erkak)|Mein Kollege kommt aus Polen.|Hamkasbim Polshadan.|m
+die Kollegin|hamkasb (ayol)|Meine Kollegin heißt Sarah.|Hamkasbimning ismi Sara.|f
+der Chef|boshliq|Mein Chef ist nett.|Boshlig‘im yoqimli odam.|m
+lernen|o‘rganmoq|Ich lerne Deutsch.|Men nemis tilini o‘rganaman.
+studieren|(oliygohda) o‘qimoq|Ich studiere in Berlin.|Men Berlinda o‘qiyman.
+machen|qilmoq|Was machst du?|Nima qilyapsan?
+suchen|qidirmoq|Ich suche Arbeit.|Men ish qidiryapman.
+wo?|qayerda?|Wo arbeiten Sie?|Qayerda ishlaysiz?
+was?|nima?|Was lernst du?|Nimani o‘rganyapsan?
+jetzt|hozir|Ich arbeite jetzt nicht.|Hozir ishlamayapman.
+viel|ko‘p|Ich arbeite viel.|Men ko‘p ishlayman.
+nicht|emas; -ma-|Ich arbeite nicht am Sonntag.|Yakshanba kuni ishlamayman.
+interessant|qiziq|Mein Beruf ist interessant.|Kasbim qiziq.
+schwer|qiyin; og‘ir|Die Arbeit ist schwer.|Ish og‘ir.`,
+grammar:{title:"Fe’l tuslanishi: yasha-YMAN → wohn-E",
+intro:"Yaxshi xabar: nemis fe’llari ham o‘zbek fe’llari kabi <b>shaxsga qarab qo‘shimcha oladi</b>. O‘zbekchada yasha<b>yman</b>, yasha<b>ysan</b>, yasha<b>ydi</b>... Nemis tilida avval <b>negizni</b> topamiz: fe’ldan <b>-en</b> ni olib tashlaymiz (wohn-en → wohn), keyin qo‘shimcha qo‘shamiz: <b>-e, -st, -t, -en, -t, -en</b>.",
+table:[["men yasha<mark>yman</mark>","ich wohn<mark>e</mark>"],["sen yasha<mark>ysan</mark>","du wohn<mark>st</mark>"],["u yasha<mark>ydi</mark>","er / sie wohn<mark>t</mark>"],["biz yasha<mark>ymiz</mark>","wir wohn<mark>en</mark>"],["sizlar yasha<mark>ysizlar</mark>","ihr wohn<mark>t</mark>"],["ular yasha<mark>ydi</mark> / Siz yasha<mark>ysiz</mark>","sie / Sie wohn<mark>en</mark>"]],
+tip:"<b>arbeiten:</b> negiz -t bilan tugasa, talaffuz oson bo‘lishi uchun <b>e</b> qo‘shiladi: du arbeit<b>e</b>st, er arbeit<b>e</b>t, ihr arbeit<b>e</b>t.<br><b>Kasb:</b> o‘zbekchadagidek artiklsiz: Men o‘qituvchiman = Ich bin Lehrer. Ayol uchun <b>-in</b>: Lehrer → Lehrer<b>in</b>, Arzt → Ärzt<b>in</b>, Koch → Köch<b>in</b> (ba’zan umlaut qo‘shiladi). «... bo‘lib ishlayman» = Ich arbeite <b>als</b> Fahrer.<br><b>Inkor:</b> o‘zbekchada -ma- fe’l ichida (ishla<b>ma</b>yman), nemischada <b>nicht</b> fe’ldan keyin: Ich arbeite <b>nicht</b>.",
+mistakes:[["Ich bin ein Lehrer.","Ich bin Lehrer.","Kasbni aytganda artikl ishlatilmaydi."],["Er arbeitt.","Er arbeitet.","Negiz -t bilan tugasa, -et qo‘shiladi."],["Sie ist Lehrer.","Sie ist Lehrerin.","Ayol uchun -in qo‘shimchasi."]]},
+dialog:{scene:"Gamburgda qo‘shnining tug‘ilgan kunida yangi tanishuv.", a:"Thomas", b:"Bekzod", lines:`a|Bekzod, was sind Sie von Beruf?|Bekzod, kasbingiz nima?
+b|Ich bin Programmierer. Ich arbeite in einer IT-Firma.|Men dasturchiman. IT-firmada ishlayman.
+a|Interessant! Arbeiten Sie im Büro?|Qiziq! Ofisda ishlaysizmi?
+b|Nein, ich arbeite oft zu Hause. Und Sie?|Yo‘q, ko‘pincha uyda ishlayman. Siz-chi?
+a|Ich bin Arzt. Ich arbeite im Krankenhaus.|Men shifokorman. Kasalxonada ishlayman.
+b|Ist die Arbeit schwer?|Ish og‘irmi?
+a|Ja, ich arbeite viel. Aber mein Beruf ist sehr interessant.|Ha, ko‘p ishlayman. Lekin kasbim juda qiziq.
+b|Meine Frau ist auch Ärztin. Sie lernt jetzt Deutsch.|Xotinim ham shifokor. U hozir nemis tilini o‘rganyapti.`},
+test:[{q:"Ich ___ in Berlin.",o:["wohne","wohnst","wohnt"],e:"ich → -e."},
+{q:"Du ___ viel.",o:["arbeitest","arbeitst","arbeite"],e:"Negiz -t bilan tugaydi: du arbeitest."},
+{q:"Wir ___ Deutsch.",o:["lernen","lernt","lernst"],e:"wir → -en."},
+{q:"Anna ist ___.",o:["Lehrerin","Lehrer","ein Lehrer"],e:"Ayol: -in, artiklsiz."},
+{q:"«Men ishlamayman»",o:["Ich arbeite nicht.","Ich nicht arbeite.","Nicht ich arbeite."],e:"nicht fe’ldan keyin."},
+{q:"«Kasbingiz nima?»",o:["Was sind Sie von Beruf?","Wer sind Sie von Beruf?","Wo sind Sie von Beruf?"],e:"Was sind Sie von Beruf?"}],
+talk:`Was sind Sie von Beruf?|Kasbingiz nima?
+Wo arbeiten Sie?|Qayerda ishlaysiz?
+Ist Ihre Arbeit interessant?|Ishingiz qiziqmi?
+Was machen Ihre Eltern beruflich?|Ota-onangiz nima ish qiladi?
+Als was möchten Sie in Deutschland arbeiten?|Germaniyada kim bo‘lib ishlamoqchisiz?`,
+phrases:["was sind Sie von Beruf","ich arbeite als","ich suche Arbeit","ich lerne Deutsch","im Krankenhaus"]
+},
+{
+id:"de-kun", title:"Kun tartibi va vaqt", ru:"Mein Tag",
+cando:["Soatni ayta olasiz va so‘ray olasiz","Kun tartibingiz haqida gapira olasiz","Hafta kunlarini bilasiz"],
+words:`der Morgen|tong, ertalab|Am Morgen trinke ich Tee.|Ertalab choy ichaman.|m
+der Mittag|tush payti|Am Mittag esse ich in der Kantine.|Tushda oshxonada ovqatlanaman.|m
+der Abend|kech, kechqurun|Am Abend bin ich zu Hause.|Kechqurun uydaman.|m
+die Nacht|tun|Gute Nacht!|Xayrli tun!|f
+heute|bugun|Heute ist Montag.|Bugun dushanba.
+morgen|ertaga|Morgen arbeite ich.|Ertaga ishlayman.
+gestern|kecha|Gestern war Sonntag.|Kecha yakshanba edi.
+der Montag|dushanba|Am Montag arbeite ich.|Dushanba kuni ishlayman.|m
+der Dienstag|seshanba|Am Dienstag habe ich Deutschkurs.|Seshanba kuni nemis tili kursim bor.|m
+der Mittwoch|chorshanba|Am Mittwoch gehe ich zum Arzt.|Chorshanba kuni shifokorga boraman.|m
+der Donnerstag|payshanba|Bis Donnerstag!|Payshanbagacha!|m
+der Freitag|juma|Am Freitag gehe ich in die Moschee.|Juma kuni masjidga boraman.|m
+der Samstag|shanba|Am Samstag kaufe ich ein.|Shanba kuni xarid qilaman.|m
+der Sonntag|yakshanba|Am Sonntag schlafe ich lange.|Yakshanba kuni uzoq uxlayman.|m
+das Wochenende|dam olish kunlari|Was machst du am Wochenende?|Dam olish kunlari nima qilasan?|n
+die Woche|hafta|Ich arbeite fünf Tage pro Woche.|Haftada besh kun ishlayman.|f
+die Uhr|soat (asbob); soat (vaqt aytganda)|Es ist acht Uhr.|Soat sakkiz.|f
+die Stunde|soat (vaqt birligi)|Ich arbeite acht Stunden.|Sakkiz soat ishlayman.|f
+die Minute|daqiqa|Warten Sie eine Minute!|Bir daqiqa kuting!|f
+Wie spät ist es?|soat necha?|Entschuldigung, wie spät ist es?|Kechirasiz, soat necha?
+um ... Uhr|soat ...da|Ich komme um acht Uhr.|Soat sakkizda kelaman.
+halb|yarim (keyingi soatgacha)|Es ist halb neun.|Soat sakkiz yarim.
+aufstehen|o‘rnidan turmoq|Ich stehe um sechs Uhr auf.|Soat oltida turaman.
+frühstücken|nonushta qilmoq|Wir frühstücken zu Hause.|Uyda nonushta qilamiz.
+anfangen|boshlanmoq|Der Kurs fängt um neun Uhr an.|Kurs soat to‘qqizda boshlanadi.
+einkaufen|xarid qilmoq|Ich kaufe im Supermarkt ein.|Supermarketda xarid qilaman.
+fernsehen|televizor ko‘rmoq|Am Abend sehe ich fern.|Kechqurun televizor ko‘raman.
+schlafen|uxlamoq|Ich schlafe sieben Stunden.|Yetti soat uxlayman.
+gehen|bormoq (piyoda)|Ich gehe nach Hause.|Uyga ketyapman.
+fahren|bormoq (transportda)|Ich fahre mit der U-Bahn zur Arbeit.|Ishga metroda boraman.
+früh|erta|Ich stehe früh auf.|Men erta turaman.
+spät|kech|Es ist schon spät.|Allaqachon kech.
+immer|doim|Ich trinke immer Tee.|Men doim choy ichaman.
+oft|tez-tez, ko‘pincha|Ich koche oft.|Men tez-tez ovqat pishiraman.
+manchmal|ba’zan|Manchmal arbeite ich am Samstag.|Ba’zan shanba kuni ishlayman.
+dann|keyin|Ich frühstücke, dann gehe ich zur Arbeit.|Nonushta qilaman, keyin ishga boraman.
+nach|...dan keyin|Nach der Arbeit gehe ich nach Hause.|Ishdan keyin uyga boraman.`,
+grammar:{title:"Ich stehe um 7 Uhr AUF: fe’l bo‘lagi gap oxiriga ketadi",
+intro:"<b>1. Fe’l doim 2-o‘rinda.</b> O‘zbek tilida fe’l gap oxirida turadi. Nemis tilida darak gapda fe’l doim <b>ikkinchi</b> o‘rinda. Agar gap vaqt bilan boshlansa, ega fe’ldan keyinga o‘tadi: Ich arbeite am Montag → <b>Am Montag arbeite ich.</b><br><br><b>2. Ajraladigan fe’llar.</b> aufstehen = <b>auf</b> + stehen. Hozirgi zamonda old qo‘shimcha (auf, an, ein, fern) <b>gap oxiriga</b> ketadi. Bu o‘zbek tiliga o‘xshaydi: o‘zbekchada ham fe’l oxirida: «Men soat yettida o‘rnimdan <b>turaman</b>» → Ich stehe um 7 Uhr <b>auf</b>.<br><br><b>3. Vaqt:</b> soat ...da = <b>um</b> ... Uhr; hafta kuni va kun qismi = <b>am</b>: am Montag, am Abend.",
+table:[["Men dushanba kuni ishlayman","Ich arbeite <mark>am</mark> Montag"],["Dushanba kuni men ishlayman","<mark>Am Montag</mark> <mark>arbeite</mark> ich"],["soat sakkiz<mark>da</mark>","<mark>um</mark> acht Uhr"],["soat sakkiz yarim (8:30)","<mark>halb neun</mark>"],["Soat yettida <mark>turaman</mark>","Ich <mark>stehe</mark> um 7 Uhr <mark>auf</mark>"],["Kechqurun televizor <mark>ko‘raman</mark>","Am Abend <mark>sehe</mark> ich <mark>fern</mark>"]],
+tip:"<b>halb</b> keyingi soatga qarab aytiladi: halb neun = «to‘qqizgacha yarim» = 8:30. Yana: Viertel nach acht = 8:15, Viertel vor neun = 8:45.<br><b>Diqqat:</b> ba’zi fe’llar tuslanganda o‘zgaradi: er f<b>ä</b>ngt an, er s<b>ie</b>ht fern, er schl<b>ä</b>ft, er f<b>ä</b>hrt.<br><b>morgen</b> (kichik harf) = ertaga, <b>der Morgen</b> (katta harf) = tong.",
+mistakes:[["Am Montag ich arbeite.","Am Montag arbeite ich.","Fe’l doim 2-o‘rinda."],["Ich aufstehe um 7 Uhr.","Ich stehe um 7 Uhr auf.","Ajraladigan old qo‘shimcha gap oxiriga ketadi."],["Es ist halb acht. (8:30)","Es ist halb neun. (8:30)","halb = keyingi soatgacha yarim."]]},
+dialog:{scene:"Do‘stlar dam olish kuni uchrashishni kelishmoqda.", a:"Lukas", b:"Shahzod", lines:`a|Shahzod, hast du am Samstag Zeit?|Shahzod, shanba kuni vaqting bormi?
+b|Am Vormittag nicht, da arbeite ich. Aber am Abend habe ich Zeit.|Kunduzi yo‘q, ishlayman. Lekin kechqurun vaqtim bor.
+a|Super! Gehen wir um sechs Uhr ins Café?|Zo‘r! Soat oltida kafega boramizmi?
+b|Um sechs? Das ist ein bisschen früh. Lieber um halb sieben.|Oltidami? Biroz erta. Yaxshisi olti yarimda.
+a|Okay, um halb sieben. Wo?|Mayli, olti yarimda. Qayerda?
+b|Im Café am Alexanderplatz.|Aleksanderplatsdagi kafeda.
+a|Gut. Bis Samstag!|Yaxshi. Shanbagacha!
+b|Bis dann. Tschüss!|Ko‘rishguncha. Xayr!`},
+test:[{q:"«Soat yettida turaman»",o:["Ich stehe um 7 Uhr auf.","Ich aufstehe um 7 Uhr.","Ich stehe auf um 7 Uhr."],e:"auf gap oxiriga ketadi."},
+{q:"«Dushanba kuni ishlayman»",o:["Am Montag arbeite ich.","Am Montag ich arbeite.","Am Montag arbeiten ich."],e:"Fe’l 2-o‘rinda, ega undan keyin."},
+{q:"8:30 =",o:["halb neun","halb acht","acht halb"],e:"halb keyingi soat bilan: halb neun."},
+{q:"Der Kurs fängt ___ neun Uhr an.",o:["um","am","im"],e:"Soat: um."},
+{q:"___ Freitag gehe ich in die Moschee.",o:["Am","Um","Im"],e:"Hafta kuni: am."},
+{q:"«Soat necha?»",o:["Wie spät ist es?","Wie viel Uhr hast du?","Wo ist die Uhr?"],e:"Wie spät ist es?"}],
+talk:`Wann stehen Sie auf?|Soat nechada turasiz?
+Was machen Sie am Morgen?|Ertalab nima qilasiz?
+Wann fängt Ihre Arbeit an?|Ishingiz soat nechada boshlanadi?
+Was machen Sie am Wochenende?|Dam olish kunlari nima qilasiz?
+Was ist Ihr Lieblingstag?|Sevimli kuningiz qaysi?`,
+phrases:["wie spät ist es","um acht Uhr","ich stehe auf","am Wochenende","nach der Arbeit"]
+},
+{
+id:"de-ovqat", title:"Ovqat va kafe", ru:"Essen und Trinken",
+cando:["Kafeda buyurtma bera olasiz","Nimani xohlashingizni xushmuomala ayta olasiz","Hisobni so‘ray olasiz"],
+words:`das Essen|ovqat|Das Essen ist sehr lecker.|Ovqat juda mazali.|n
+das Brot|non|Das Brot ist frisch.|Non yangi.|n
+das Brötchen|bulochka|Zum Frühstück esse ich ein Brötchen.|Nonushtaga bitta bulochka yeyman.|n
+das Wasser|suv|Ein Glas Wasser, bitte.|Bir stakan suv, iltimos.|n
+der Tee|choy|Ich trinke gern grünen Tee.|Ko‘k choyni yaxshi ko‘raman.|m
+der Kaffee|qahva|Einen Kaffee, bitte.|Bitta qahva, iltimos.|m
+die Milch|sut|Kaffee mit Milch, bitte.|Sutli qahva, iltimos.|f
+der Saft|sharbat|Einen Apfelsaft, bitte.|Bitta olma sharbati, iltimos.|m
+das Fleisch|go‘sht|Ich esse kein Schweinefleisch.|Men cho‘chqa go‘shti yemayman.|n
+das Hähnchen|tovuq (go‘shti)|Ich nehme Reis mit Hähnchen.|Tovuqli guruch olaman.|n
+der Fisch|baliq|Ich esse gern Fisch.|Baliqni yaxshi ko‘rib yeyman.|m
+der Reis|guruch|Plov ohne Reis? Nein!|Guruchsiz palovmi? Yo‘q!|m
+das Gemüse|sabzavot|Frisches Gemüse ist gesund.|Yangi sabzavot foydali.|n
+das Obst|meva|Ich esse jeden Tag Obst.|Har kuni meva yeyman.|n
+der Apfel|olma|Ein Apfel kostet fünfzig Cent.|Bitta olma ellik sent turadi.|m
+die Kartoffel|kartoshka|Fleisch mit Kartoffeln.|Kartoshkali go‘sht.|f
+das Ei|tuxum|Zum Frühstück esse ich zwei Eier.|Nonushtaga ikkita tuxum yeyman.|n
+der Käse|pishloq|Ein Brötchen mit Käse, bitte.|Pishloqli bulochka, iltimos.|m
+der Zucker|shakar|Tee ohne Zucker, bitte.|Shakarsiz choy, iltimos.|m
+das Salz|tuz|Hier ist das Salz.|Mana tuz.|n
+die Suppe|sho‘rva|Die Suppe ist heiß.|Sho‘rva issiq.|f
+der Salat|salat|Ich nehme einen Salat.|Bitta salat olaman.|m
+das Frühstück|nonushta|Das Frühstück ist um acht Uhr.|Nonushta soat sakkizda.|n
+das Mittagessen|tushlik|Was gibt es zum Mittagessen?|Tushlikka nima bor?|n
+das Abendessen|kechki ovqat|Das Abendessen ist fertig.|Kechki ovqat tayyor.|n
+essen|yemoq|Was essen Sie gern?|Nimani yeyishni yaxshi ko‘rasiz?
+trinken|ichmoq|Ich trinke viel Wasser.|Men ko‘p suv ichaman.
+möchten|xohlamoq (xushmuomala)|Ich möchte einen Tee.|Bitta choy ichmoqchiman.
+nehmen|olmoq (tanlamoq)|Ich nehme die Suppe.|Men sho‘rvani olaman.
+Ich hätte gern ...|... bersangiz (xushmuomala buyurtma)|Ich hätte gern einen Kaffee.|Bitta qahva bersangiz.
+die Speisekarte|menyu|Die Speisekarte, bitte.|Menyuni bering, iltimos.|f
+die Rechnung|hisob (to‘lov)|Die Rechnung, bitte!|Hisobni bering, iltimos!|f
+lecker|mazali|Das ist sehr lecker!|Bu juda mazali!
+halal|halol|Das Fleisch hier ist halal.|Bu yerdagi go‘sht halol.
+ohne|...siz|Kaffee ohne Zucker.|Shakarsiz qahva.
+mit|...bilan, ...li|Tee mit Zitrone.|Limonli choy.
+das Café|kafe|Gehen wir ins Café?|Kafega boramizmi?|n
+der Kellner|ofitsiant (erkak)|Der Kellner bringt die Speisekarte.|Ofitsiant menyuni olib keladi.|m
+gern|yaxshi ko‘rib, bajonidil|Ich koche gern.|Men ovqat pishirishni yaxshi ko‘raman.`,
+grammar:{title:"Ich möchte EINEN Tee: faqat der so‘zlar o‘zgaradi",
+intro:"O‘zbek tilida «nimani?» savoliga javob beruvchi so‘zga <b>-ni</b> qo‘shiladi: choy<b>ni</b> ichaman. Nemis tilida ham shunday holat bor (Akkusativ). Yaxshi xabar: o‘zgarish faqat <b>erkak jinsidagi (der)</b> so‘zlarda ko‘rinadi:<br>• der → <b>den</b>, ein → <b>einen</b>, kein → <b>keinen</b><br>• die, das va ko‘plik <b>o‘zgarmaydi</b>: eine Suppe, ein Wasser.<br><br>Buyurtma berishda uchta tayyor ibora: <b>Ich möchte...</b> (xohlayman), <b>Ich hätte gern...</b> (bersangiz, eng xushmuomala), <b>Ich nehme...</b> (olaman). Ulardan keyin doim shu shakl keladi.<br><br><b>kein</b> = otning inkori («...yo‘q, ...emas»): Ich esse <b>kein</b> Fleisch.",
+table:[["bitta choy xohlayman (der Tee)","Ich möchte <mark>einen</mark> Tee"],["bitta sho‘rva olaman (die Suppe)","Ich nehme <mark>eine</mark> Suppe"],["bitta suv bersangiz (das Wasser)","Ich hätte gern <mark>ein</mark> Wasser"],["qahva<mark>ni</mark> olaman","Ich nehme <mark>den</mark> Kaffee"],["shakar xohlamayman","Ich möchte <mark>keinen</mark> Zucker"],["go‘sht yemayman","Ich esse <mark>kein</mark> Fleisch"]],
+tip:"<b>möchten tuslanishi:</b> ich möchte, du möchtest, er/sie möcht<b>e</b> (-t yo‘q!), wir möchten, ihr möchtet, sie/Sie möchten.<br><b>Kafeda:</b> hisobni so‘rash uchun <b>Die Rechnung, bitte!</b> yoki <b>Ich möchte bezahlen.</b> Ofitsiant ko‘pincha so‘raydi: <b>Zusammen oder getrennt?</b> (hammasini birga yoki alohida-alohida to‘laysizmi?). Germaniyada odatda 5–10% choychaqa (Trinkgeld) qoldiriladi.",
+mistakes:[["Ich möchte ein Tee.","Ich möchte einen Tee.","der Tee: «nimani?» savolida ein → einen."],["Ich esse nicht Fleisch.","Ich esse kein Fleisch.","Ot oldidan inkor: kein."],["Er möchtet Kaffee.","Er möchte Kaffee.","er / sie: möchte (-t qo‘shilmaydi)."]]},
+dialog:{scene:"Myunxendagi kafeda buyurtma berish.", a:"Julia", b:"Madina", lines:`a|Guten Tag! Hier ist die Speisekarte.|Assalomu alaykum! Mana menyu.
+b|Danke. Ist das Fleisch hier halal?|Rahmat. Bu yerdagi go‘sht halolmi?
+a|Das Hähnchen ist halal. Ich empfehle die Hähnchensuppe.|Tovuq halol. Tovuq sho‘rvasini tavsiya qilaman.
+b|Gut, ich nehme die Suppe und einen Salat.|Yaxshi, sho‘rva va bitta salat olaman.
+a|Und was möchten Sie trinken?|Nima ichasiz?
+b|Ich hätte gern einen grünen Tee ohne Zucker.|Shakarsiz ko‘k choy bersangiz.
+a|Gern. Noch etwas?|Bajonidil. Yana biror narsa?
+b|Nein, danke. Und dann die Rechnung, bitte.|Yo‘q, rahmat. Keyin hisobni ham, iltimos.`},
+test:[{q:"Ich möchte ___ Kaffee.",o:["einen","ein","eine"],e:"der Kaffee → einen."},
+{q:"Ich nehme ___ Suppe.",o:["eine","einen","ein"],e:"die Suppe o‘zgarmaydi: eine."},
+{q:"Ich esse ___ Fleisch.",o:["kein","nicht","keinen"],e:"das Fleisch → kein."},
+{q:"Er ___ einen Tee.",o:["möchte","möchtet","möchten"],e:"er → möchte."},
+{q:"«Hisobni bering»",o:["Die Rechnung, bitte!","Das Geld, bitte!","Die Speisekarte, bitte!"],e:"die Rechnung = hisob."},
+{q:"«Shakarsiz»",o:["ohne Zucker","mit Zucker","kein Zuckers"],e:"ohne = ...siz."}],
+talk:`Was essen Sie gern zum Frühstück?|Nonushtaga nima yeyishni yaxshi ko‘rasiz?
+Was ist Ihr Lieblingsessen?|Sevimli taomingiz qaysi?
+Trinken Sie lieber Tee oder Kaffee?|Choyni afzal ko‘rasizmi yoki qahvani?
+Wie kocht man Plov? Erzählen Sie!|Palov qanday pishiriladi? Aytib bering!
+Was bestellen Sie im Café?|Kafeda nima buyurtma qilasiz?`,
+phrases:["ich möchte","ich hätte gern","die Rechnung bitte","sehr lecker","ohne Zucker"]
+}
+);
+
+</script>
+<script>
+/* NEMIS TILI A1, 7–12-darslar.
+   words:  nemischa | o‘zbekcha | misol | misol tarjimasi | jins (m, f, n, pl; faqat otlar uchun)
+           otlar artikl bilan yoziladi: der Bahnhof, die Apotheke, das Zimmer
+   dialog: a|nemischa|o‘zbekcha  yoki  b|...
+   test:   o[0] doim to‘g‘ri javob (ekranda aralashtiriladi)
+   talk:   suhbat uchun savollar: nemischa|o‘zbekcha
+   ru maydoni: dars nomi nemis tilida (maydon nomi rus kursi bilan bir xil qoldirilgan) */
+window.TIL = window.TIL || {};
+TIL.deA1 = TIL.deA1 || [];
+TIL.deA1.push(
+{
+id:"de-shahar", title:"Shahar va yo‘l so‘rash", ru:"In der Stadt",
+cando:["Joy qayerdaligini so‘ray olasiz","Yo‘l ko‘rsatmasini tushuna olasiz","«Qayerda?» va «Qayerga?» savollariga javob bera olasiz"],
+words:`die Stadt|shahar|Berlin ist eine große Stadt.|Berlin katta shahar.|f
+die Straße|ko‘cha|Ich wohne in der Goethestraße.|Men Goethestraße ko‘chasida yashayman.|f
+das Zentrum|markaz|Ich wohne im Zentrum.|Men markazda yashayman.|n
+die Bank|bank|Ist hier eine Bank in der Nähe?|Bu yer yaqinida bank bormi?|f
+die Apotheke|dorixona|Wo ist die Apotheke?|Dorixona qayerda?|f
+der Supermarkt|supermarket|Der Supermarkt ist am Bahnhof.|Supermarket vokzal yonida.|m
+der Bahnhof|vokzal|Der Bahnhof ist nicht weit.|Vokzal uzoq emas.|m
+der Flughafen|aeroport|Der Flughafen ist weit vom Zentrum.|Aeroport markazdan uzoq.|m
+die Haltestelle|bekat|Die Haltestelle ist da vorne.|Bekat ana u oldinda.|f
+der Platz|maydon|Das Café ist am Marktplatz.|Kafe bozor maydonida.|m
+der Park|bog‘, park|Wir gehen in den Park.|Biz bog‘ga boramiz.|m
+die Moschee|masjid|Die Moschee ist in der Bergstraße.|Masjid Bergstraße ko‘chasida.|f
+das Museum|muzey|Das Museum ist heute geschlossen.|Muzey bugun yopiq.|n
+das Hotel|mehmonxona|Das Hotel ist im Zentrum.|Mehmonxona markazda.|n
+die Toilette|hojatxona|Entschuldigung, wo ist die Toilette?|Kechirasiz, hojatxona qayerda?|f
+die Post|pochta|Die Post ist neben der Bank.|Pochta bankning yonida.|f
+die Polizei|politsiya|Rufen Sie die Polizei!|Politsiyani chaqiring!|f
+das Rathaus|shahar hokimiyati, meriya|Das Rathaus ist auch am Marktplatz.|Meriya ham bozor maydonida.|n
+die Ampel|svetofor|An der Ampel gehen Sie links.|Svetoforda chapga yurasiz.|f
+die Kreuzung|chorraha|An der Kreuzung gehen Sie rechts.|Chorrahada o‘ngga yurasiz.|f
+die Ecke|burchak, muyulish|Der Kiosk ist an der Ecke.|Kiosk muyulishda.|f
+wo?|qayerda?|Wo ist der Bahnhof?|Vokzal qayerda?
+hier|bu yerda|Hier ist die Post.|Pochta shu yerda.
+dort|u yerda|Die Bank ist dort.|Bank u yerda.
+links|chapda, chapga|Gehen Sie hier links.|Shu yerdan chapga yuring.
+rechts|o‘ngda, o‘ngga|Die Apotheke ist rechts.|Dorixona o‘ng tomonda.
+geradeaus|to‘g‘riga|Gehen Sie immer geradeaus.|Doim to‘g‘riga yuravering.
+neben|yonida|Die Apotheke ist neben dem Supermarkt.|Dorixona supermarketning yonida.
+gegenüber|qarshisida|Das Hotel ist gegenüber dem Bahnhof.|Mehmonxona vokzalning qarshisida.
+weit|uzoq|Ist das weit?|Bu uzoqmi?
+nah|yaqin|Nein, das ist ganz nah.|Yo‘q, juda yaqin.
+in der Nähe|yaqinida|Gibt es hier in der Nähe eine Apotheke?|Bu yer yaqinida dorixona bormi?
+Wie komme ich zum ...?|...ga qanday borsam bo‘ladi?|Wie komme ich zum Bahnhof?|Vokzalga qanday borsam bo‘ladi?
+gehen|bormoq (piyoda), yurmoq|Ich gehe zur Post.|Pochtaga ketyapman.
+suchen|qidirmoq|Ich suche die Haltestelle.|Bekatni qidiryapman.
+finden|topmoq|Ich finde das Hotel nicht.|Mehmonxonani topa olmayapman.
+offen|ochiq|Ist die Apotheke heute offen?|Dorixona bugun ochiqmi?
+geschlossen|yopiq|Sonntags ist der Supermarkt geschlossen.|Yakshanba kunlari supermarket yopiq.
+Ich bin nicht von hier.|Men bu yerlik emasman.|Tut mir leid, ich bin nicht von hier.|Kechirasiz, men bu yerlik emasman.`,
+grammar:{title:"Qayerda? bank-DA → in der Bank; Qayerga? vokzal-GA → zum Bahnhof",
+intro:"O‘zbek tilida joyni qo‘shimcha bilan aytamiz: bank<b>da</b>, vokzal<b>ga</b>. Nemis tilida qo‘shimcha o‘rniga <b>old ko‘makchi</b> (in, an, zu, neben) ishlatiladi, artikl esa o‘zgaradi (Dativ):<br>• <b>der</b> → <b>dem</b>, <b>das</b> → <b>dem</b>, <b>die</b> → <b>der</b><br><br>Ko‘pincha ular qo‘shilib ketadi:<br>• in + dem = <b>im</b> (im Hotel, im Zentrum)<br>• an + dem = <b>am</b> (am Bahnhof, am Marktplatz)<br>• zu + dem = <b>zum</b> (zum Bahnhof), zu + der = <b>zur</b> (zur Post)<br><br><b>Qayerda?</b> → in, an, neben. <b>Qayerga?</b> (odam yoki bino oldiga) → zu: zum / zur.",
+table:[["bank<mark>da</mark>","<mark>in der</mark> Bank"],["mehmonxona<mark>da</mark>","<mark>im</mark> Hotel (in dem)"],["vokzal <mark>yonida</mark>","<mark>am</mark> Bahnhof (an dem)"],["vokzal<mark>ga</mark>","<mark>zum</mark> Bahnhof (zu dem)"],["pochta<mark>ga</mark>","<mark>zur</mark> Post (zu der)"],["bankning <mark>yonida</mark>","<mark>neben der</mark> Bank"]],
+tip:"<b>Hurmat bilan buyruq:</b> fe’l birinchi, keyin Sie: <b>Gehen Sie</b> geradeaus! <b>Rufen Sie</b> die Polizei! O‘zbekchadagi «yuring», «chaqiring» shakliga mos keladi. <br><b>Yo‘l so‘rashning eng oson yo‘li:</b> Entschuldigung, wo ist ...? yoki Wie komme ich zum / zur ...? Artiklni bilmasangiz, shunchaki «Entschuldigung, Bahnhof?» desangiz ham tushunishadi.",
+mistakes:[["Wie komme ich zu Bahnhof?","Wie komme ich zum Bahnhof?","der Bahnhof → zu dem = zum."],["Ich bin in Apotheke.","Ich bin in der Apotheke.","Artikl tushib qolmaydi: die → in der."],["Sie gehen geradeaus, bitte!","Gehen Sie bitte geradeaus!","Buyruqda fe’l birinchi turadi."]]},
+dialog:{scene:"Myunxenda ko‘chada yo‘l so‘rash.", a:"Aziz", b:"Frau Becker", lines:`a|Entschuldigung, wo ist hier eine Apotheke?|Kechirasiz, bu yerda dorixona qayerda?
+b|Eine Apotheke? Gehen Sie geradeaus und dann links.|Dorixonami? To‘g‘riga yuring, keyin chapga.
+a|Ist das weit?|Bu uzoqmi?
+b|Nein, nur fünf Minuten. Die Apotheke ist neben der Bank.|Yo‘q, atigi besh daqiqa. Dorixona bankning yonida.
+a|Und wie komme ich danach zum Bahnhof?|Undan keyin vokzalga qanday borsam bo‘ladi?
+b|Gehen Sie einfach weiter geradeaus. Der Bahnhof ist dann rechts.|Yana to‘g‘riga yuravering. Vokzal o‘ng tomonda bo‘ladi.
+a|Vielen Dank!|Katta rahmat!
+b|Gern geschehen.|Arzimaydi.`},
+test:[{q:"Wie komme ich ___ Bahnhof?",o:["zum","zur","zu"],e:"der Bahnhof → zum."},
+{q:"Wie komme ich ___ Post?",o:["zur","zum","zu"],e:"die Post → zur."},
+{q:"Ich wohne ___ Zentrum.",o:["im","in","am"],e:"das Zentrum → in dem = im."},
+{q:"«To‘g‘riga yuring»",o:["Gehen Sie geradeaus.","Gehen Sie links.","Sie gehen rechts."],e:"geradeaus = to‘g‘riga."},
+{q:"Die Bank ist neben ___ Post.",o:["der","die","dem"],e:"Qayerda? die → der."},
+{q:"«Bu uzoqmi?»",o:["Ist das weit?","Ist das nah?","Wo ist das?"],e:"weit = uzoq."}],
+talk:`Wo wohnen Sie?|Qayerda yashaysiz?
+Was gibt es bei Ihnen in der Nähe?|Uyingiz yaqinida nimalar bor?
+Wie kommen Sie von Ihrer Wohnung zur Haltestelle?|Uyingizdan bekatgacha qanday borasiz?
+Was ist Ihr Lieblingsort in der Stadt?|Shahardagi sevimli joyingiz qaysi?
+Ist Ihre Stadt groß oder klein?|Shahringiz kattami yoki kichik?`,
+phrases:["wo ist","wie komme ich zum","gehen Sie geradeaus","ist das weit","in der Nähe"]
+},
+{
+id:"de-uy", title:"Uy va kvartira", ru:"Die Wohnung",
+cando:["Uyingizni tasvirlay olasiz","Ijaraga kvartira haqida so‘ray olasiz","«Bor» va «yo‘q» ni ayta olasiz"],
+words:`das Haus|uy; bino|Wir wohnen in einem Haus.|Biz hovli uyda yashaymiz.|n
+die Wohnung|kvartira|Ich suche eine Wohnung.|Kvartira qidiryapman.|f
+das Zimmer|xona|Die Wohnung hat zwei Zimmer.|Kvartirada ikkita xona bor.|n
+die Küche|oshxona|Die Küche ist modern.|Oshxona zamonaviy.|f
+das Bad|vannaxona|Wo ist das Bad?|Vannaxona qayerda?|n
+das Schlafzimmer|yotoqxona|Das Schlafzimmer hat ein großes Fenster.|Yotoqxonaning katta derazasi bor.|n
+das Wohnzimmer|mehmonxona (yashash xonasi)|Im Wohnzimmer steht ein Sofa.|Mehmonxonada divan turibdi.|n
+der Balkon|balkon|Die Wohnung hat einen Balkon.|Kvartiraning balkoni bor.|m
+das Fenster|deraza|Machen Sie bitte das Fenster auf.|Derazani oching, iltimos.|n
+die Tür|eshik|Machen Sie bitte die Tür zu.|Eshikni yoping, iltimos.|f
+der Tisch|stol|Die Schlüssel liegen auf dem Tisch.|Kalitlar stol ustida.|m
+der Stuhl|stul|Wir brauchen noch einen Stuhl.|Bizga yana bitta stul kerak.|m
+das Bett|karavot|Das Bett ist neu.|Karavot yangi.|n
+das Sofa|divan|Die Katze schläft auf dem Sofa.|Mushuk divanda uxlayapti.|n
+der Schrank|shkaf|Die Kleidung ist im Schrank.|Kiyimlar shkafda.|m
+der Kühlschrank|muzlatkich|Der Kühlschrank ist leer.|Muzlatkich bo‘sh.|m
+die Waschmaschine|kir yuvish mashinasi|Gibt es eine Waschmaschine?|Kir yuvish mashinasi bormi?|f
+die Lampe|chiroq|Die Lampe ist kaputt.|Chiroq buzuq.|f
+der Schlüssel|kalit|Wo ist mein Schlüssel?|Kalitim qayerda?|m
+der Stock|qavat|Ich wohne im dritten Stock.|Uchinchi qavatda yashayman (bizcha 4-qavat).|m
+der Aufzug|lift|Gibt es einen Aufzug?|Lift bormi?|m
+der Nachbar|qo‘shni|Mein Nachbar ist sehr nett.|Qo‘shnim juda yoqimtoy.|m
+der Vermieter|uy egasi (ijaraga beruvchi)|Der Vermieter wohnt auch im Haus.|Uy egasi ham shu binoda yashaydi.|m
+die Miete|ijara haqi|Die Miete ist nicht teuer.|Ijara haqi qimmat emas.|f
+groß|katta|Die Wohnung ist groß.|Kvartira katta.
+klein|kichik|Das Zimmer ist klein.|Xona kichik.
+neu|yangi|Die Küche ist ganz neu.|Oshxona butunlay yangi.
+alt|eski; keksa|Das Haus ist sehr alt.|Bino juda eski.
+hell|yorug‘|Das Wohnzimmer ist hell.|Mehmonxona yorug‘.
+dunkel|qorong‘i|Die Küche ist ein bisschen dunkel.|Oshxona sal qorong‘i.
+schön|chiroyli|Der Balkon ist sehr schön.|Balkon juda chiroyli.
+bequem|qulay|Das Sofa ist bequem.|Divan qulay.
+billig|arzon|Die Wohnung ist billig, aber klein.|Kvartira arzon, lekin kichik.
+teuer|qimmat|Die Wohnung ist zu teuer.|Kvartira juda qimmat.
+kaputt|buzuq|Die Waschmaschine ist kaputt.|Kir yuvish mashinasi buzuq.
+mieten|ijaraga olmoq|Wir möchten eine Wohnung mieten.|Biz kvartira ijaraga olmoqchimiz.
+wohnen|yashamoq|Ich wohne allein.|Men yolg‘iz yashayman.
+es gibt|bor (mavjud)|Hier gibt es einen Supermarkt.|Bu yerda supermarket bor.`,
+grammar:{title:"Bor → es gibt einen / eine / ein; yo‘q → kein",
+intro:"O‘zbek tilida «Kvartirada balkon <b>bor</b>» deymiz. Nemis tilida buning uchun <b>es gibt</b> ishlatiladi: <b>Es gibt</b> einen Balkon. Savolda tartib almashadi: <b>Gibt es</b> einen Balkon?<br><br>es gibt dan keyin ot <b>Akkusativ</b>da bo‘ladi. Faqat erkak jinsidagi (der) so‘zlar o‘zgaradi:<br>• der → ein → <b>einen</b>: einen Balkon, einen Aufzug<br>• die → <b>eine</b> (o‘zgarmaydi): eine Küche<br>• das → <b>ein</b> (o‘zgarmaydi): ein Bad<br><br><b>Yo‘q</b> bo‘lsa, ein o‘rniga <b>kein</b>: keinen Balkon, keine Waschmaschine, kein Bad.",
+table:[["balkon <mark>bor</mark>","<mark>es gibt einen</mark> Balkon"],["kir yuvish mashinasi <mark>bor</mark>","es gibt <mark>eine</mark> Waschmaschine"],["vannaxona <mark>bor</mark>","es gibt <mark>ein</mark> Bad"],["lift <mark>yo‘q</mark>","es gibt <mark>keinen</mark> Aufzug"],["lift <mark>bormi</mark>?","<mark>gibt es</mark> einen Aufzug?"],["kvartira <mark>katta</mark>","die Wohnung <mark>ist groß</mark>"]],
+tip:"<b>Sifat ist dan keyin o‘zgarmaydi</b>, xuddi o‘zbekchadagi kabi: Die Wohnung ist groß. Das Zimmer ist groß. Die Zimmer sind groß. <br><b>Qavatlar:</b> Germaniyada pastki qavat <b>das Erdgeschoss</b> deyiladi, shuning uchun <b>erster Stock</b> bizdagi 2-qavat. <br><b>Kaltmiete / Warmmiete:</b> warm = kommunal to‘lovlar (isitish, suv) bilan birga.",
+mistakes:[["Es gibt ein Balkon.","Es gibt einen Balkon.","der Balkon → Akkusativ: einen."],["Es gibt nicht einen Aufzug.","Es gibt keinen Aufzug.","Otni inkor qilish: kein."],["Die Wohnung ist große.","Die Wohnung ist groß.","ist dan keyin sifat qo‘shimchasiz."]]},
+dialog:{scene:"Telefonda ijaraga kvartira so‘rash.", a:"Dilshod", b:"Frau Schmidt", lines:`a|Guten Tag! Ich rufe wegen der Wohnung an.|Assalomu alaykum! Kvartira bo‘yicha qo‘ng‘iroq qilyapman.
+b|Ja, gern. Die Wohnung hat zwei Zimmer, Küche und Bad.|Ha, marhamat. Kvartirada ikkita xona, oshxona va vannaxona bor.
+a|In welchem Stock ist die Wohnung? Gibt es einen Aufzug?|Kvartira nechanchi qavatda? Lift bormi?
+b|Im vierten Stock. Ja, es gibt einen Aufzug.|To‘rtinchi qavatda. Ha, lift bor.
+a|Gibt es auch einen Balkon?|Balkon ham bormi?
+b|Nein, leider gibt es keinen Balkon. Aber die Wohnung ist sehr hell.|Yo‘q, afsuski balkon yo‘q. Lekin kvartira juda yorug‘.
+a|Wie hoch ist die Miete?|Ijara haqi qancha?
+b|650 Euro warm. Möchten Sie die Wohnung sehen?|Kommunal to‘lovlar bilan 650 yevro. Kvartirani ko‘rishni xohlaysizmi?
+a|Ja, sehr gern!|Ha, juda xohlayman!`},
+test:[{q:"In der Wohnung gibt es ___ Balkon.",o:["einen","ein","eine"],e:"der Balkon → einen."},
+{q:"Gibt es ___ Waschmaschine?",o:["eine","einen","ein"],e:"die → eine (o‘zgarmaydi)."},
+{q:"Es gibt ___ Aufzug.",o:["keinen","nicht","kein"],e:"der + inkor → keinen."},
+{q:"Das Zimmer ist ___.",o:["klein","kleine","kleines"],e:"ist dan keyin qo‘shimchasiz."},
+{q:"«Ijara haqi qancha?»",o:["Wie hoch ist die Miete?","Wo ist die Miete?","Gibt es die Miete?"],e:"die Miete = ijara haqi."},
+{q:"«Ijaraga olmoq»",o:["mieten","wohnen","kaufen"],e:"mieten = ijaraga olmoq."}],
+talk:`Wohnen Sie in einem Haus oder in einer Wohnung?|Hovli uyda yashaysizmi yoki kvartirada?
+Wie viele Zimmer hat Ihre Wohnung?|Kvartirangizda nechta xona bor?
+Was gibt es in Ihrer Küche?|Oshxonangizda nimalar bor?
+Was ist Ihr Lieblingszimmer?|Sevimli xonangiz qaysi?
+Wie hoch ist die Miete in Ihrer Stadt?|Shahringizda ijara haqi qancha?`,
+phrases:["es gibt","eine Wohnung mieten","wie hoch ist die Miete","im dritten Stock","gibt es einen Balkon"]
+},
+{
+id:"de-transport", title:"Transport va safar", ru:"Verkehr und Reisen",
+cando:["Chipta sotib ola olasiz","Qayerga va nima bilan borishingizni ayta olasiz","Jo‘nash va yetib kelish vaqtini tushuna olasiz"],
+words:`der Bus|avtobus|Ich fahre mit dem Bus.|Avtobusda ketyapman.|m
+die U-Bahn|metro|Die U-Bahn kommt alle fünf Minuten.|Metro har besh daqiqada keladi.|f
+die S-Bahn|shahar elektr poyezdi|Die S-Bahn fährt zum Flughafen.|Elektr poyezdi aeroportga boradi.|f
+die Straßenbahn|tramvay|Ich nehme die Straßenbahn.|Tramvayga chiqaman.|f
+der Zug|poyezd|Der Zug nach Hamburg ist pünktlich.|Gamburgga ketadigan poyezd o‘z vaqtida.|m
+das Flugzeug|samolyot|Das Flugzeug fliegt nach Taschkent.|Samolyot Toshkentga uchadi.|n
+das Taxi|taksi|Rufen Sie bitte ein Taxi.|Taksi chaqiring, iltimos.|n
+das Auto|mashina|Mein Bruder hat ein neues Auto.|Akamning yangi mashinasi bor.|n
+das Fahrrad|velosiped|Ich fahre mit dem Fahrrad zur Arbeit.|Ishga velosipedda boraman.|n
+die Fahrkarte|chipta|Eine Fahrkarte nach Köln, bitte.|Kyolnga bitta chipta, iltimos.|f
+der Fahrplan|harakat jadvali|Wo ist der Fahrplan?|Harakat jadvali qayerda?|m
+der Automat|avtomat|Fahrkarten gibt es am Automaten.|Chiptalarni avtomatdan olsa bo‘ladi.|m
+das Gleis|yo‘l (vokzalda)|Der Zug nach Berlin fährt von Gleis drei.|Berlin poyezdi uchinchi yo‘ldan jo‘naydi.|n
+die Abfahrt|jo‘nash|Die Abfahrt ist um acht Uhr.|Jo‘nash soat sakkizda.|f
+die Ankunft|yetib kelish|Die Ankunft ist um zehn Uhr.|Yetib kelish soat o‘nda.|f
+der Pass|pasport|Ihren Pass, bitte.|Pasportingiz, iltimos.|m
+der Koffer|chamadon|Mein Koffer ist schwer.|Chamadonim og‘ir.|m
+das Gepäck|bagaj, yuk|Haben Sie viel Gepäck?|Yukingiz ko‘pmi?|n
+die Reise|safar, sayohat|Gute Reise!|Oq yo‘l!|f
+der Eingang|kirish|Der Eingang ist links.|Kirish chap tomonda.|m
+der Ausgang|chiqish|Wo ist der Ausgang?|Chiqish qayerda?|m
+die Verspätung|kechikish|Der Zug hat zehn Minuten Verspätung.|Poyezd o‘n daqiqa kechikyapti.|f
+fahren|(transportda) bormoq; haydamoq|Ich fahre nach Berlin.|Berlinga ketyapman.
+nehmen|olmoq; (transportga) chiqmoq|Ich nehme den Bus.|Avtobusga chiqaman.
+fliegen|uchmoq|Ich fliege nach Taschkent.|Toshkentga uchyapman.
+einsteigen|(transportga) chiqmoq|Bitte einsteigen!|Iltimos, chiqing!
+aussteigen|(transportdan) tushmoq|Ich steige hier aus.|Shu yerda tushaman.
+umsteigen|boshqa transportga o‘tmoq|Wo muss ich umsteigen?|Qayerda boshqasiga o‘tishim kerak?
+warten|kutmoq|Ich warte auf den Bus.|Avtobus kutyapman.
+kosten|turmoq (narx)|Was kostet die Fahrkarte?|Chipta qancha turadi?
+wohin?|qayerga?|Wohin fahren Sie?|Qayerga ketyapsiz?
+nach|...ga (shahar, mamlakat)|Ich fahre nach München.|Myunxenga ketyapman.
+schnell|tez|Der Zug ist sehr schnell.|Poyezd juda tez.
+langsam|sekin|Sprechen Sie bitte langsam.|Sekinroq gapiring, iltimos.
+pünktlich|o‘z vaqtida|Der Bus ist heute pünktlich.|Avtobus bugun o‘z vaqtida.
+nächste|keyingi|Die nächste Haltestelle ist Marienplatz.|Keyingi bekat Marienplatz.
+hin und zurück|borish-qaytish|Einmal nach Köln, hin und zurück.|Kyolnga bitta, borish-qaytish.
+zu Fuß|piyoda|Ich gehe zu Fuß.|Piyoda ketyapman.`,
+grammar:{title:"Avtobus-DA → mit dem Bus; fahren → du fährst",
+intro:"O‘zbek tilida transportni <b>-da</b> bilan aytamiz: avtobus<b>da</b>, metro<b>da</b>. Nemis tilida <b>mit</b> («bilan») + Dativ ishlatiladi. Artikl 7-darsdagidek o‘zgaradi:<br>• der / das → <b>dem</b>: mit dem Bus, mit dem Auto<br>• die → <b>der</b>: mit der U-Bahn, mit der Straßenbahn<br><br><b>fahren</b> va <b>nehmen</b> fe’llari du va er/sie/es shaklida o‘zakdagi unlini o‘zgartiradi:<br>• fahren: du f<b>ä</b>hrst, er f<b>ä</b>hrt<br>• nehmen: du n<b>imm</b>st, er n<b>imm</b>t",
+table:[["avtobus<mark>da</mark>","<mark>mit dem</mark> Bus"],["metro<mark>da</mark>","<mark>mit der</mark> U-Bahn"],["poyezd<mark>da</mark>","<mark>mit dem</mark> Zug"],["men boraman / sen borasan / u boradi","ich fahre / du <mark>fährst</mark> / er <mark>fährt</mark>"],["biz / siz / ular boramiz","wir fahren / ihr fahrt / sie, Sie fahren"],["men olaman / sen olasan / u oladi","ich nehme / du <mark>nimmst</mark> / er <mark>nimmt</mark>"]],
+tip:"<b>gehen yoki fahren?</b> gehen = piyoda, fahren = transportda: Ich <b>gehe</b> zu Fuß. Ich <b>fahre</b> mit dem Bus. <br><b>Shahar va mamlakatga:</b> <b>nach</b> + nom: nach Berlin, nach Usbekistan. <br><b>Ajraladigan fe’llar:</b> umsteigen, aussteigen: oldidagi qism gap oxiriga ketadi: Ich <b>steige</b> hier <b>aus</b>.",
+mistakes:[["Ich fahre mit Bus.","Ich fahre mit dem Bus.","mit dan keyin artikl kerak: dem / der."],["Du fahrst nach Berlin.","Du fährst nach Berlin.","du va er/sie shaklida a → ä."],["Ich gehe mit dem Zug nach Köln.","Ich fahre mit dem Zug nach Köln.","Transportda bo‘lsa fahren."]]},
+dialog:{scene:"Vokzal kassasida chipta olish.", a:"Herr Wagner", b:"Farhod", lines:`b|Guten Tag! Eine Fahrkarte nach Köln, bitte.|Assalomu alaykum! Kyolnga bitta chipta, iltimos.
+a|Einfach oder hin und zurück?|Bir tomongami yoki borish-qaytish?
+b|Hin und zurück, bitte. Für morgen.|Borish-qaytish, iltimos. Ertangi kunga.
+a|Es gibt einen Zug um acht Uhr und einen um zehn Uhr.|Soat sakkizda va soat o‘nda poyezd bor.
+b|Um acht Uhr, bitte. Muss ich umsteigen?|Soat sakkizdagisi, iltimos. Boshqa poyezdga o‘tishim kerakmi?
+a|Nein, der Zug fährt direkt. Die Ankunft ist um zwölf Uhr.|Yo‘q, poyezd to‘g‘ri boradi. Yetib borish soat o‘n ikkida.
+b|Was kostet die Fahrkarte?|Chipta qancha turadi?
+a|Neunzig Euro. Der Zug fährt von Gleis vier.|To‘qson yevro. Poyezd to‘rtinchi yo‘ldan jo‘naydi.
+b|Vielen Dank!|Katta rahmat!`},
+test:[{q:"Ich fahre mit ___ Bus.",o:["dem","der","den"],e:"der Bus → mit dem."},
+{q:"Wir fahren mit ___ U-Bahn.",o:["der","dem","die"],e:"die U-Bahn → mit der."},
+{q:"Du ___ nach Berlin.",o:["fährst","fahrst","fahren"],e:"du: a → ä."},
+{q:"Er ___ den Bus.",o:["nimmt","nehmt","nehmen"],e:"nehmen → er nimmt."},
+{q:"Ich fahre ___ Hamburg.",o:["nach","zu","in"],e:"Shaharga → nach."},
+{q:"«Borish-qaytish»",o:["hin und zurück","einfach","zu Fuß"],e:"hin und zurück."}],
+talk:`Wie fahren Sie zur Arbeit oder zum Deutschkurs?|Ishga yoki nemis tili kursiga qanday borasiz?
+Wohin möchten Sie reisen?|Qayerga sayohat qilmoqchisiz?
+Fahren Sie lieber mit dem Zug oder mit dem Auto?|Poyezdda yurishni afzal ko‘rasizmi yoki mashinada?
+Was kostet ein Flug von Deutschland nach Taschkent?|Germaniyadan Toshkentga parvoz qancha turadi?
+Was nehmen Sie auf eine Reise mit?|Safarga nimalarni olib ketasiz?`,
+phrases:["mit dem Bus","eine Fahrkarte nach","hin und zurück","wo muss ich umsteigen","der Zug hat Verspätung"]
+},
+{
+id:"de-salomatlik", title:"Salomatlik", ru:"Gesundheit",
+cando:["Nima og‘riyotganini ayta olasiz","Shifokorga yozilib, qabulda gaplasha olasiz","Nima qilish kerakligini tushuna olasiz"],
+words:`die Gesundheit|salomatlik; aksirganda: «Sog‘ bo‘ling!»|Die Gesundheit ist sehr wichtig.|Salomatlik juda muhim.|f
+der Kopf|bosh|Mein Kopf tut weh.|Boshim og‘riyapti.|m
+der Bauch|qorin|Das Kind hat Bauchschmerzen.|Bolaning qorni og‘riyapti.|m
+der Zahn|tish|Ich habe Zahnschmerzen.|Tishim og‘riyapti.|m
+der Hals|tomoq; bo‘yin|Ich habe Halsschmerzen.|Tomog‘im og‘riyapti.|m
+der Rücken|bel, orqa|Ich habe Rückenschmerzen.|Belim og‘riyapti.|m
+der Arm|qo‘l|Mein linker Arm tut weh.|Chap qo‘lim og‘riyapti.|m
+die Hand|qo‘l (kaft)|Waschen Sie sich die Hände.|Qo‘llaringizni yuving.|f
+das Bein|oyoq|Das rechte Bein tut weh.|O‘ng oyog‘im og‘riyapti.|n
+der Fuß|oyoq (tovondan pastki qismi)|Mein Fuß tut sehr weh.|Oyog‘im qattiq og‘riyapti.|m
+das Auge|ko‘z|Meine Augen tun weh.|Ko‘zlarim og‘riyapti.|n
+das Ohr|quloq|Mein Ohr tut weh.|Qulog‘im og‘riyapti.|n
+die Schmerzen|og‘riq|Haben Sie Schmerzen?|Og‘riq bormi?|pl
+das Fieber|isitma|Ich habe Fieber.|Isitmam bor.|n
+der Husten|yo‘tal|Das Kind hat Husten.|Bolada yo‘tal bor.|m
+der Schnupfen|tumov|Ich habe Schnupfen.|Tumov bo‘ldim.|m
+die Erkältung|shamollash|Das ist nur eine Erkältung.|Bu shunchaki shamollash.|f
+das Medikament|dori|Nehmen Sie das Medikament dreimal am Tag.|Dorini kuniga uch marta iching.|n
+die Tablette|tabletka|Ich nehme eine Tablette gegen Kopfschmerzen.|Bosh og‘rig‘iga qarshi tabletka ichaman.|f
+das Rezept|retsept|Brauche ich ein Rezept?|Menga retsept kerakmi?|n
+der Arzt|shifokor (erkak); die Ärztin (ayol)|Ich gehe heute zum Arzt.|Bugun shifokorga boraman.|m
+die Praxis|shifokor qabulxonasi|Die Praxis ist heute geschlossen.|Qabulxona bugun yopiq.|f
+der Termin|qabul vaqti, uchrashuv|Ich möchte einen Termin machen.|Qabulga yozilmoqchiman.|m
+das Krankenhaus|kasalxona|Er ist im Krankenhaus.|U kasalxonada.|n
+die Krankenkasse|tibbiy sug‘urta kassasi|Bei welcher Krankenkasse sind Sie?|Qaysi sug‘urta kassasidasiz?|f
+der Krankenwagen|tez yordam mashinasi|Rufen Sie einen Krankenwagen!|Tez yordam chaqiring!|m
+die Allergie|allergiya|Ich habe eine Allergie gegen Nüsse.|Menda yong‘oqqa allergiya bor.|f
+krank|kasal|Ich bin krank.|Men kasalman.
+gesund|sog‘lom|Bleiben Sie gesund!|Sog‘ bo‘ling!
+wehtun|og‘rimoq|Was tut Ihnen weh?|Qayeringiz og‘riyapti?
+müssen|...ishi kerak, majbur|Sie müssen im Bett bleiben.|Siz yotib turishingiz kerak.
+können|...a olmoq|Ich kann heute nicht arbeiten.|Bugun ishlay olmayman.
+dürfen|...ish mumkin|Darf ich Sport machen?|Sport bilan shug‘ullansam bo‘ladimi?
+müde|charchagan|Ich bin oft müde.|Tez-tez charchayman.
+schlecht|yomon|Mir ist schlecht.|Ko‘nglim aynayapti.
+Gute Besserung!|Tezroq tuzalib keting!|Gute Besserung, Aziz!|Tezroq tuzalib ket, Aziz!
+Hilfe!|Yordam bering!|Hilfe! Ich brauche einen Arzt!|Yordam bering! Menga shifokor kerak!`,
+grammar:{title:"Modal fe’llar: Ich muss zum Arzt GEHEN — asosiy fe’l oxirida",
+intro:"O‘zbek tilida fe’l gap oxirida turadi: «Men shifokorga <b>borishim kerak</b>». Nemis tilida ham shunga o‘xshash: modal fe’l (<b>müssen</b> kerak, <b>können</b> olmoq, <b>dürfen</b> mumkin) ikkinchi o‘rinda, asosiy fe’l esa noaniq shaklda <b>gap oxirida</b>:<br>Ich <b>muss</b> heute zum Arzt <b>gehen</b>.<br><br>Tuslanishi:<br>• müssen: ich <b>muss</b>, du musst, er <b>muss</b>, wir müssen, Sie müssen<br>• können: ich <b>kann</b>, du kannst, er <b>kann</b>, wir können, Sie können<br>• dürfen: ich <b>darf</b>, du darfst, er <b>darf</b>, wir dürfen, Sie dürfen<br><br><b>Og‘riq haqida:</b> Ich habe Kopf<b>schmerzen</b> yoki Mein Kopf <b>tut weh</b>.",
+table:[["Shifokorga <mark>borishim kerak</mark>.","Ich <mark>muss</mark> zum Arzt <mark>gehen</mark>."],["Bugun <mark>ishlay olmayman</mark>.","Ich <mark>kann</mark> heute nicht <mark>arbeiten</mark>."],["Sport <mark>qilsam bo‘ladimi</mark>?","<mark>Darf</mark> ich Sport <mark>machen</mark>?"],["U yotib <mark>turishi kerak</mark>.","Er <mark>muss</mark> im Bett <mark>bleiben</mark>."],["bosh<mark>im</mark> og‘riyapti","<mark>Ich habe</mark> Kopf<mark>schmerzen</mark>. / Mein Kopf <mark>tut weh</mark>."],["ko‘zlar<mark>im</mark> og‘riyapti","Meine Augen <mark>tun weh</mark>."]],
+tip:"<b>ich = er:</b> modal fe’llarda ich va er/sie shakli bir xil, -t yo‘q: ich muss, er muss; ich kann, er kann. <br><b>Germaniyada:</b> shifokorga avval <b>Termin</b> olinadi (telefon yoki internet orqali), qabulda <b>Versichertenkarte</b> (sug‘urta kartasi) so‘raladi. Favqulodda holat: <b>112</b>. Kechasi va dam olish kunlari navbatchi shifokor: <b>116 117</b>.",
+mistakes:[["Ich muss gehen zum Arzt.","Ich muss zum Arzt gehen.","Asosiy fe’l oxirida, o‘zbekchadagi kabi."],["Er musst arbeiten.","Er muss arbeiten.","er/sie: qo‘shimchasiz, ich kabi."],["Meine Augen tut weh.","Meine Augen tun weh.","Ko‘plik → tun."]]},
+dialog:{scene:"Shifokor qabulida.", a:"Frau Dr. Klein", b:"Otabek", lines:`a|Guten Tag, Herr Karimov. Was fehlt Ihnen?|Assalomu alaykum, Karimov janoblari. Sizni nima bezovta qilyapti?
+b|Ich habe Kopfschmerzen und Halsschmerzen.|Boshim va tomog‘im og‘riyapti.
+a|Haben Sie auch Fieber?|Isitmangiz ham bormi?
+b|Ja, achtunddreißig Grad.|Ha, o‘ttiz sakkiz daraja.
+a|Das ist eine Erkältung. Sie müssen viel trinken und im Bett bleiben.|Bu shamollash. Ko‘p suyuqlik ichishingiz va yotib turishingiz kerak.
+b|Kann ich morgen arbeiten?|Ertaga ishlay olamanmi?
+a|Nein, Sie dürfen drei Tage nicht arbeiten. Hier ist Ihre Krankmeldung.|Yo‘q, uch kun ishlashingiz mumkin emas. Mana kasallik varaqangiz.
+b|Vielen Dank, Frau Doktor.|Katta rahmat, doktor.
+a|Gute Besserung!|Tezroq tuzalib keting!`},
+test:[{q:"Ich ___ heute zum Arzt gehen.",o:["muss","musst","müssen"],e:"ich → muss."},
+{q:"Ich kann heute nicht ___.",o:["arbeiten","arbeite","arbeitet"],e:"Modal fe’ldan keyin noaniq shakl, oxirida."},
+{q:"Er ___ gut Deutsch sprechen.",o:["kann","kannt","können"],e:"er → kann (ich kabi)."},
+{q:"Meine Augen ___ weh.",o:["tun","tut","tue"],e:"Ko‘plik → tun."},
+{q:"«Tezroq tuzalib keting!»",o:["Gute Besserung!","Guten Appetit!","Gute Reise!"],e:"Gute Besserung!"},
+{q:"«Qabulga yozilmoqchiman»",o:["Ich möchte einen Termin machen.","Ich möchte einen Arzt machen.","Ich muss einen Termin."],e:"der Termin = qabul vaqti."}],
+talk:`Was machen Sie, wenn Sie krank sind?|Kasal bo‘lganingizda nima qilasiz?
+Wie oft gehen Sie zum Arzt?|Shifokorga qanchalik tez-tez borasiz?
+Was kann man für die Gesundheit tun?|Salomatlik uchun nima qilish mumkin?
+Machen Sie Sport?|Sport bilan shug‘ullanasizmi?
+Was sagen Sie beim Arzt, wenn Sie erkältet sind?|Shamollasangiz, shifokorga nima deysiz?`,
+phrases:["ich habe Kopfschmerzen","was fehlt Ihnen","ich brauche einen Termin","gute Besserung","ich muss zum Arzt"]
+},
+{
+id:"de-obhavo", title:"Ob-havo, kiyim, ranglar", ru:"Wetter und Kleidung",
+cando:["Ob-havo haqida gapira olasiz","Kiyim va ranglarni ayta olasiz","Do‘konda kiyim so‘ray olasiz"],
+words:`das Wetter|ob-havo|Wie ist das Wetter heute?|Bugun ob-havo qanday?|n
+die Sonne|quyosh|Die Sonne scheint.|Quyosh charaqlayapti.|f
+der Regen|yomg‘ir|Im Herbst gibt es viel Regen.|Kuzda yomg‘ir ko‘p bo‘ladi.|m
+der Schnee|qor|Im Winter liegt oft Schnee.|Qishda ko‘pincha qor yotadi.|m
+der Wind|shamol|Heute ist der Wind sehr stark.|Bugun shamol juda kuchli.|m
+der Grad|daraja|Es ist minus fünf Grad.|Minus besh daraja.|m
+regnen|yomg‘ir yog‘moq|Es regnet.|Yomg‘ir yog‘yapti.
+schneien|qor yog‘moq|Es schneit.|Qor yog‘yapti.
+warm|iliq|Heute ist es warm.|Bugun iliq.
+kalt|sovuq|Im Winter ist es kalt.|Qishda sovuq.
+heiß|issiq|Im Sommer ist es in Taschkent heiß.|Yozda Toshkentda issiq.
+sonnig|quyoshli|Heute ist es sonnig.|Bugun quyoshli.
+der Frühling|bahor|Im Frühling blühen die Bäume.|Bahorda daraxtlar gullaydi.|m
+der Sommer|yoz|Im Sommer fahre ich nach Usbekistan.|Yozda O‘zbekistonga boraman.|m
+der Herbst|kuz|Im Herbst regnet es oft.|Kuzda tez-tez yomg‘ir yog‘adi.|m
+der Winter|qish|Der Winter in Deutschland ist lang.|Germaniyada qish uzoq davom etadi.|m
+die Jahreszeit|yil fasli|Welche Jahreszeit magst du?|Qaysi faslni yoqtirasan?|f
+die Kleidung|kiyim|Ich brauche warme Kleidung.|Menga issiq kiyim kerak.|f
+die Jacke|kurtka|Die Jacke ist zu klein.|Kurtka juda kichik.|f
+der Mantel|palto|Der Mantel ist teuer.|Palto qimmat.|m
+das Hemd|ko‘ylak (erkaklar)|Das Hemd ist weiß.|Ko‘ylak oq.|n
+das Kleid|ko‘ylak (ayollar)|Das Kleid ist sehr schön.|Ko‘ylak juda chiroyli.|n
+die Hose|shim|Die Hose ist zu lang.|Shim juda uzun.|f
+die Schuhe|poyabzal, tufli|Die Schuhe sind bequem.|Tuflilar qulay.|pl
+die Mütze|telpak, shapka|Nimm eine Mütze mit!|Telpak olib ol!|f
+der Pullover|sviter|Der Pullover ist warm.|Sviter issiq.|m
+der Regenschirm|soyabon|Vergiss den Regenschirm nicht!|Soyabonni unutma!|m
+die Größe|o‘lcham|Welche Größe haben Sie?|O‘lchamingiz qanaqa?|f
+anprobieren|kiyib ko‘rmoq|Kann ich das anprobieren?|Buni kiyib ko‘rsam bo‘ladimi?
+tragen|kiymoq, kiyib yurmoq|Im Winter trage ich einen Mantel.|Qishda palto kiyaman.
+die Farbe|rang|Welche Farbe hat die Jacke?|Kurtka qanday rangda?|f
+rot|qizil|Das Auto ist rot.|Mashina qizil.
+blau|ko‘k|Der Himmel ist blau.|Osmon ko‘k.
+weiß|oq|Der Schnee ist weiß.|Qor oq.
+schwarz|qora|Die Schuhe sind schwarz.|Tuflilar qora.
+grün|yashil|Der Park ist im Sommer grün.|Yozda bog‘ yam-yashil.
+gelb|sariq|Die Banane ist gelb.|Banan sariq.
+grau|kulrang|Im November ist der Himmel oft grau.|Noyabrda osmon ko‘pincha kulrang.
+braun|jigarrang|Er hat braune Augen.|Uning ko‘zlari jigarrang.`,
+grammar:{title:"Es ist kalt. Es regnet. Die Jacke ist rot.",
+intro:"O‘zbek tilida ob-havo haqida egasiz gapiramiz: «<b>Sovuq.</b>» «Yomg‘ir yog‘yapti.» Nemis tilida gapda doim ega bo‘lishi kerak, shuning uchun <b>es</b> qo‘shiladi:<br>• <b>Es ist</b> kalt / warm / heiß / sonnig.<br>• <b>Es regnet.</b> <b>Es schneit.</b><br><br><b>Fasllar</b> bilan <b>im</b> (in dem): im Winter, im Sommer, im Frühling, im Herbst.<br><br><b>Sifat ist / sind dan keyin o‘zgarmaydi</b>, xuddi o‘zbekchadagi kabi: Die Jacke <b>ist rot</b>. Die Schuhe <b>sind schwarz</b>.",
+table:[["<mark>Sovuq.</mark>","<mark>Es ist</mark> kalt."],["Yomg‘ir <mark>yog‘yapti</mark>.","<mark>Es regnet</mark>."],["Qor yog‘yapti.","<mark>Es schneit</mark>."],["qish<mark>da</mark>","<mark>im</mark> Winter"],["Kurtka <mark>qizil</mark>.","Die Jacke <mark>ist rot</mark>."],["Tuflilar <mark>qora</mark>.","Die Schuhe <mark>sind schwarz</mark>."]],
+tip:"<b>Sifat ot oldida kelsa</b>, qo‘shimcha oladi: eine rot<b>e</b> Jacke, ein schwarz<b>er</b> Mantel, ein weiß<b>es</b> Hemd. Bu qoidalarni keyingi darajada o‘rganasiz. Hozircha <b>ist</b> bilan gapiring: Die Jacke ist rot — xato qilmaysiz. <br><b>die Hose</b> birlikda: Die Hose <b>ist</b> lang (o‘zbekchadagi «shim» kabi).",
+mistakes:[["Ist kalt.","Es ist kalt.","Nemis tilida ega shart: es."],["Die Jacke ist rote.","Die Jacke ist rot.","ist dan keyin sifat qo‘shimchasiz."],["In Winter ist es kalt.","Im Winter ist es kalt.","Fasllar bilan im."]]},
+dialog:{scene:"Kiyim do‘konida.", a:"Frau Wolf", b:"Nigora", lines:`b|Guten Tag! Haben Sie warme Jacken?|Assalomu alaykum! Issiq kurtkalaringiz bormi?
+a|Ja, hier. Welche Farbe möchten Sie?|Ha, mana. Qaysi rangni xohlaysiz?
+b|Schwarz oder grau, bitte.|Qora yoki kulrang, iltimos.
+a|Welche Größe haben Sie?|O‘lchamingiz qanaqa?
+b|Größe 38. Kann ich die Jacke anprobieren?|38-o‘lcham. Kurtkani kiyib ko‘rsam bo‘ladimi?
+a|Natürlich. Die Kabine ist dort.|Albatta. Kiyinish xonasi u yerda.
+b|Die Jacke ist sehr schön und warm. Was kostet sie?|Kurtka juda chiroyli va issiq. Qancha turadi?
+a|89 Euro. Im Winter ist es hier sehr kalt, die Jacke ist perfekt.|89 yevro. Bu yerda qishda juda sovuq, bu kurtka aynan mos.
+b|Gut, ich nehme sie.|Yaxshi, olaman.`},
+test:[{q:"«Yomg‘ir yog‘yapti»",o:["Es regnet.","Es ist Regen.","Regen kommt."],e:"regnen fe’li: es regnet."},
+{q:"Heute ___ kalt.",o:["ist es","es ist","ist"],e:"Heute birinchi → fe’l ikkinchi: ist es."},
+{q:"Die Jacke ist ___.",o:["rot","rote","roter"],e:"ist dan keyin qo‘shimchasiz."},
+{q:"___ Sommer ist es heiß.",o:["Im","In","Am"],e:"Fasllar bilan im."},
+{q:"Die Schuhe ___ schwarz.",o:["sind","ist","bist"],e:"die Schuhe ko‘plik → sind."},
+{q:"«Kiyib ko‘rsam bo‘ladimi?»",o:["Kann ich das anprobieren?","Kann ich das kaufen?","Kann ich das tragen?"],e:"anprobieren = kiyib ko‘rmoq."}],
+talk:`Wie ist das Wetter heute in Ihrer Stadt?|Bugun shahringizda ob-havo qanday?
+Welche Jahreszeit mögen Sie? Warum?|Qaysi faslni yoqtirasiz? Nega?
+Was tragen Sie im Winter?|Qishda nima kiyasiz?
+Was ist Ihre Lieblingsfarbe?|Sevimli rangingiz qaysi?
+Wo kaufen Sie gern Kleidung: im Geschäft oder online?|Kiyimni qayerdan olishni yoqtirasiz: do‘kondanmi yoki internetdan?`,
+phrases:["wie ist das Wetter","es regnet","es ist kalt","welche Größe","kann ich das anprobieren"]
+},
+{
+id:"de-otgan", title:"Kecha nima qildingiz?", ru:"Gestern",
+cando:["O‘tgan zamonda gapira olasiz","Dam olish kunlaringiz haqida aytib bera olasiz","haben va sein bilan Perfekt yasay olasiz"],
+words:`gestern|kecha|Gestern war ich zu Hause.|Kecha uyda edim.
+vorgestern|o‘tgan kuni (kechadan oldin)|Vorgestern habe ich meine Mutter angerufen.|O‘tgan kuni oyimga qo‘ng‘iroq qildim.
+letzte Woche|o‘tgan hafta|Letzte Woche war ich in Berlin.|O‘tgan hafta Berlinda edim.
+letztes Jahr|o‘tgan yili|Letztes Jahr bin ich nach Deutschland gekommen.|O‘tgan yili Germaniyaga keldim.
+am Wochenende|dam olish kunlari|Was hast du am Wochenende gemacht?|Dam olish kunlari nima qilding?
+war|edi (sein)|Ich war letzte Woche krank.|O‘tgan hafta kasal edim.
+hatte|...i bor edi (haben)|Ich hatte keine Zeit.|Vaqtim yo‘q edi.
+gemacht (machen)|qildi|Ich habe meine Hausaufgaben gemacht.|Uy vazifamni qildim.
+gearbeitet (arbeiten)|ishladi|Ich habe den ganzen Tag gearbeitet.|Kun bo‘yi ishladim.
+gekauft (kaufen)|sotib oldi|Ich habe ein Handy gekauft.|Telefon sotib oldim.
+gekocht (kochen)|pishirdi|Meine Mutter hat Plov gekocht.|Oyim palov pishirdi.
+gelernt (lernen)|o‘rgandi|Wir haben neue Wörter gelernt.|Yangi so‘zlarni o‘rgandik.
+gespielt (spielen)|o‘ynadi|Die Kinder haben Fußball gespielt.|Bolalar futbol o‘ynashdi.
+gehört (hören)|tingladi, eshitdi|Wir haben Musik gehört.|Musiqa tingladik.
+gewohnt (wohnen)|yashadi|Ich habe drei Jahre in Taschkent gewohnt.|Uch yil Toshkentda yashadim.
+besucht (besuchen)|mehmonga bordi, ziyorat qildi|Ich habe meinen Freund besucht.|Do‘stimnikiga mehmonga bordim.
+gesehen (sehen)|ko‘rdi|Ich habe einen Film gesehen.|Film ko‘rdim.
+gegessen (essen)|yedi|Wir haben im Restaurant gegessen.|Restoranda ovqatlandik.
+getrunken (trinken)|ichdi|Ich habe Tee getrunken.|Choy ichdim.
+geschrieben (schreiben)|yozdi|Ich habe eine E-Mail geschrieben.|Elektron xat yozdim.
+gelesen (lesen)|o‘qidi|Ich habe ein Buch gelesen.|Kitob o‘qidim.
+gesprochen (sprechen)|gapirdi|Wir haben Deutsch gesprochen.|Nemischa gaplashdik.
+geschlafen (schlafen)|uxladi|Ich habe lange geschlafen.|Uzoq uxladim.
+angerufen (anrufen)|qo‘ng‘iroq qildi|Mama hat heute Morgen angerufen.|Oyim bugun ertalab qo‘ng‘iroq qildi.
+gegangen (gehen)|bordi (piyoda)|Ich bin ins Kino gegangen.|Kinoga bordim.
+gefahren (fahren)|bordi (transportda)|Wir sind nach Hamburg gefahren.|Gamburgga bordik.
+gekommen (kommen)|keldi|Er ist gestern gekommen.|U kecha keldi.
+geflogen (fliegen)|uchdi|Ich bin nach Taschkent geflogen.|Toshkentga uchib bordim.
+aufgestanden (aufstehen)|(o‘rnidan) turdi|Ich bin um sieben Uhr aufgestanden.|Soat yettida turdim.
+geblieben (bleiben)|qoldi|Ich bin zu Hause geblieben.|Uyda qoldim.
+der Film|film|Der Film war sehr gut.|Film juda yaxshi edi.|m
+das Kino|kino|Gehen wir heute ins Kino?|Bugun kinoga boramizmi?|n
+die Hochzeit|to‘y|Die Hochzeit war sehr schön.|To‘y juda chiroyli o‘tdi.|f
+die E-Mail|elektron xat|Hast du meine E-Mail gelesen?|Xatimni o‘qidingmi?|f
+schon|allaqachon|Hast du schon gefrühstückt?|Nonushta qilib bo‘ldingmi?
+noch nicht|hali ...ma-|Ich habe noch nicht gegessen.|Hali ovqatlanmadim.
+zuerst|avval|Zuerst habe ich meine Mutter angerufen.|Avval oyimga qo‘ng‘iroq qildim.
+dann|keyin|Dann haben wir Tee getrunken.|Keyin choy ichdik.`,
+grammar:{title:"O‘tgan zamon: Ich habe ... GEMACHT — fe’l oxirida, o‘zbekchadagi kabi",
+intro:"O‘zbek tilida fe’l gap oxirida turadi: «Kecha film <b>ko‘rdim</b>». Nemis tilining so‘zlashuvdagi o‘tgan zamoni — <b>Perfekt</b> — ham shunday: <b>haben</b> yoki <b>sein</b> ikkinchi o‘rinda, asosiy fe’lning <b>Partizip II</b> shakli esa <b>gap oxirida</b>:<br>Ich <b>habe</b> gestern einen Film <b>gesehen</b>.<br><br><b>Partizip II yasash:</b><br>• oddiy fe’llar: <b>ge-</b> + o‘zak + <b>-t</b>: machen → <b>ge</b>mach<b>t</b>, kaufen → <b>ge</b>kauf<b>t</b><br>• noto‘g‘ri fe’llar: <b>ge-</b> + ... + <b>-en</b>, ko‘pincha unli o‘zgaradi: sehen → gesehen, gehen → gegangen, trinken → getrunken (yodlash kerak)<br>• be- bilan boshlanadigan fe’llar ge- olmaydi: besuchen → besucht<br>• ajraladigan fe’llar: ge- o‘rtaga kiradi: anrufen → an<b>ge</b>rufen, aufstehen → auf<b>ge</b>standen",
+table:[["Kecha film <mark>ko‘rdim</mark>.","Ich <mark>habe</mark> gestern einen Film <mark>gesehen</mark>."],["Biz palov <mark>pishirdik</mark>.","Wir <mark>haben</mark> Plov <mark>gekocht</mark>."],["U Berlinga <mark>bordi</mark>.","Er <mark>ist</mark> nach Berlin <mark>gefahren</mark>."],["Soat yettida <mark>turdim</mark>.","Ich <mark>bin</mark> um sieben Uhr <mark>aufgestanden</mark>."],["oddiy fe’l: ge- ... -t","machen → <mark>ge</mark>mach<mark>t</mark>, lernen → <mark>ge</mark>lern<mark>t</mark>"],["noto‘g‘ri fe’l: ge- ... -en","sehen → <mark>ge</mark>seh<mark>en</mark>, schreiben → <mark>ge</mark>schrieb<mark>en</mark>"]],
+tip:"<b>haben yoki sein?</b> Ko‘pchilik fe’llar <b>haben</b> bilan. <b>sein</b> bilan: bir joydan boshqasiga harakat (gehen, fahren, kommen, fliegen), holat o‘zgarishi (aufstehen) va bleiben. <br><b>sein va haben</b>ning o‘zi uchun odatda qisqa shakl ishlatiladi: Ich <b>war</b> krank. Ich <b>hatte</b> keine Zeit.",
+mistakes:[["Ich habe gemacht meine Hausaufgaben.","Ich habe meine Hausaufgaben gemacht.","Partizip II gap oxirida."],["Ich habe nach Berlin gefahren.","Ich bin nach Berlin gefahren.","Harakat → sein."],["Ich habe Tee getrinkt.","Ich habe Tee getrunken.","trinken noto‘g‘ri fe’l: getrunken."]]},
+dialog:{scene:"Dushanba ertalab ishda.", a:"Lena", b:"Kamol", lines:`a|Hallo Kamol! Wie war dein Wochenende?|Salom, Kamol! Dam olish kunlaring qanday o‘tdi?
+b|Super! Am Samstag war ich auf einer Hochzeit. Mein Freund hat geheiratet.|Zo‘r! Shanba kuni to‘yda bo‘ldim. Do‘stim uylandi.
+a|Toll! Und am Sonntag?|Ajoyib! Yakshanba-chi?
+b|Ich habe lange geschlafen. Dann bin ich mit meinem Bruder in den Park gegangen.|Uzoq uxladim. Keyin akam bilan bog‘ga bordim.
+a|Und ich habe den ganzen Tag Serien gesehen.|Men esa kun bo‘yi serial ko‘rdim.
+b|Welche Serie hast du gesehen?|Qaysi serialni ko‘rding?
+a|Eine deutsche Krimiserie. Sehr spannend! Ich erzähle dir später davon.|Nemis detektiv seriali. Juda qiziqarli! Keyin aytib beraman.`},
+test:[{q:"Ich ___ gestern einen Film gesehen.",o:["habe","bin","hat"],e:"sehen → haben bilan."},
+{q:"Wir ___ nach Hamburg gefahren.",o:["sind","haben","seid"],e:"Harakat → sein."},
+{q:"Ich habe Plov ___.",o:["gekocht","kochen","gekochen"],e:"kochen → gekocht."},
+{q:"Er ist zu Hause ___.",o:["geblieben","bleibt","gebleibt"],e:"bleiben → geblieben."},
+{q:"Was hast du am Wochenende ___?",o:["gemacht","machen","macht"],e:"Partizip II oxirida: gemacht."},
+{q:"«Hali ovqatlanmadim»",o:["Ich habe noch nicht gegessen.","Ich habe schon gegessen.","Ich habe nicht noch gegessen."],e:"noch nicht = hali ...ma-."}],
+talk:`Was haben Sie gestern gemacht?|Kecha nima qildingiz?
+Was haben Sie am Wochenende gemacht?|Dam olish kunlari nima qildingiz?
+Welchen Film haben Sie zuletzt gesehen?|Oxirgi marta qaysi filmni ko‘rdingiz?
+Wann sind Sie nach Deutschland gekommen?|Germaniyaga qachon kelgansiz?
+Was haben Sie diese Woche Neues gelernt?|Bu hafta qanday yangi narsa o‘rgandingiz?`,
+phrases:["was hast du gemacht","ich habe gestern","ich bin gefahren","am Wochenende","letzte Woche"]
+}
+);
+
+</script>
+<script>
 /* Ovoz: avval odamlarning jonli yozuvlari, topilmasa sintez ovoz.
    1) So‘zlar: Wikimedia Commons (Vikilug‘at yozuvlari "Ru-so‘z.ogg") va Lingua Libre ("LL-Q7737 (rus)-...").
    2) Gaplar: Tatoeba (faqat ochiq litsenziyali yozuvlar).
@@ -1289,9 +2226,16 @@ TIL.audio = (function(){
   const saveCache = () => { try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch(e) {} };
   let offline = { commons:false, tatoeba:false };
   let cur = null;          // hozir o‘ynayotgan Audio
+  let curDone = null;      // uning va’dasini yakunlash
+  let gen = 0;             // har stop() yangi avlod: eski so‘rovlar ovoz chiqarmaydi
   let settings = { live:true, slow:false };
 
   const plain = s => String(s).replace(/́/g,"").replace(/'/g,"").trim();
+  /* tillar: Commons fayl nomi, Lingua Libre belgisi, Tatoeba kodi */
+  const LANGS = {
+    ru:{ commons:"Ru-", ll:"LL-Q7737 (rus)", tat:"rus" },
+    de:{ commons:"De-", ll:"LL-Q188 (deu)", tat:"deu", article:/^(der|die|das)\s+/i }
+  };
   const keyOf = (lang,s) => lang + ":" + plain(s).toLowerCase();
 
   function withTimeout(p, ms){
@@ -1316,17 +2260,18 @@ TIL.audio = (function(){
 
   /* Bir nechta so‘zni bitta so‘rov bilan tekshirish (dars ochilganda) */
   async function prefetchWords(lang, words){
-    if (!settings.live || offline.commons || lang !== "ru") return;
+    const LG = LANGS[lang];
+    if (!settings.live || offline.commons || !LG) return;
     const todo = [];
     words.forEach(w => {
-      const p = plain(w).toLowerCase();
+      let p = plain(w); if (LG.article) p = p.replace(LG.article, "");
       if (!p || /[\s?!.,]/.test(p)) return;
       if (cache[keyOf(lang,p)] !== undefined) return;
-      todo.push(p);
+      if (!todo.includes(p)) todo.push(p);
     });
     for (let i=0; i<todo.length; i+=40){
       const chunk = todo.slice(i, i+40);
-      const titles = chunk.map(w => "File:Ru-" + w + ".ogg").join("|");
+      const titles = chunk.map(w => "File:" + LG.commons + w + ".ogg").join("|");
       const url = COMMONS + "?action=query&format=json&origin=*&prop=videoinfo&viprop=url|derivatives&titles=" + encodeURIComponent(titles);
       try {
         const j = await getJSON(url, 6000);
@@ -1338,17 +2283,18 @@ TIL.audio = (function(){
           if (pg.missing !== undefined || !pg.videoinfo) return;
           const src = pickFromInfo(pg.videoinfo[0]);
           if (!src) return;
-          const t = (norm[pg.title] || pg.title).replace(/^File:Ru-/,"").replace(/\.ogg$/,"").replace(/_/g," ").toLowerCase();
+          const t = (norm[pg.title] || pg.title).replace(/^File:[A-Za-z]+-/,"").replace(/\.ogg$/,"").replace(/_/g," ").toLowerCase();
           found[t] = { src, by:"Wikimedia Commons", lic:"ochiq litsenziya", link:"https://commons.wikimedia.org/wiki/" + encodeURIComponent(pg.title.replace(/ /g,"_")) };
         });
-        chunk.forEach(w => { cache[keyOf(lang,w)] = found[w] || (cache[keyOf(lang,w)] === undefined ? null : cache[keyOf(lang,w)]); });
+        chunk.forEach(w => { const lw = w.toLowerCase(); cache[keyOf(lang,w)] = found[lw] || (cache[keyOf(lang,w)] === undefined ? null : cache[keyOf(lang,w)]); });
         saveCache();
       } catch(e){ offline.commons = true; return; }
     }
   }
 
-  async function lookupLinguaLibre(w){
-    const q = 'intitle:"LL-Q7737 (rus)" intitle:"' + w + '"';
+  async function lookupLinguaLibre(w, lang){
+    const LG = LANGS[lang];
+    const q = 'intitle:"' + LG.ll + '" intitle:"' + w + '"';
     const url = COMMONS + "?action=query&format=json&origin=*&list=search&srnamespace=6&srlimit=20&srsearch=" + encodeURIComponent(q);
     const j = await getJSON(url, 5000);
     const hits = ((j.query||{}).search||[]).map(h=>h.title).filter(t => t.toLowerCase().endsWith("-" + w.toLowerCase() + ".wav"));
@@ -1358,13 +2304,13 @@ TIL.audio = (function(){
     const pg = Object.values((j2.query||{}).pages||{})[0];
     const u = pg && pg.imageinfo && pg.imageinfo[0] && pg.imageinfo[0].url;
     if (!u) return null;
-    const m = title.match(/\(rus\)-(.+?)-/);
+    const m = title.match(/\([a-z]{3}\)-(.+?)-/);
     return { src:u, by:"Lingua Libre" + (m ? " · " + m[1] : ""), lic:"CC BY-SA 4.0", link:"https://commons.wikimedia.org/wiki/" + encodeURIComponent(title.replace(/ /g,"_")) };
   }
 
-  async function lookupTatoeba(text){
+  async function lookupTatoeba(text, lang){
     const q = plain(text);
-    const url = "https://tatoeba.org/en/api_v0/search?from=rus&orphans=no&unapproved=no&has_audio=yes&query=" + encodeURIComponent('"' + q + '"');
+    const url = "https://tatoeba.org/en/api_v0/search?from=" + LANGS[lang].tat + "&orphans=no&unapproved=no&has_audio=yes&query=" + encodeURIComponent('"' + q + '"');
     const j = await getJSON(url, 5000);
     const norm = s => plain(s).toLowerCase().replace(/[«»"“”.,!?—–-]/g,"").replace(/\s+/g," ").trim();
     const want = norm(q);
@@ -1377,20 +2323,22 @@ TIL.audio = (function(){
   }
 
   async function resolve(lang, text){
-    if (!settings.live || lang !== "ru") return null;
-    const k = keyOf(lang, text);
+    const LG = LANGS[lang];
+    if (!settings.live || !LG) return null;
+    let p = plain(text).replace(/[«»"“”„]/g,"");
+    if (LG.article && /^(der|die|das)\s+\S+$/i.test(p)) p = p.replace(LG.article, "");
+    const k = keyOf(lang, p);
     if (cache[k]) return cache[k];
-    const p = plain(text).replace(/[«»"“”]/g,"");
     const isWord = !/\s/.test(p) && p.length < 30;
     if (isWord){
-      const w = p.toLowerCase().replace(/[?!.,]/g,"");
+      const w = p.replace(/[?!.,]/g,"");
       if (cache[k] === undefined) { await prefetchWords(lang, [w]); if (cache[k]) return cache[k]; }
       if (!offline.commons && cache[k + "#ll"] === undefined){
-        try { const res = await lookupLinguaLibre(w); cache[k + "#ll"] = res ? 1 : 0; if (res) cache[k] = res; saveCache(); }
+        try { const res = await lookupLinguaLibre(w, lang); cache[k + "#ll"] = res ? 1 : 0; if (res) cache[k] = res; saveCache(); }
         catch(e){ offline.commons = true; }
       }
     } else if (!offline.tatoeba && cache[k + "#tt"] === undefined){
-      try { const res = await lookupTatoeba(p); cache[k + "#tt"] = res ? 1 : 0; if (res) cache[k] = res; saveCache(); }
+      try { const res = await lookupTatoeba(p, lang); cache[k + "#tt"] = res ? 1 : 0; if (res) cache[k] = res; saveCache(); }
       catch(e){ offline.tatoeba = true; }
     }
     return cache[k] || null;
@@ -1421,16 +2369,19 @@ TIL.audio = (function(){
   }
 
   function stop(){
-    try { if (cur){ cur.pause(); cur = null; } } catch(e){}
+    gen++;
+    try { if (cur){ cur.pause(); cur.removeAttribute("src"); cur = null; } } catch(e){}
+    if (curDone){ const d = curDone; curDone = null; d(); }
     try { speechSynthesis.cancel(); } catch(e){}
   }
 
   function playSrc(src){
     return new Promise((res, rej) => {
       const a = new Audio(src); cur = a;
+      curDone = () => res(false);
       a.playbackRate = settings.slow ? 0.8 : 1;
-      a.onended = () => res(true);
-      a.onerror = () => rej(new Error("audio"));
+      a.onended = () => { curDone = null; res(true); };
+      a.onerror = () => { curDone = null; rej(new Error("audio")); };
       const p = a.play(); if (p && p.catch) p.catch(rej);
     });
   }
@@ -1440,11 +2391,13 @@ TIL.audio = (function(){
     opts = opts || {};
     const lang = opts.lang || "ru", tag = opts.tag || "ru-RU";
     stop();
+    const my = gen;
     let info = null;
     try { info = await withTimeout(resolve(lang, text), 7000); } catch(e){ info = null; }
+    if (my !== gen) return null;          // kutilayotganda to‘xtatildi
     if (info && info.src){
       try { opts.onSource && opts.onSource(info); await playSrc(info.src); return info; }
-      catch(e){ /* sintezga o‘tamiz */ }
+      catch(e){ if (my !== gen) return null; /* sintezga o‘tamiz */ }
     }
     const s = { by:"Sintez ovoz (jonli yozuv topilmadi)", synth:true };
     opts.onSource && opts.onSource(s);
@@ -1452,7 +2405,8 @@ TIL.audio = (function(){
     return s;
   }
 
-  return { say, stop, prefetchWords, plain, setSettings: s => Object.assign(settings, s), status: () => ({...offline}) };
+  const busy = () => !!cur || (("speechSynthesis" in window) && speechSynthesis.speaking);
+  return { say, stop, busy, prefetchWords, plain, setSettings: s => Object.assign(settings, s), status: () => ({...offline}) };
 })();
 
 </script>
@@ -1538,7 +2492,7 @@ const app = $("#app");
 const STRESS = "́";
 const stress = s => String(s).replace(/([аеиоуыэюяАЕИОУЫЭЮЯ])'/g, "$1" + STRESS);
 const plain = s => String(s).replace(/́/g,"").replace(/'/g,"");
-const normRu = s => plain(s).toLowerCase().replace(/ё/g,"е").replace(/[.,!?«»"“”:;()…]/g," ").replace(/[—–]/g," ").replace(/-/g,"").replace(/\s+/g," ").trim();
+const normRu = s => plain(s).toLowerCase().replace(/ё/g,"е").replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[.,!?«»"“”:;()…]/g," ").replace(/[—–]/g," ").replace(/-/g,"").replace(/\s+/g," ").trim();
 function lev(a, b){
   const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
   let prev = Array.from({length:n+1}, (_,j)=>j);
@@ -1547,6 +2501,7 @@ function lev(a, b){
 }
 const TR = {а:"a",б:"b",в:"v",г:"g",д:"d",ж:"j",з:"z",и:"i",й:"y",к:"k",л:"l",м:"m",н:"n",о:"o",п:"p",р:"r",с:"s",т:"t",у:"u",ф:"f",х:"x",ц:"ts",ч:"ch",ш:"sh",щ:"sh",ъ:"’",ы:"i",ь:"",э:"e",ю:"yu",я:"ya",ё:"yo",е:"e"};
 function translit(s){
+  if (C.id !== "ru") return PHON[plain(s).toLowerCase()] || "";
   const t = plain(s); let out = "";
   for (let i=0;i<t.length;i++){
     const ch = t[i], lo = ch.toLowerCase(), prev = (t[i-1]||" ").toLowerCase();
@@ -1588,18 +2543,39 @@ const I = {
 };
 
 /* ---------- kurs ma’lumotlari ---------- */
+/* Har bir til uchun: matnlar, klaviatura, jins savoli. Til tanlovi brauzerda saqlanadi, natijalar (XP, seriya) umumiy. */
 const COURSES = {
-  ru:{ id:"ru", name:"Rus tili", short:"RU", tag:"ru-RU", lessons:TIL.ruA1 || [], alphabet:TIL.ruAlphabet },
-  de:{ id:"de", name:"Nemis tili", short:"DE", soon:true },
+  ru:{ id:"ru", name:"Rus tili", gen:"rus tili", adj:"Ruscha", adjl:"ruscha", short:"RU", tag:"ru-RU", yg:"russian", lessons:TIL.ruA1 || [], alphabet:TIL.ruAlphabet,
+    sub:"rus tili · noldan", typeLbl:"Kirillda yozing", kb:["йцукенгшщзхъ","фывапролджэ","ячсмитьбю"], kbExtra:["ё"],
+    alpha:{ n:"А", stop:"Alifbo", ru:"Кириллица · 33 harf", todo:"Rus alifbosini o‘rganing", todoSub:"33 harf, o‘qish va yozish mashqi", h1:"Rus alifbosi", h1sub:"Кириллица", write:"Yozish",
+      kbNote:"Telefoningizda rus klaviaturasi bo‘lmasa, pastdagi «Klaviatura» tugmasini bosing. Uni o‘rnatish ham foydali: Sozlamalar → Til va klaviatura → Русский." },
+    gender:{ label:"«Mening» qaysi shakli?", opts:["мой","моя","моё","мои"], ans:{ m:"мой", f:"моя", n:"моё", pl:"мои" } },
+    tips:`<h3>Rus tilini o‘rganishda o‘zbeklar uchun maslahatlar</h3>
+    <ul><li><b>Jins (мой / моя / моё)</b> — eng katta yangilik. Kartochkalardagi ranglarga e’tibor bering.</li>
+    <li><b>Kelishiklar</b> o‘zbekcha qo‘shimchalarga o‘xshaydi: -da → в ...е, -ni → ...у, -ga → в ...у. Darslarda har biri taqqoslangan.</li>
+    <li><b>Urg‘u</b> (´ belgisi) so‘z ma’nosini o‘zgartirishi mumkin. Urg‘usiz О «a» kabi o‘qiladi: молоко = «malako».</li></ul>` },
+  de:{ id:"de", name:"Nemis tili", gen:"nemis tili", adj:"Nemischa", adjl:"nemischa", short:"DE", tag:"de-DE", yg:"german", lessons:TIL.deA1 || [], alphabet:TIL.deAlphabet,
+    sub:"nemis tili · noldan", typeLbl:"Nemischa yozing", kb:["äöüß","ÄÖÜ"], kbExtra:[],
+    alpha:{ n:"Ä", stop:"Talaffuz", ru:"Aussprache · harflar va tovushlar", todo:"Nemis talaffuzini o‘rganing", todoSub:"ä ö ü ß, ei, ie, sch va boshqalar", h1:"Nemis talaffuzi", h1sub:"Aussprache", write:"Eshitib yozish",
+      kbNote:"ä ö ü ß harflari uchun pastdagi «Klaviatura» tugmasini bosing yoki ae, oe, ue, ss deb yozing: bu ham to‘g‘ri hisoblanadi." },
+    gender:{ label:"Artiklni tanlang: der, die yoki das?", opts:["der","die","das"], ans:{ m:"der", f:"die", n:"das" } },
+    tips:`<h3>Nemis tilini o‘rganishda o‘zbeklar uchun maslahatlar</h3>
+    <ul><li><b>der / die / das</b> — eng katta yangilik. Har bir otni artikli bilan yodlang: «Tisch» emas, «der Tisch». Kartochkalardagi ranglar yordam beradi.</li>
+    <li><b>Fe’l oxirga ketadi</b>: «Ich habe Brot gekauft» = «Men non sotib oldim». Bu o‘zbekchaga juda o‘xshaydi, nemis gapining oxirini kuting!</li>
+    <li><b>Ikkinchi o‘rin qoidasi</b>: oddiy gapda fe’l doim 2-o‘rinda: «Heute arbeite ich».</li>
+    <li><b>Otlar katta harf bilan</b> yoziladi: das Haus, die Stadt.</li></ul>` },
   en:{ id:"en", name:"Ingliz tili", short:"EN", soon:true }
 };
+Object.values(COURSES).forEach(c => { if (!c.lessons || !c.lessons.length) c.soon = true; });
 const LEVELS = [
   { id:"A1", name:"A1 · Boshlang‘ich", desc:"Oddiy hayotiy vaziyatlar: tanishuv, do‘kon, yo‘l, shifokor.", words:"~450 so‘z" },
   { id:"A2", name:"A2 · Elementar", desc:"Ish, ijara, hujjatlar, telefonda gaplashish, o‘tgan va kelasi zamon.", words:"~1000 so‘z", lessons:12 },
   { id:"B1", name:"B1 · O‘rta", desc:"Mamlakatda mustaqil yashash, ishda uchrashuvlar, fikr bildirish.", words:"~2000–3000 so‘z", lessons:15 },
   { id:"B2", name:"B2 · O‘rtadan yuqori", desc:"Filmlar (subtitr bilan), erkin suhbat, murakkab mavzular.", words:"~4000–5000 so‘z", lessons:15 }
 ];
-const C = COURSES.ru;
+let pickC = "ru"; try { pickC = localStorage.getItem("til.course") || "ru"; } catch(e){}
+const C = COURSES[pickC] && !COURSES[pickC].soon ? COURSES[pickC] : COURSES.ru;
+const isDe = C.id === "de";
 
 function parseWords(lesson){
   return lesson.words.trim().split("\n").map((line, i) => {
@@ -1607,18 +2583,22 @@ function parseWords(lesson){
     return { id: lesson.id + ":" + i, lesson: lesson.id, ru: stress(ru), plain: plain(ru), uz, ex: stress(ex||""), exUz: exUz||"", g: g||"" };
   });
 }
-C.lessons.forEach((l, idx) => {
-  l.n = idx + 1;
+Object.values(COURSES).filter(c => !c.soon).forEach(c => c.lessons.forEach((l, idx) => {
+  l.n = idx + 1; l.course = c.id;
   l.ruTitle = stress(l.ru);
   l.W = parseWords(l);
   l.D = l.dialog.lines.trim().split("\n").map(s => { const [w, ru, uz] = s.split("|"); return { who:w, ru:ru.trim(), uz:(uz||"").trim() }; });
   l.T = l.talk.trim().split("\n").map(s => { const [ru, uz] = s.split("|"); return { ru:ru.trim(), uz:(uz||"").trim() }; });
-});
+}));
+const LESSONS_ALL = Object.values(COURSES).filter(c => !c.soon).flatMap(c => c.lessons);
+const LESSON_ALL = Object.fromEntries(LESSONS_ALL.map(l => [l.id, l]));
 const ALL_WORDS = C.lessons.flatMap(l => l.W);
 const WORD = Object.fromEntries(ALL_WORDS.map(w => [w.id, w]));
 const LESSON = Object.fromEntries(C.lessons.map(l => [l.id, l]));
-const ALPHA = C.alphabet.letters.trim().split("\n").map(s => { const [L, lat, type, ex, exUz, note] = s.split("|"); return { L, lat, type, ex: stress(ex), exUz, note: note||"" }; });
-const READING = C.alphabet.reading.trim().split("\n").map(s => { const [ru, uz] = s.split("|"); return { ru: stress(ru), uz }; });
+const ALPHA = C.alphabet.letters.trim().split("\n").map(s => { const [L, lat, type, ex, exUz, note, ph] = s.split("|"); return { L, lat, type, ex: stress(ex), exUz, note: note||"", ph: ph||"" }; });
+const READING = C.alphabet.reading.trim().split("\n").map(s => { const [ru, uz, ph] = s.split("|"); return { ru: stress(ru), uz, ph: ph||"" }; });
+/* nemis tili uchun «o‘qilishi» faqat talaffuz bo‘limidagi so‘zlarda bor */
+const PHON = {}; ALPHA.concat(READING).forEach(a => { if (a.ph) PHON[plain(a.ex || a.ru).toLowerCase()] = a.ph; });
 
 /* ---------- holat (faqat shu brauzerda saqlanadi) ---------- */
 const CL = TIL.cloud, CFG = window.TIL_CONFIG || {};
@@ -1630,6 +2610,12 @@ S.settings = Object.assign(fresh().settings, S.settings || {});
 TIL.audio.setSettings(S.settings);
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} schedulePush(); };
 const LS = id => (S.lessons[id] = S.lessons[id] || { hw:{} });
+/* tilga bog‘liq kalitlar: rus tili eski kalitlarni saqlaydi */
+const AK = C.id === "ru" ? "alpha" : "alpha_" + C.id;
+const EXK = C.id === "ru" ? "A1" : C.id + "-A1";
+const WKK = wk => C.id === "ru" ? wk : C.id + ":" + wk;
+const fixS = () => { S[AK] = S[AK] || {}; S.exams = S.exams || {}; S.weekly = S.weekly || {}; };
+fixS();
 
 function addXP(n){
   if (!n) return;
@@ -1677,12 +2663,12 @@ function markPart(l, part){
   if (part === "practice") addXP(20);
   if (PARTS.every(p => st[p])) { addXP(50); toast("«" + l.title + "» darsi tugadi! +50 XP", "gold"); }
 }
-function alphaDone(){ return !!(S.alpha.read && S.alpha.write); }
+function alphaDone(){ return !!(S[AK].read && S[AK].write); }
 function nextStop(){
   if (!alphaDone()) return "alpha";
   const l = C.lessons.find(l => lessonPct(l) < 100);
   if (l) return l.id;
-  if (!(S.exams.A1||{}).passed) return "examA1";
+  if (!(S.exams[EXK]||{}).passed) return "examA1";
   return null;
 }
 const doneLessons = () => C.lessons.filter(l => lessonPct(l) === 100).length;
@@ -1695,18 +2681,66 @@ function toast(msg, cls){
 
 /* ---------- ovoz ---------- */
 let lastSrcToast = "";
+/* Ovoz o‘ynayotganda pastda «To‘xtatish» tugmasi chiqadi; o‘ynayotgan tugmani qayta bosish ham to‘xtatadi. */
+let speakN = 0, playAllRun = 0;
+function stopAudio(){ playAllRun++; speakN++; TIL.audio.stop(); $$(".playing").forEach(x => x.classList.remove("playing")); stopFab(false); const pa = $("#playAll"); if (pa) pa.innerHTML = I.play + "Hammasini tinglash"; }
+function stopFab(on){
+  let f = $("#stopFab");
+  if (!f){ f = document.createElement("button"); f.id = "stopFab"; f.className = "stop-fab"; f.type = "button"; f.innerHTML = '<span class="sq"></span>To‘xtatish'; f.onclick = stopAudio; document.body.appendChild(f); }
+  f.hidden = !on;
+}
 function speak(text, btn){
+  $$(".spk.playing").forEach(x => x !== btn && x.classList.remove("playing"));
   if (btn) btn.classList.add("playing");
-  return TIL.audio.say(text, { onSource: info => {
+  const n = ++speakN; stopFab(true);
+  const lang = /[а-яё]/i.test(text) ? "ru" : (C.id === "ru" ? "de" : C.id);
+  return TIL.audio.say(text, { lang, tag: COURSES[lang].tag, onSource: info => {
     const msg = info.synth ? "Sintez ovoz" : "Jonli ovoz: " + info.by;
     if (msg !== lastSrcToast) { toast(msg, "small"); lastSrcToast = msg; setTimeout(()=> lastSrcToast = "", 8000); }
-  }}).finally(() => btn && btn.classList.remove("playing"));
+  }}).finally(() => { if (btn) btn.classList.remove("playing"); if (n === speakN && !playAllBusy()) stopFab(false); });
 }
-const yg = phrase => "https://youglish.com/pronounce/" + encodeURIComponent(plain(phrase)) + "/russian";
+let playAllActive = false; const playAllBusy = () => playAllActive;
+/* Videoda: YouGlish vidjeti YouTube’dagi haqiqiy videolar (kino lavhalari, seriallar, intervyular) ichidan
+   aynan shu ibora aytilgan joyni topib, sahifaning o‘zida ko‘rsatadi. Video YouTube pleerida o‘ynaydi. */
+let ygReady = null, ygWidget = null;
+function loadYG(){
+  if (ygReady) return ygReady;
+  ygReady = new Promise((res, rej) => {
+    window.onYouglishAPIReady = () => res();
+    const t = document.createElement("script"); t.src = "https://youglish.com/public/emb/widget.js"; t.async = true;
+    t.onerror = () => { ygReady = null; rej(new Error("load")); };
+    document.head.appendChild(t);
+    setTimeout(() => rej(new Error("timeout")), 15000);
+  });
+  return ygReady;
+}
+function closeVideo(){ try { ygWidget && ygWidget.close(); } catch(e){} ygWidget = null; const s = $("#ygSheet"); if (s) s.remove(); document.body.classList.remove("noscroll"); }
+function openVideo(q){
+  stopAudio(); closeVideo();
+  const query = plain(q).replace(/\.\.\./g, "").replace(/[?!.,«»]/g, "").trim();
+  const sh = document.createElement("div"); sh.id = "ygSheet"; sh.className = "yg-sheet"; sh.setAttribute("role", "dialog"); sh.setAttribute("aria-label", "Videoda tinglash");
+  sh.innerHTML = `<div class="yg-box"><div class="yg-h"><div><small>Kino va videolarda</small><b>${esc(query)}</b></div><button class="yg-x" id="ygX" aria-label="Yopish">✕</button></div>
+    <div id="ygw" class="yg-w"><p class="fc-tr" style="padding:24px 4px">Videolar qidirilmoqda…</p></div>
+    <p class="yg-note">Ibora aytilgan joydan boshlanadi. «Keyingi» tugmasi boshqa video, boshqa odam. Powered by <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a> · <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube shartlari</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google maxfiyligi</a></p></div>`;
+  document.body.appendChild(sh); document.body.classList.add("noscroll");
+  sh.onclick = e => { if (e.target === sh) closeVideo(); };
+  $("#ygX").onclick = closeVideo;
+  const fail = () => { const w = $("#ygw"); if (w) w.innerHTML = `<p style="padding:16px 4px">Video yuklanmadi. Internetni tekshiring yoki <a href="${yg(query)}" target="_blank" rel="noopener">YouGlish saytida oching</a>.</p>`; };
+  loadYG().then(() => {
+    if (!$("#ygw")) return;
+    $("#ygw").innerHTML = "";
+    ygWidget = new YG.Widget("ygw", { components: 4 + 8 + 16 + 64, autoStart: 1, title: "%i% / %total%",
+      events: { onFetchDone: e => { if (!e.totalResult && $("#ygw")) $("#ygw").innerHTML = `<p style="padding:16px 4px">Bu ibora videolarda topilmadi. Kartochkadagi «Tinglash» tugmasidan foydalaning.</p>`; }, onError: fail } });
+    ygWidget.fetch(query, C.yg);
+  }).catch(fail);
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-yg]"); if (b){ e.preventDefault(); e.stopPropagation(); openVideo(b.dataset.yg); } }, true);
+document.addEventListener("keydown", e => { if (e.key === "Escape" && $("#ygSheet")) closeVideo(); });
+const yg = phrase => "https://youglish.com/pronounce/" + encodeURIComponent(plain(phrase)) + "/" + C.yg;
 const spkBtn = (text, label, cls) => `<button class="spk ${cls||""}" data-say="${esc(text)}">${I.play}${label ? "<span>" + label + "</span>" : ""}</button>`;
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-say]");
-  if (b){ e.stopPropagation(); speak(b.dataset.say, b); }
+  if (b){ e.stopPropagation(); if (b.classList.contains("playing")) stopAudio(); else speak(b.dataset.say, b); }
 }, true);
 
 /* ---------- genderni ko‘rsatish ---------- */
@@ -1730,10 +2764,12 @@ async function loadRole(){
 }
 function weekXP(wk){ let s = 0; for (let i=0;i<7;i++) s += S.days[addDays(wk, i)] || 0; return s; }
 const loginName = () => { const u = CL.user(); if (!u) return ""; const n = u.email.split("@")[0]; return n[0].toUpperCase() + n.slice(1); };
+const weekScores = wk => Object.entries(S.weekly).filter(([k]) => k.endsWith(wk)).map(([, v]) => v.score);
 function statsRow(){
   const wk = weekKey(), t = todayStr();
   return { name: S.name || loginName(), xp:S.xp, week_xp:weekXP(wk), last_week_xp:weekXP(addDays(wk, -7)), week_key:wk, today_xp:S.days[t] || 0, day:t,
-    streak:streak().n, words:known(), lessons:doneLessons(), a1_passed:!!(S.exams.A1||{}).passed, weekly_score:(S.weekly[wk]||{}).score ?? null, last_seen:new Date().toISOString(), state:S };
+    streak:streak().n, words:Object.values(S.cards).filter(c => c.box >= 3).length, lessons:LESSONS_ALL.filter(l => lessonPct(l) === 100).length,
+    a1_passed:Object.values(S.exams).some(e => e && e.passed), weekly_score:weekScores(wk).length ? Math.max(...weekScores(wk)) : null, last_seen:new Date().toISOString(), state:S };
 }
 function schedulePush(){ if (!CL.configured || !CL.user() || isAdmin()) return; clearTimeout(pushT); pushT = setTimeout(pushNow, 3000); }
 async function pushNow(){ clearTimeout(pushT); if (!CL.configured || !CL.user() || isAdmin()) return; try { await CL.upsertProfile(statsRow()); } catch(e){ /* internet yo‘q: keyingi safar yuboriladi */ } }
@@ -1747,15 +2783,15 @@ async function afterLogin(typed){
   if (!cands.length){ const g = loadLocal("til.state.v1"); if (g) cands.push(g); }
   S = cands.sort((a, b) => b.xp - a.xp)[0] || fresh();
   if (!S.name) S.name = typed.trim();
-  S.settings = Object.assign(fresh().settings, S.settings || {}); TIL.audio.setSettings(S.settings);
+  S.settings = Object.assign(fresh().settings, S.settings || {}); TIL.audio.setSettings(S.settings); fixS();
   save(); await pushNow();
 }
 
 /* ===================== NAVIGATSIYA ===================== */
 let route = { v:"home" };
 const history_ = [];
-function go(r, push){ if (push !== false) history_.push(route); route = r; TIL.audio.stop(); render(); window.scrollTo(0,0); }
-function back(){ route = history_.pop() || { v:"home" }; TIL.audio.stop(); render(); window.scrollTo(0,0); }
+function go(r, push){ if (push !== false) history_.push(route); route = r; stopAudio(); closeVideo(); render(); window.scrollTo(0,0); }
+function back(){ route = history_.pop() || { v:"home" }; stopAudio(); closeVideo(); render(); window.scrollTo(0,0); }
 
 function renderNav(){
   const due = dueCards().length;
@@ -1764,14 +2800,17 @@ function renderNav(){
   $("#nav").innerHTML = items.map(([v, label, ic, cnt]) =>
     `<button data-nav="${v}" ${(route.v === v || (v==="home" && !["review","dict","profile","rank","duel"].includes(route.v)) || (v==="rank" && route.v==="duel")) ? 'aria-current="page"' : ""}>${ic}${label}${cnt ? `<span class="cnt">${cnt > 99 ? "99+" : cnt}</span>` : ""}</button>`).join("");
   $$("#nav button").forEach(b => b.onclick = () => { history_.length = 0; go({ v:b.dataset.nav }, false); });
-  $("#langs").innerHTML = Object.values(COURSES).map(c => `<button class="lang ${c.soon ? "soon" : ""}" aria-pressed="${c.id === "ru"}" data-lang="${c.id}" title="${c.name}">${c.short}</button>`).join("");
+  $("#langs").innerHTML = Object.values(COURSES).map(c => `<button class="lang ${c.soon ? "soon" : ""}" aria-pressed="${c.id === C.id}" data-lang="${c.id}" title="${c.name}">${c.short}</button>`).join("");
   $$("#langs button").forEach(b => b.onclick = () => {
     const c = COURSES[b.dataset.lang];
-    if (c.soon) toast(c.name + " rus kursidan keyin qo‘shiladi.");
+    if (c.soon) return toast(c.name + " keyinroq qo‘shiladi.");
+    if (c.id === C.id) return;
+    stopAudio(); pushNow(); try { localStorage.setItem("til.course", c.id); } catch(e){} location.reload();
   });
 }
 $("#brand").onclick = () => { history_.length = 0; go({ v:"home" }, false); };
 
+$("#brandSub").textContent = C.sub; document.title = "TIL: " + C.sub.replace(" · ", " ");
 function render(){
   if (CL.configured && !CL.user() && route.v !== "login") route = { v:"login" };
   renderNav();
@@ -1798,13 +2837,13 @@ function viewHome(){
   const st = streak(), t = todayStr(), todayXP = S.days[t] || 0;
   const k = known(), dl = doneLessons(), nx = nextStop();
   const nxL = nx && LESSON[nx];
-  const remain = C.lessons.length - dl + ((S.exams.A1||{}).passed ? 0 : 1);
+  const remain = C.lessons.length - dl + ((S.exams[EXK]||{}).passed ? 0 : 1);
   const due = dueCards().length;
-  const wk = S.weekly[weekKey()];
+  const wk = S.weekly[WKK(weekKey())];
 
   /* Bugungi reja */
   const todo = [];
-  if (nx === "alpha") todo.push({ t:"Rus alifbosini o‘rganing", s:"33 harf, o‘qish va yozish mashqi", go:{v:"alpha"}, done:false });
+  if (nx === "alpha") todo.push({ t:C.alpha.todo, s:C.alpha.todoSub, go:{v:"alpha"}, done:false });
   else if (nxL) {
     const stp = S.lessons[nxL.id] || {};
     const nextPart = PARTS.find(p => !stp[p]);
@@ -1815,9 +2854,9 @@ function viewHome(){
   if (dl > 0 || Object.keys(S.lessons).length) todo.push({ t:"Haftalik nazorat", s: wk ? `Bu hafta: ${wk.score}%` : "Haftada bir marta, 15 savol", go:{v:"weekly"}, done: !!wk });
 
   const road = [];
-  road.push(stopHTML({ id:"alpha", n:"А", title:"Alifbo", ru:"Кириллица · 33 harf", pct: (S.alpha.read?50:0) + (S.alpha.write?50:0), next: nx === "alpha" }));
+  road.push(stopHTML({ id:"alpha", n:C.alpha.n, title:C.alpha.stop, ru:C.alpha.ru, pct: (S[AK].read?50:0) + (S[AK].write?50:0), next: nx === "alpha" }));
   C.lessons.forEach(l => road.push(stopHTML({ id:l.id, n:l.n, title:l.title, ru:l.ruTitle, pct:lessonPct(l), next: nx === l.id, words:l.W.length })));
-  const ex = S.exams.A1 || {};
+  const ex = S.exams[EXK] || {};
   road.push(stopHTML({ id:"examA1", n:"A1", title:"A1 imtihoni va sertifikat", ru: ex.best ? `Eng yaxshi natija: ${ex.best}%` : "30 savol · o‘tish bali 80%", pct: ex.passed ? 100 : 0, next: nx === "examA1", exam:true, last:true }));
 
   app.innerHTML = `
@@ -1866,16 +2905,16 @@ function stopHTML(o){
 function viewAlpha(){
   const tab = route.tab || "letters";
   app.innerHTML = `${backBtn("Yo‘l xaritasi")}
-  <div class="thead"><div class="eyebrow">Birinchi qadam</div><h1>Rus alifbosi</h1><p>Кириллица</p></div>
+  <div class="thead"><div class="eyebrow">Birinchi qadam</div><h1>${C.alpha.h1}</h1><p>${C.alpha.h1sub}</p></div>
   <div class="tabs t3" role="tablist">
-    ${[["letters","Harflar"],["read","O‘qish",S.alpha.read],["write","Yozish",S.alpha.write]].map(([k,l,d]) => `<button class="tab" role="tab" aria-selected="${tab===k}" data-tab="${k}">${l}${d ? "<i>✓</i>" : ""}</button>`).join("")}
+    ${[["letters","Harflar"],["read","O‘qish",S[AK].read],["write",C.alpha.write,S[AK].write]].map(([k,l,d]) => `<button class="tab" role="tab" aria-selected="${tab===k}" data-tab="${k}">${l}${d ? "<i>✓</i>" : ""}</button>`).join("")}
   </div><div class="panel" id="panel"></div>`;
   bindBack();
   $$("[data-tab]").forEach(b => b.onclick = () => { route.tab = b.dataset.tab; viewAlpha(); });
   const P = $("#panel");
   if (tab === "letters"){
     P.innerHTML = `<p class="note">${C.alphabet.intro}</p>
-      <div class="legend"><span><span class="kdot k"></span>tanish</span><span><span class="kdot l"></span>aldamchi: ko‘rinishi tanish, o‘qilishi boshqa</span></div>
+      <div class="legend"><span><span class="kdot k"></span>tanish</span><span><span class="kdot l"></span>aldamchi: ko‘rinishi tanish, o‘qilishi boshqa</span>${isDe ? '<span><span class="kdot"></span>yangi</span>' : ""}</div>
       <div class="letters" style="margin-top:12px">${ALPHA.map((a,i) => `<button class="letter ${a.type}" data-l="${i}"><div class="L">${a.L}</div><div class="s">${esc(a.lat)}</div><div class="w">${a.ex}</div></button>`).join("")}</div>
       <div id="ltd" class="lt-detail"></div>
       <button class="btn primary wide" id="toRead">O‘qish mashqini boshlash</button>`;
@@ -1889,20 +2928,20 @@ function viewAlpha(){
     $("#toRead").onclick = () => { route.tab = "read"; viewAlpha(); };
   }
   if (tab === "read"){
-    const pool = READING.concat(ALPHA.map(a => ({ ru:a.ex, uz:a.exUz })));
+    const pool = READING.concat(ALPHA.map(a => ({ ru:a.ex, uz:a.exUz }))).filter(it => translit(it.ru));
     const qs = sample(pool, 12).map(it => {
       const right = translit(it.ru);
       const opts = [right]; let guard = 0;
       while (opts.length < 4 && guard++ < 50){ const o = translit(sample(pool,1)[0].ru); if (!opts.includes(o)) opts.push(o); }
       return { kind:"choice", label:"Qanday o‘qiladi?", prompt:`<span class="big">${it.ru}</span><small>${esc(it.uz)}</small>`, audioAfter: it.ru, options: opts, answer: right };
     });
-    runQuiz(P, { questions: qs, onFinish: (sc, n) => { const p = Math.round(sc/n*100); if (p >= 80 && !S.alpha.read){ S.alpha.read = true; save(); addXP(15); } return p >= 80 ? "O‘qish mashqi bajarildi!" : "80% kerak. Yana bir bor urinib ko‘ring."; }, retry: () => viewAlpha() });
+    runQuiz(P, { questions: qs, onFinish: (sc, n) => { const p = Math.round(sc/n*100); if (p >= 80 && !S[AK].read){ S[AK].read = true; save(); addXP(15); } return p >= 80 ? "O‘qish mashqi bajarildi!" : "80% kerak. Yana bir bor urinib ko‘ring."; }, retry: () => viewAlpha() });
   }
   if (tab === "write"){
     const pool = READING.filter(r => plain(r.ru).length <= 8);
-    const qs = sample(pool, 8).map(it => ({ kind:"type", label:"Kirillda yozing", prompt:`<span class="big">${esc(translit(it.ru))}</span><small>${esc(it.uz)}</small>`, audio: it.ru, answer: it.ru }));
-    P.innerHTML = `<p class="note">Telefoningizda rus klaviaturasi bo‘lmasa, pastdagi «Klaviatura» tugmasini bosing. Uni o‘rnatish ham foydali: Sozlamalar → Til va klaviatura → Русский.</p><div id="q"></div>`;
-    runQuiz($("#q"), { questions: qs, onFinish: (sc, n) => { const p = Math.round(sc/n*100); if (p >= 80 && !S.alpha.write){ S.alpha.write = true; save(); addXP(15); } return p >= 80 ? "Yozish mashqi bajarildi!" : "80% kerak. Yana bir bor urinib ko‘ring."; }, retry: () => viewAlpha() });
+    const qs = sample(pool, 8).map(it => ({ kind:"type", label:C.typeLbl, prompt:`<span class="big">${esc(translit(it.ru))}</span><small>${esc(it.uz)}</small>`, audio: it.ru, answer: it.ru }));
+    P.innerHTML = `<p class="note">${C.alpha.kbNote}</p><div id="q"></div>`;
+    runQuiz($("#q"), { questions: qs, onFinish: (sc, n) => { const p = Math.round(sc/n*100); if (p >= 80 && !S[AK].write){ S[AK].write = true; save(); addXP(15); } return p >= 80 ? "Yozish mashqi bajarildi!" : "80% kerak. Yana bir bor urinib ko‘ring."; }, retry: () => viewAlpha() });
   }
 }
 
@@ -1910,7 +2949,7 @@ function viewAlpha(){
 const TABS = [["cards","So‘zlar"],["grammar","Grammatika"],["dialog","Dialog"],["practice","Mashq"],["hw","Uy vazifasi"]];
 function viewLesson(){
   const l = LESSON[route.id]; const tab = route.tab || "cards"; const st = LS(l.id);
-  TIL.audio.prefetchWords("ru", l.W.map(w => w.plain));
+  TIL.audio.prefetchWords(C.id, l.W.map(w => w.plain));
   app.innerHTML = `${backBtn("Yo‘l xaritasi")}
   <div class="thead"><div class="eyebrow">${l.n}-dars · A1</div><h1>${esc(l.title)}</h1><p>${l.ruTitle}</p>
     <ul class="cando">${l.cando.map(c => `<li>${esc(c)}</li>`).join("")}</ul></div>
@@ -1936,7 +2975,7 @@ function flashDeck(P, words, opts){
         <div class="fc-face">
           <div class="box-dots" title="Bilish darajasi">${[1,2,3,4,5,6].map(n => `<i class="${c.box >= n ? "on" : ""}"></i>`).join("")}</div>
           <div class="fc-word">${wordHTML(w)} ${gTag(w.g)}</div>
-          ${S.settings.translit ? `<div class="fc-tr">[${esc(translit(w.ru))}]</div>` : ""}
+          ${S.settings.translit && translit(w.ru) ? `<div class="fc-tr">[${esc(translit(w.ru))}]</div>` : ""}
           <div class="spkrow">${spkBtn(w.ru, "Tinglash")}</div>
           <div class="fc-hint">Ma’nosini eslang, keyin bosing</div>
         </div>
@@ -1944,7 +2983,7 @@ function flashDeck(P, words, opts){
           <div class="fc-uz">${esc(w.uz)}</div>
           <div class="fc-word" style="font-size:20px">${wordHTML(w)}</div>
           ${w.ex ? `<div class="fc-ex">${esc(w.ex)}<i>${esc(w.exUz)}</i></div>` : ""}
-          <div class="spkrow">${w.ex ? spkBtn(w.ex, "Misol", "sm") : ""}<a class="spk sm alt" href="${yg(w.plain)}" target="_blank" rel="noopener">${I.video}Videoda</a></div>
+          <div class="spkrow">${w.ex ? spkBtn(w.ex, "Misol", "sm") : ""}<button class="spk sm alt" data-yg="${esc(w.plain)}">${I.video}Videoda</button></div>
         </div>
       </div></div>
     <div class="grade">
@@ -1980,8 +3019,8 @@ function lessonGrammar(P, l){
   const g = l.grammar;
   P.innerHTML = `<article class="gram">
     <h3>${esc(g.title)}</h3><p>${g.intro}</p>
-    <h4>O‘zbekcha va ruscha</h4>
-    <div class="cmp-wrap"><table class="cmp"><thead><tr><th>O‘zbekcha</th><th>Ruscha</th></tr></thead><tbody>
+    <h4>O‘zbekcha va ${C.adjl}</h4>
+    <div class="cmp-wrap"><table class="cmp"><thead><tr><th>O‘zbekcha</th><th>${C.adj}</th></tr></thead><tbody>
       ${g.table.map(([uz, ru]) => `<tr><td>${uz}</td><td>${ru}<button data-say="${esc(ru.replace(/<[^>]+>/g,""))}" aria-label="Tinglash">${I.play}</button></td></tr>`).join("")}
     </tbody></table></div>
     <div class="tip">${g.tip}</div>
@@ -2004,19 +3043,26 @@ function lessonDialog(P, l){
     </div>
     <div class="lines">${l.D.map((d, i) => `<div class="line ${d.who}" data-i="${i}"><span class="who">${esc(d.who === "a" ? l.dialog.a : l.dialog.b)}</span>
       <div class="bubble"><span class="t">${esc(d.ru)}${showTr ? `<span class="tr">${esc(d.uz)}</span>` : ""}</span><button data-say="${esc(d.ru)}" aria-label="Tinglash">${I.play}</button></div></div>`).join("")}</div>
-    <section class="live cardbox"><h3>Jonli nutqda eshiting</h3><p>Bu iboralarni haqiqiy odamlar YouTube videolarida qanday aytishini ko‘ring (YouGlish sayti, yangi oynada ochiladi).</p>
-      <div class="row">${l.phrases.map(p => `<a class="chip" href="${yg(p)}" target="_blank" rel="noopener">${I.video}${esc(p)}</a>`).join("")}</div></section>
+    <section class="live cardbox"><h3>Jonli nutqda eshiting</h3><p>Bu iboralarni kino lavhalari, seriallar va intervyularda haqiqiy odamlar qanday aytishini ko‘ring. Video shu yerda, ibora aytilgan joydan ochiladi.</p>
+      <div class="row">${l.phrases.map(p => `<button class="chip" data-yg="${esc(p)}">${I.video}${esc(p)}</button>`).join("")}</div></section>
     ${nextTab(l, "dialog")}`;
     $("#trBtn").onclick = () => { showTr = !showTr; draw(); };
     $("#slowBtn").onclick = () => { S.settings.slow = !S.settings.slow; TIL.audio.setSettings(S.settings); save(); draw(); };
     $("#playAll").onclick = async () => {
+      if (playAllActive){ stopAudio(); return; }
+      const run = ++playAllRun; playAllActive = true;
+      $("#playAll").innerHTML = '<span class="sq"></span>To‘xtatish';
+      let all = true;
       for (const el of $$(".line", P)){
-        if (!document.body.contains(el)) break;
+        if (!document.body.contains(el) || run !== playAllRun){ all = false; break; }
         el.classList.add("playing"); el.scrollIntoView({ block:"nearest", behavior:"smooth" });
         await speak(l.D[+el.dataset.i].ru); el.classList.remove("playing");
+        if (run !== playAllRun){ all = false; break; }
         await new Promise(r => setTimeout(r, 350));
       }
-      markPart(l, "dialog");
+      playAllActive = false;
+      if (run === playAllRun){ stopFab(false); const pa = $("#playAll"); if (pa) pa.innerHTML = I.play + "Hammasini tinglash"; }
+      if (all) markPart(l, "dialog");
     };
     bindNext(P);
   };
@@ -2035,16 +3081,18 @@ function qVocab(w, type, pool){
   if (type === "gender" && !w.g) type = "ru2uz";
   pool = pool && pool.length >= 6 ? pool : ALL_WORDS;
   if (type === "ru2uz") return { kind:"choice", word:w.id, label:"Tarjimasini toping", prompt:`<span class="big">${wordHTML(w)}</span>`, audio:w.ru, options:distract(w,"uz",3,pool), answer:w.uz };
-  if (type === "uz2ru") return { kind:"choice", word:w.id, label:"Ruschasini toping", prompt:esc(w.uz), options:distract(w,"ru",3,pool), answer:w.ru, audioAfter:w.ru };
+  if (type === "uz2ru") return { kind:"choice", word:w.id, label:C.adj + "sini toping", prompt:esc(w.uz), options:distract(w,"ru",3,pool), answer:w.ru, audioAfter:w.ru };
   if (type === "listen") return { kind:"choice", word:w.id, label:"Tinglang va toping", prompt:`<span class="fc-tr">Tugmani bosib tinglang</span>`, audio:w.ru, autoplay:true, options:distract(w,"uz",3,pool), answer:w.uz };
   if (type === "type" && (w.plain.includes("...") || w.plain.length > 16)) type = "uz2ru";
-  if (type === "type") return { kind:"type", word:w.id, label:"Ruscha yozing", prompt:esc(w.uz), answer:w.ru, audioAfter:w.ru };
+  if (type === "type") return { kind:"type", word:w.id, label:C.adj + " yozing", prompt:esc(w.uz), answer:w.ru, audioAfter:w.ru };
   if (type === "gender"){
-    const ans = { m:"мой", f:"моя", n:"моё", pl:"мои" }[w.g];
-    return { kind:"choice", word:w.id, label:"«Mening» qaysi shakli?", prompt:`___ <span class="big" style="font-size:24px">${esc(w.ru)}</span><small>${esc(w.uz)}</small>`, options:["мой","моя","моё","мои"], keepOrder:true, answer:ans, explain: GN[w.g] + " jinsi" };
+    const G = C.gender, ans = G.ans[w.g];
+    if (!ans) return qVocab(w, "ru2uz", pool);
+    const bare = isDe ? w.ru.replace(/^(der|die|das)\s+/i, "") : w.ru;
+    return { kind:"choice", word:w.id, label:G.label, prompt:`___ <span class="big" style="font-size:24px">${esc(bare)}</span><small>${esc(w.uz)}</small>`, options:G.opts, keepOrder:true, answer:ans, audioAfter:w.ru, explain: GN[w.g] + " jinsi" + (isDe ? ": " + w.ru : "") };
   }
 }
-const nouns = ws => ws.filter(w => /^(m|f|n|pl)$/.test(w.g) && !/\s/.test(w.plain));
+const nouns = ws => ws.filter(w => isDe ? (/^(m|f|n)$/.test(w.g) && /^(der|die|das) \S+$/.test(w.plain)) : (/^(m|f|n|pl)$/.test(w.g) && !/\s/.test(w.plain)));
 const grammarQs = (l, n) => sample(l.test, n || l.test.length).map(t => ({ kind:"choice", label:"Grammatika", prompt:esc(t.q), options:t.o, answer:t.o[0], explain:t.e }));
 function sentencePool(l){
   const ex = l.W.filter(w => w.ex && w.ex.split(" ").length >= 2 && w.ex.split(" ").length <= 8 && !w.ex.includes("—")).map(w => ({ ru:w.ex, uz:w.exUz }));
@@ -2075,8 +3123,8 @@ function lessonPractice(P, l){
 /* --- uy vazifasi --- */
 const HW_INFO = {
   review:{ t:"Takrorlash", s:"Shu dars va oldingi darslardagi unutilayotgan so‘zlar", ic:I.cards },
-  dict:{ t:"Diktant", s:"Tinglang va kirillda yozing", ic:I.ear },
-  trans:{ t:"Tarjima", s:"O‘zbekchadan ruschaga yozing", ic:I.pen },
+  dict:{ t:"Diktant", s:"Tinglang va " + (isDe ? "nemischa" : "kirillda") + " yozing", ic:I.ear },
+  trans:{ t:"Tarjima", s:"O‘zbekchadan " + C.adjl.replace(/a$/, "aga") + " yozing", ic:I.pen },
   build:{ t:"Gap tuzish", s:"So‘zlardan to‘g‘ri gap yig‘ing", ic:I.puzzle },
   speak:{ t:"Aktyordan keyin takrorlang", s:"Tinglang, ovozingizni yozib, solishtiring", ic:I.mic }
 };
@@ -2116,7 +3164,7 @@ function lessonHW(P, l){
     runQuiz(Q, { questions: qs, onFinish: done, retry: () => viewLesson(), after: backHW });
   }
   if (part === "trans"){
-    const qs = sample(ex.filter(s => s.ru.split(" ").length <= 6), 4).map(s => ({ kind:"type", label:"Ruschaga tarjima qiling", prompt:esc(s.uz), answer:s.ru, audioAfter:s.ru, sentence:true, selfCheck:true }));
+    const qs = sample(ex.filter(s => s.ru.split(" ").length <= 6), 4).map(s => ({ kind:"type", label:C.adj.replace(/a$/, "aga") + " tarjima qiling", prompt:esc(s.uz), answer:s.ru, audioAfter:s.ru, sentence:true, selfCheck:true }));
     runQuiz(Q, { questions: qs, onFinish: done, retry: () => viewLesson(), after: backHW });
   }
   if (part === "build"){
@@ -2164,11 +3212,11 @@ function speakPractice(Q, lines, onDone){
 
 /* ===================== VIKTORINA DVIGATELI ===================== */
 let kbOpen = false;
-const KB_ROWS = ["йцукенгшщзхъ","фывапролджэ","ячсмитьбю"];
+const KB_ROWS = C.kb;
 function keyboardHTML(){
   return `<button class="chip kbtoggle" id="kbT" aria-pressed="${kbOpen}">⌨ Klaviatura</button>
   <div class="kb" id="kb" ${kbOpen ? "" : "hidden"}>${KB_ROWS.map(r => `<div class="r">${[...r].map(ch => `<button type="button" data-k="${ch}">${ch}</button>`).join("")}</div>`).join("")}
-  <div class="r"><button type="button" class="w" data-k="ё">ё</button><button type="button" class="w" data-k=" ">bo‘sh joy</button><button type="button" class="w" data-k="⌫">⌫ o‘chirish</button></div></div>`;
+  <div class="r">${C.kbExtra.map(ch => `<button type="button" class="w" data-k="${ch}">${ch}</button>`).join("")}<button type="button" class="w" data-k=" ">bo‘sh joy</button><button type="button" class="w" data-k="⌫">⌫ o‘chirish</button></div></div>`;
 }
 function bindKeyboard(input){
   const T = $("#kbT"); if (!T) return;
@@ -2228,7 +3276,7 @@ function runQuiz(root, cfg){
       });
     }
     if (q.kind === "type"){
-      body.innerHTML = `<form id="tf" autocomplete="off"><input class="tin" id="tin" lang="ru" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Kirillda yozing…" aria-label="Javob">
+      body.innerHTML = `<form id="tf" autocomplete="off"><input class="tin" id="tin" lang="${C.id}" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${C.typeLbl}…" aria-label="Javob">
         <button class="btn primary wide" type="submit">Tekshirish</button></form>${keyboardHTML()}`;
       const inp = $("#tin", body); bindKeyboard(inp);
       if (!kbOpen) setTimeout(() => inp.focus({ preventScroll:true }), 50);
@@ -2239,10 +3287,10 @@ function runQuiz(root, cfg){
         inp.disabled = true; $("#tf button", body).remove();
         const d = lev(a, b), tol = b.length <= 6 ? 1 : Math.max(2, Math.round(b.length * 0.12));
         if (a === b){ inp.classList.add("right"); feedback("good", "To‘g‘ri!", esc(q.answer) + (q.explain ? " — " + esc(q.explain) : "")); next(true); }
-        else if (d <= tol && /[а-я]/.test(a)){ inp.classList.add("right"); feedback("mid", "Deyarli to‘g‘ri! Imloga e’tibor bering:", esc(q.answer)); next(true, true); }
+        else if (d <= tol && (isDe ? /[a-z]/ : /[а-я]/).test(a)){ inp.classList.add("right"); feedback("mid", "Deyarli to‘g‘ri! Imloga e’tibor bering:", esc(q.answer)); next(true, true); }
         else {
           inp.classList.add("wrong");
-          feedback("bad", "To‘g‘ri javob: " + esc(q.answer), (/[a-z]/i.test(a) ? "Lotin harflarida yozdingiz. Kirill harflaridan foydalaning. " : "") + (q.explain ? esc(q.explain) : ""));
+          feedback("bad", "To‘g‘ri javob: " + esc(q.answer), (!isDe && /[a-z]/i.test(a) ? "Lotin harflarida yozdingiz. Kirill harflaridan foydalaning. " : "") + (q.explain ? esc(q.explain) : ""));
           if (q.selfCheck){
             const sb = document.createElement("button"); sb.className = "btn ghost sm"; sb.style.marginTop = "8px"; sb.textContent = "Mening javobim ham to‘g‘ri (boshqa so‘zlar bilan)";
             sb.onclick = () => { score += 1; addXP(1); sb.remove(); toast("Qabul qilindi. Javobni o‘zingiz tekshirdingiz."); };
@@ -2311,10 +3359,10 @@ function viewReview(){
 
 /* ===================== LUG‘AT ===================== */
 function viewDict(){
-  app.innerHTML = `<div class="thead"><div class="eyebrow">A1</div><h1>Lug‘at</h1><p>${ALL_WORDS.length} ta so‘z va ibora. Ruscha, o‘zbekcha yoki lotincha o‘qilishi bo‘yicha qidiring.</p></div>
+  app.innerHTML = `<div class="thead"><div class="eyebrow">A1</div><h1>Lug‘at</h1><p>${ALL_WORDS.length} ta so‘z va ibora. ${C.adj}, o‘zbekcha${isDe ? "" : " yoki lotincha o‘qilishi"} bo‘yicha qidiring.</p></div>
   <div class="dtools"><input class="search" id="q" placeholder="Qidirish: дом, uy, dom…" aria-label="Qidirish"><select id="fl" aria-label="Dars"><option value="">Barcha darslar</option>${C.lessons.map(l => `<option value="${l.id}">${l.n}. ${esc(l.title)}</option>`).join("")}</select></div>
   <div class="legend"><span><span class="kdot k"></span>bilasiz</span><span><span class="kdot l"></span>o‘rganilmoqda</span><span><span class="kdot"></span>yangi</span></div>
-  <div class="dict-wrap"><table class="dict"><thead><tr><th>Ruscha</th><th>O‘zbekcha</th><th></th></tr></thead><tbody id="dt"></tbody></table></div>`;
+  <div class="dict-wrap"><table class="dict"><thead><tr><th>${C.adj}</th><th>O‘zbekcha</th><th></th></tr></thead><tbody id="dt"></tbody></table></div>`;
   const draw = () => {
     const q = $("#q").value.trim().toLowerCase(), f = $("#fl").value;
     const nq = normRu(q);
@@ -2327,7 +3375,7 @@ function viewDict(){
 /* ===================== HAFTALIK NAZORAT VA IMTIHON ===================== */
 function studied(){ return C.lessons.filter(l => { const st = S.lessons[l.id]; return st && (st.cards || st.practice || st.grammar); }); }
 function viewWeeklyIntro(){
-  const wk = weekKey(), res = S.weekly[wk], ls = studied();
+  const wk = weekKey(), res = S.weekly[WKK(wk)], ls = studied();
   app.innerHTML = `${backBtn()}<div class="thead"><div class="eyebrow">Hafta: ${fmtDate(wk)} dan</div><h1>Haftalik nazorat</h1><p>O‘tilgan barcha mavzular bo‘yicha 15 savol. Haftada bir marta topshiriladi.</p></div><div id="w"></div>`;
   bindBack();
   const W = $("#w");
@@ -2337,16 +3385,16 @@ function viewWeeklyIntro(){
   $("#st").onclick = () => {
     const words = ls.flatMap(l => l.W);
     const qs = shuffle(ls.flatMap(l => grammarQs(l))).slice(0, 8).concat(sample(words, 7).map((w, i) => qVocab(w, ["uz2ru","listen","type","ru2uz","uz2ru","listen","type"][i], words)));
-    runQuiz(W, { questions: shuffle(qs), onFinish: (sc, n) => { const p = Math.round(sc/n*100); S.weekly[wk] = { score:p, date:todayStr() }; save(); addXP(25); return p >= 80 ? "Zo‘r natija!" : "Xatolar bo‘lgan mavzularni takrorlang."; }, retry: () => viewWeeklyIntro() });
+    runQuiz(W, { questions: shuffle(qs), onFinish: (sc, n) => { const p = Math.round(sc/n*100); S.weekly[WKK(wk)] = { score:p, date:todayStr() }; save(); addXP(25); return p >= 80 ? "Zo‘r natija!" : "Xatolar bo‘lgan mavzularni takrorlang."; }, retry: () => viewWeeklyIntro() });
   };
 }
 function weeklyHistory(){
-  const e = Object.entries(S.weekly).sort((a,b) => a[0] < b[0] ? 1 : -1).slice(0, 8);
+  const e = Object.entries(S.weekly).filter(([k]) => C.id === "ru" ? /^\d/.test(k) : k.startsWith(C.id + ":")).map(([k, v]) => [k.replace(/^[a-z]+:/, ""), v]).sort((a,b) => a[0] < b[0] ? 1 : -1).slice(0, 8);
   if (!e.length) return "";
   return `<div class="section-h"><h2>Oldingi haftalar</h2></div><div class="cardbox">${e.map(([k, v]) => `<div class="switch"><span>${fmtDate(k)} haftasi</span><span>${v.score}%</span></div>`).join("")}</div>`;
 }
 function viewExamIntro(){
-  const ex = S.exams.A1 || {}, dl = doneLessons();
+  const ex = S.exams[EXK] || {}, dl = doneLessons();
   app.innerHTML = `${backBtn()}<div class="thead"><div class="eyebrow">Daraja imtihoni</div><h1>A1 imtihoni</h1><p>30 savol: grammatika, so‘zlar, tinglash va yozish. O‘tish bali: 80%. O‘tsangiz, ismingiz yozilgan sertifikat olasiz va A2 yo‘li ochiladi.</p></div><div id="w"></div>`;
   bindBack();
   const W = $("#w");
@@ -2361,16 +3409,16 @@ function viewExamIntro(){
     const qs = shuffle(gq.concat(vq)).map(q => Object.assign(q, { word: undefined }));
     runQuiz(W, { questions: qs, onFinish: (sc, n) => {
       const p = Math.round(sc/n*100);
-      const e = S.exams.A1 = S.exams.A1 || {};
+      const e = S.exams[EXK] = S.exams[EXK] || {};
       e.best = Math.max(e.best||0, p); e.tries = (e.tries||0) + 1;
-      if (p >= 80 && !e.passed){ e.passed = true; e.date = todayStr(); e.score = p; e.no = "TIL-RU-A1-" + Math.random().toString(36).slice(2, 8).toUpperCase(); addXP(100); }
+      if (p >= 80 && !e.passed){ e.passed = true; e.date = todayStr(); e.score = p; e.no = "TIL-" + C.short + "-A1-" + Math.random().toString(36).slice(2, 8).toUpperCase(); addXP(100); }
       save();
       return p >= 80 ? "Tabriklaymiz! Siz A1 darajasini tasdiqladingiz." : "80% kerak. Xato qilgan mavzularingizni takrorlab, yana topshiring.";
-    }, retry: () => viewExamIntro(), after: () => go({ v: (S.exams.A1||{}).passed ? "cert" : "home" }) });
+    }, retry: () => viewExamIntro(), after: () => go({ v: (S.exams[EXK]||{}).passed ? "cert" : "home" }) });
   };
 }
 function viewCert(){
-  const e = S.exams.A1 || {};
+  const e = S.exams[EXK] || {};
   app.innerHTML = `${backBtn()}<div id="w" style="margin-top:10px"></div>`;
   bindBack();
   const W = $("#w");
@@ -2380,8 +3428,8 @@ function viewCert(){
     $("#sv").onclick = () => { const v = $("#nm").value.trim(); if (v){ S.name = v; save(); viewCert(); } };
     return;
   }
-  W.innerHTML = `<div class="cert"><div class="k">Sertifikat · Сертификат</div><h2>TIL</h2><p>Ushbu sertifikat egasi</p><div class="name">${esc(S.name)}</div>
-    <p>rus tili bo‘yicha</p><div class="lv">A1</div><p>darajasini imtihon orqali tasdiqladi</p>
+  W.innerHTML = `<div class="cert"><div class="k">Sertifikat · ${isDe ? "Zertifikat" : "Сертификат"}</div><h2>TIL</h2><p>Ushbu sertifikat egasi</p><div class="name">${esc(S.name)}</div>
+    <p>${C.gen} bo‘yicha</p><div class="lv">A1</div><p>darajasini imtihon orqali tasdiqladi</p>
     <p><b>Natija: ${e.score}%</b> · ${fmtDate(e.date)}</p><p style="font-size:12px">№ ${e.no}</p></div>
     <p class="note" style="margin-top:12px">Ekran rasmini olib, do‘stlaringizga yuboring. Bu sertifikat TIL saytida o‘qiganingizni ko‘rsatadi; davlat imtihoni o‘rnini bosmaydi.</p>`;
 }
@@ -2490,7 +3538,7 @@ function seeded(seed){ let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B
 function duelQuestions(d){
   const R = Math.random; Math.random = seeded(d.seed);
   try {
-    const ls = (d.lessons || []).map(id => LESSON[id]).filter(Boolean);
+    const ls = (d.lessons || []).map(id => LESSON_ALL[id]).filter(Boolean);
     const pool = (ls.length ? ls : [C.lessons[0]]).flatMap(l => l.W);
     return sample(pool, 10).map((w, i) => qVocab(w, ["ru2uz","uz2ru","listen","ru2uz","uz2ru"][i % 5], pool));
   } finally { Math.random = R; }
@@ -2524,7 +3572,7 @@ function viewProfile(){
   <div class="section-h"><h2>Foydali</h2></div>
   <div class="hw">
     <button class="hwi" id="toGuide"><span class="ic">${I.road}</span><span><b>Qanday o‘qish kerak</b><span>Kunlik reja, darajalar, do‘stlar bilan mashg‘ulot</span></span>${I.chev.replace("<svg", '<svg width="18" height="18"')}</button>
-    <button class="hwi" id="toCert"><span class="ic">${I.star}</span><span><b>Sertifikat</b><span>${(S.exams.A1||{}).passed ? "A1 sertifikatingiz" : "A1 imtihonidan keyin"}</span></span>${I.chev.replace("<svg", '<svg width="18" height="18"')}</button>
+    <button class="hwi" id="toCert"><span class="ic">${I.star}</span><span><b>Sertifikat</b><span>${(S.exams[EXK]||{}).passed ? "A1 sertifikatingiz" : "A1 imtihonidan keyin"}</span></span>${I.chev.replace("<svg", '<svg width="18" height="18"')}</button>
   </div>
   <div class="section-h"><h2>Taraqqiyotni ko‘chirish</h2></div>
   <div class="cardbox"><p>Boshqa telefon yoki kompyuterga o‘tish uchun kodni nusxalang va u yerda «Kodni kiritish» qismiga qo‘ying.</p>
@@ -2534,7 +3582,7 @@ function viewProfile(){
   <div class="cardbox prose"><p>Saytdagi ovozlar avvalo haqiqiy odamlarning ochiq litsenziyali yozuvlaridan olinadi:</p>
     <ul><li><a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> (Vikilug‘at talaffuzlari) va <a href="https://lingualibre.org" target="_blank" rel="noopener">Lingua Libre</a>: so‘zlar, CC BY-SA.</li>
     <li><a href="https://tatoeba.org" target="_blank" rel="noopener">Tatoeba</a>: gaplar, faqat ochiq litsenziyali yozuvlar (CC BY va boshqalar).</li>
-    <li><a href="https://youglish.com" target="_blank" rel="noopener">YouGlish</a>: iboralarning YouTube videolardagi jonli talaffuzi.</li></ul>
+    <li><a href="https://youglish.com" target="_blank" rel="noopener">YouGlish</a>: iboralarning YouTube videolaridagi (kino, serial, intervyu) jonli talaffuzi. Videolar YouTube pleerida o‘ynaydi: <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube shartlari</a>, <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google maxfiylik siyosati</a>.</li></ul>
     <p>Har bir yozuv ijro etilganda muallifi ekranda ko‘rsatiladi. Jonli yozuv topilmasa, brauzerning sintez ovozi ishlatiladi.</p></div>
   <div class="section-h"><h2>Boshidan boshlash</h2></div>
   <div class="cardbox"><p>Barcha natijalar o‘chiriladi.</p><button class="btn sm bad" id="rst">Taraqqiyotni o‘chirish</button><div id="rstC"></div></div>`;
@@ -2558,7 +3606,7 @@ function viewProfile(){
 
 /* ===================== QO‘LLANMA ===================== */
 function viewGuide(){
-  app.innerHTML = `${backBtn()}<div class="thead"><div class="eyebrow">Qo‘llanma</div><h1>Qanday o‘qish kerak</h1><p>Rus tilida erkin gapirish uchun halol yo‘l xaritasi.</p></div>
+  app.innerHTML = `${backBtn()}<div class="thead"><div class="eyebrow">Qo‘llanma</div><h1>Qanday o‘qish kerak</h1><p>${C.name.replace(/i$/, "i")}da erkin gapirish uchun halol yo‘l xaritasi.</p></div>
   <article class="cardbox prose">
     <h3>Har kuni 30–60 daqiqa</h3>
     <ol><li><b>10 daqiqa:</b> takrorlash (Takrorlash bo‘limi). Buni hech qachon o‘tkazib yubormang.</li>
@@ -2577,10 +3625,7 @@ function viewGuide(){
     <ul><li>Haftasiga 1–2 marta uchrashing. Har bir uy vazifasi oxirida 5 ta suhbat savoli bor.</li>
     <li>Rolli o‘yin: darsdagi dialogni rollarga bo‘lib o‘qing, keyin o‘z so‘zlaringiz bilan qayta o‘ynang.</li>
     <li>Kim ko‘proq XP va seriya to‘pladi? Haftalik nazorat natijalarini solishtiring.</li></ul>
-    <h3>Rus tilini o‘rganishda o‘zbeklar uchun maslahatlar</h3>
-    <ul><li><b>Jins (мой / моя / моё)</b> — eng katta yangilik. Kartochkalardagi ranglarga e’tibor bering.</li>
-    <li><b>Kelishiklar</b> o‘zbekcha qo‘shimchalarga o‘xshaydi: -da → в ...е, -ni → ...у, -ga → в ...у. Darslarda har biri taqqoslangan.</li>
-    <li><b>Urg‘u</b> (´ belgisi) so‘z ma’nosini o‘zgartirishi mumkin. Urg‘usiz О «a» kabi o‘qiladi: молоко = «malako».</li></ul>
+    ${C.tips}
   </article>`;
   bindBack();
 }
