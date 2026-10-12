@@ -287,8 +287,6 @@ mark{background:var(--saffron-soft);color:var(--saffron);font-weight:800;border-
 .bubble button{border:0;background:none;color:var(--lapis);padding:2px;flex:none}
 .bubble button svg{width:20px;height:20px}
 .line.playing .bubble{outline:2px solid var(--turq)}
-.live{margin-top:18px}
-.live .row a{font-size:13.5px}
 
 /* homework */
 .hw{display:grid;gap:8px}
@@ -391,15 +389,21 @@ mark{background:var(--saffron-soft);color:var(--saffron);font-weight:800;border-
 .stop-fab{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:60;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);font:700 15px/1 Manrope,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer}
 .stop-fab .sq,#playAll .sq{display:inline-block;width:11px;height:11px;border-radius:2px;background:currentColor}
 /* Videoda: pastdan chiqadigan oyna */
-.yg-sheet{position:fixed;inset:0;z-index:80;background:rgba(10,14,30,.55);display:flex;align-items:flex-end;justify-content:center}
-.yg-box{width:100%;max-width:640px;max-height:92vh;overflow:auto;background:var(--surface);color:var(--ink);border-radius:18px 18px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 30px rgba(0,0,0,.3)}
-.yg-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
-.yg-h small{display:block;color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-.yg-h b{font-size:20px}
-.yg-x{border:0;background:var(--surface-2);color:var(--ink);width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer;flex:none}
-.yg-w{min-height:220px}
-.yg-note{font-size:12px;color:var(--muted);margin-top:10px}
 body.noscroll{overflow:hidden}
+/* Kino lavhalari */
+.kino{margin-top:18px}
+.clips{display:grid;gap:12px;margin-top:10px}
+.clip{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center}
+.clip-play{position:relative;border:0;padding:0;border-radius:12px;overflow:hidden;cursor:pointer;aspect-ratio:16/9;background:#000}
+.clip-play img{width:100%;height:100%;object-fit:cover;display:block}
+.clip-play span{position:absolute;inset:0;display:grid;place-items:center;color:#fff;background:rgba(0,0,0,.25)}
+.clip-play span svg{width:34px;height:34px}
+.clip-t b{display:block}.clip-t small{color:var(--muted)}
+.clip-del{display:block;margin-top:4px;border:0;background:none;color:var(--bad);font:inherit;font-size:13px;padding:0;cursor:pointer}
+.clip-yt{display:inline-block;margin-top:4px;font-size:13px;font-weight:700}
+.clip-frame{grid-column:1/-1;position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.clip-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.clip-add{margin-top:12px}.clip-add summary{cursor:pointer;font-weight:700;color:var(--lapis)}
 
 </style>
 <script>
@@ -2213,6 +2217,208 @@ phrases:["was hast du gemacht","ich habe gestern","ich bin gefahren","am Wochene
 
 </script>
 <script>
+/* Darslar uchun kino lavhalari: YouTube video ID, boshlanish soniyasi, sarlavha.
+   Videolar YouTube pleerida o‘ynaydi, saytga hech narsa nusxalanmaydi. */
+window.TIL = window.TIL || {};
+TIL.films = {
+ "tanishuv": [
+  {
+   "video": "5T-MKFBsZes",
+   "start": 0,
+   "title": "Москва слезам не верит — знакомство Катерины и Гоши в электричке"
+  },
+  {
+   "video": "nf12eCSIOfI",
+   "start": 0,
+   "title": "Москва слезам не верит — «Он же Гога, он же Гоша, он же Юрий…» (имена)"
+  },
+  {
+   "video": "sAvOIyiLjbM",
+   "start": 0,
+   "title": "Мимино — «Лётчик? — Иногда. Вообще-то я эндокринолог» (знакомство в гостинице)"
+  }
+ ],
+ "oila": [
+  {
+   "video": "0ja76Mx_myc",
+   "start": 0,
+   "title": "Ирония судьбы — «Мама, моя Надя приехала» (знакомство с мамой)"
+  },
+  {
+   "video": "7J6gA09-qjc",
+   "start": 0,
+   "title": "Служебный роман — «Мать у них был Новосельцев» (Новосельцев и его дети)"
+  },
+  {
+   "video": "ArG2jE0_YTc",
+   "start": 0,
+   "title": "Москва слезам не верит — «Ну, мужа-то никакого нет…» (разговор о семье)"
+  }
+ ],
+ "raqamlar": [
+  {
+   "video": "026V2juPhdM",
+   "start": 0,
+   "title": "Афоня — «Полста, полста, два» (номер телефона)"
+  },
+  {
+   "video": "Eu5AhZNp_Ok",
+   "start": 0,
+   "title": "Операция «Ы» — «Покупай живопись!» (продажа, деньги)"
+  },
+  {
+   "video": "yp9Fkly8UV4",
+   "start": 0,
+   "title": "Иван Васильевич меняет профессию — Шпак перечисляет украденное («три магнитофона…»)"
+  }
+ ],
+ "ish": [
+  {
+   "video": "sAvOIyiLjbM",
+   "start": 0,
+   "title": "Мимино — «Лётчик? — Иногда. Вообще-то я эндокринолог» (профессии)"
+  },
+  {
+   "video": "ec9dl20el2A",
+   "start": 0,
+   "title": "Служебный роман — «Но это моя ошибка» (в кабинете начальницы)"
+  },
+  {
+   "video": "BAVHIFQ2f-A",
+   "start": 0,
+   "title": "Операция «Ы» — «Ну, теперь поработаем! Сработаемся!» (на стройке)"
+  }
+ ],
+ "kun": [
+  {
+   "video": "rZiCOqOMWig",
+   "start": 0,
+   "title": "Москва слезам не верит — утро, будильник: «В сорок лет жизнь только начинается»"
+  },
+  {
+   "video": "GzhB-dfU2HU",
+   "start": 0,
+   "title": "Джентльмены удачи — «Проснись и пой!» (утро, подъём)"
+  },
+  {
+   "video": "NkuySSW843U",
+   "start": 0,
+   "title": "Служебный роман — утро рабочего дня (музыкальный фрагмент, почти без диалога)"
+  }
+ ],
+ "ovqat": [
+  {
+   "video": "ExGwyIqv_Tg",
+   "start": 0,
+   "title": "Иван Васильевич меняет профессию — «Почки заячьи верчёные… икра заморская баклажанная»"
+  },
+  {
+   "video": "uuoePB4KUqI",
+   "start": 0,
+   "title": "Ирония судьбы — «Какая гадость эта ваша заливная рыба!»"
+  },
+  {
+   "video": "o7YyvZAz8HI",
+   "start": 0,
+   "title": "Джентльмены удачи — «А в тюрьме сейчас ужин — макароны»"
+  }
+ ],
+ "shahar": [
+  {
+   "video": "GHWsMT9m4IY",
+   "start": 0,
+   "title": "Ирония судьбы — «3-я улица Строителей, дом 25, квартира 12» (адрес таксисту)"
+  },
+  {
+   "video": "Be1ZHRri78I",
+   "start": 0,
+   "title": "Джентльмены удачи — «Ты туда не ходи, ты сюда ходи» (куда идти)"
+  }
+ ],
+ "uy": [
+  {
+   "video": "XA_mjmCvbNE",
+   "start": 0,
+   "title": "Ирония судьбы — «Типовые квартиры, мебель, двери и замки…» (вступление о квартирах)"
+  },
+  {
+   "video": "u4luxEM8vws",
+   "start": 0,
+   "title": "Бриллиантовая рука — «Будет там тебе и ванная, будет и кофэ»"
+  },
+  {
+   "video": "A_ffBMbikV4",
+   "start": 0,
+   "title": "Москва слезам не верит — «Хелоу! Общежитие слушает»"
+  }
+ ],
+ "transport": [
+  {
+   "video": "NN66sDJdbwE",
+   "start": 0,
+   "title": "Бриллиантовая рука — «Наши люди в булочную на такси не ездят!»"
+  },
+  {
+   "video": "W45bhT4RHpY",
+   "start": 0,
+   "title": "Бриллиантовая рука — «Кто заказывал такси на Дубровку?»"
+  },
+  {
+   "video": "b1xnQqe_tIc",
+   "start": 0,
+   "title": "Ирония судьбы — в аэропорту: «Павел может лететь в Ленинград?»"
+  }
+ ],
+ "salomatlik": [
+  {
+   "video": "LW35o_ddHNU",
+   "start": 0,
+   "title": "Бриллиантовая рука — «У тебя там не закрытый, а открытый перелом» (в больнице)"
+  },
+  {
+   "video": "ZNZWfZjJ-Sk",
+   "start": 0,
+   "title": "Покровские ворота — сцена в больнице (Хоботов)"
+  }
+ ],
+ "obhavo": [
+  {
+   "video": "uk92Bsl29bs",
+   "start": 0,
+   "title": "Я шагаю по Москве — летний дождь (мало диалога)"
+  },
+  {
+   "video": "sdNU53iH5lU",
+   "start": 0,
+   "title": "Ирония судьбы — «Ипполит, пальто испортишь!» (одежда)"
+  },
+  {
+   "video": "b3rYMjzWSdA",
+   "start": 0,
+   "title": "Джентльмены удачи — «Прямо так пойдём? — Пусть думают, что мы спортсмены» (одежда)"
+  }
+ ],
+ "otgan": [
+  {
+   "video": "8RbK_PBv9vI",
+   "start": 0,
+   "title": "Москва слезам не верит — «Почему ты не выходила замуж?» (рассказ о прошлом)"
+  },
+  {
+   "video": "0RXFLZPoiBg",
+   "start": 0,
+   "title": "Мимино — «Один баран куда делся?» (в суде, что случилось)"
+  },
+  {
+   "video": "LshdU-0Nwo4",
+   "start": 0,
+   "title": "Ирония судьбы — «Надо меньше пить!» (что было вчера)"
+  }
+ ]
+};
+
+</script>
+<script>
 /* Ovoz: avval odamlarning jonli yozuvlari, topilmasa sintez ovoz.
    1) So‘zlar: Wikimedia Commons (Vikilug‘at yozuvlari "Ru-so‘z.ogg") va Lingua Libre ("LL-Q7737 (rus)-...").
    2) Gaplar: Tatoeba (faqat ochiq litsenziyali yozuvlar).
@@ -2472,6 +2678,9 @@ TIL.cloud = (function(){
     duels: () => rest("duels?select=*&order=created_at.desc&limit=30"),
     results: ids => ids.length ? rest("duel_results?select=*&duel_id=in.(" + ids.join(",") + ")") : Promise.resolve([]),
     createDuel: d => rest("duels", { method:"POST", headers:{ Prefer:"return=representation" }, body: d }).then(a => a[0]),
+    clips: lesson => rest("clips?select=id,user_id,video,start_s,phrase,created_at&lesson=eq." + encodeURIComponent(lesson) + "&order=created_at.asc"),
+    addClip: c => rest("clips", { method:"POST", headers:{ Prefer:"return=minimal" }, body: c }),
+    delClip: id => rest("clips?id=eq." + id, { method:"DELETE" }),
     submitResult: r => rest("duel_results", { method:"POST", headers:{ Prefer:"return=minimal" }, body: r })
   };
 })();
@@ -2700,43 +2909,7 @@ function speak(text, btn){
   }}).finally(() => { if (btn) btn.classList.remove("playing"); if (n === speakN && !playAllBusy()) stopFab(false); });
 }
 let playAllActive = false; const playAllBusy = () => playAllActive;
-/* Videoda: YouGlish vidjeti YouTube’dagi haqiqiy videolar (kino lavhalari, seriallar, intervyular) ichidan
-   aynan shu ibora aytilgan joyni topib, sahifaning o‘zida ko‘rsatadi. Video YouTube pleerida o‘ynaydi. */
-let ygReady = null, ygWidget = null;
-function loadYG(){
-  if (ygReady) return ygReady;
-  ygReady = new Promise((res, rej) => {
-    window.onYouglishAPIReady = () => res();
-    const t = document.createElement("script"); t.src = "https://youglish.com/public/emb/widget.js"; t.async = true;
-    t.onerror = () => { ygReady = null; rej(new Error("load")); };
-    document.head.appendChild(t);
-    setTimeout(() => rej(new Error("timeout")), 15000);
-  });
-  return ygReady;
-}
-function closeVideo(){ try { ygWidget && ygWidget.close(); } catch(e){} ygWidget = null; const s = $("#ygSheet"); if (s) s.remove(); document.body.classList.remove("noscroll"); }
-function openVideo(q){
-  stopAudio(); closeVideo();
-  const query = plain(q).replace(/\.\.\./g, "").replace(/[?!.,«»]/g, "").trim();
-  const sh = document.createElement("div"); sh.id = "ygSheet"; sh.className = "yg-sheet"; sh.setAttribute("role", "dialog"); sh.setAttribute("aria-label", "Videoda tinglash");
-  sh.innerHTML = `<div class="yg-box"><div class="yg-h"><div><small>Kino va videolarda</small><b>${esc(query)}</b></div><button class="yg-x" id="ygX" aria-label="Yopish">✕</button></div>
-    <div id="ygw" class="yg-w"><p class="fc-tr" style="padding:24px 4px">Videolar qidirilmoqda…</p></div>
-    <p class="yg-note">Ibora aytilgan joydan boshlanadi. «Keyingi» tugmasi boshqa video, boshqa odam. Powered by <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a> · <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube shartlari</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google maxfiyligi</a></p></div>`;
-  document.body.appendChild(sh); document.body.classList.add("noscroll");
-  sh.onclick = e => { if (e.target === sh) closeVideo(); };
-  $("#ygX").onclick = closeVideo;
-  const fail = () => { const w = $("#ygw"); if (w) w.innerHTML = `<p style="padding:16px 4px">Video yuklanmadi. Internetni tekshiring yoki <a href="${yg(query)}" target="_blank" rel="noopener">YouGlish saytida oching</a>.</p>`; };
-  loadYG().then(() => {
-    if (!$("#ygw")) return;
-    $("#ygw").innerHTML = "";
-    ygWidget = new YG.Widget("ygw", { components: 4 + 8 + 16 + 64, autoStart: 1, title: "%i% / %total%",
-      events: { onFetchDone: e => { if (!e.totalResult && $("#ygw")) $("#ygw").innerHTML = `<p style="padding:16px 4px">Bu ibora videolarda topilmadi. Kartochkadagi «Tinglash» tugmasidan foydalaning.</p>`; }, onError: fail } });
-    ygWidget.fetch(query, C.yg);
-  }).catch(fail);
-}
-document.addEventListener("click", e => { const b = e.target.closest("[data-yg]"); if (b){ e.preventDefault(); e.stopPropagation(); openVideo(b.dataset.yg); } }, true);
-document.addEventListener("keydown", e => { if (e.key === "Escape" && $("#ygSheet")) closeVideo(); });
-const yg = phrase => "https://youglish.com/pronounce/" + encodeURIComponent(plain(phrase)) + "/" + C.yg;
+function closeVideo(){ $$(".clip-frame iframe").forEach(f => f.remove()); }
 const spkBtn = (text, label, cls) => `<button class="spk ${cls||""}" data-say="${esc(text)}">${I.play}${label ? "<span>" + label + "</span>" : ""}</button>`;
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-say]");
@@ -2983,7 +3156,7 @@ function flashDeck(P, words, opts){
           <div class="fc-uz">${esc(w.uz)}</div>
           <div class="fc-word" style="font-size:20px">${wordHTML(w)}</div>
           ${w.ex ? `<div class="fc-ex">${esc(w.ex)}<i>${esc(w.exUz)}</i></div>` : ""}
-          <div class="spkrow">${w.ex ? spkBtn(w.ex, "Misol", "sm") : ""}<button class="spk sm alt" data-yg="${esc(w.plain)}">${I.video}Videoda</button></div>
+          <div class="spkrow">${w.ex ? spkBtn(w.ex, "Misol", "sm") : ""}<a class="spk sm alt" href="${ytSearch(w.plain)}" target="_blank" rel="noopener">${I.video}Kinoda</a></div>
         </div>
       </div></div>
     <div class="grade">
@@ -3043,8 +3216,7 @@ function lessonDialog(P, l){
     </div>
     <div class="lines">${l.D.map((d, i) => `<div class="line ${d.who}" data-i="${i}"><span class="who">${esc(d.who === "a" ? l.dialog.a : l.dialog.b)}</span>
       <div class="bubble"><span class="t">${esc(d.ru)}${showTr ? `<span class="tr">${esc(d.uz)}</span>` : ""}</span><button data-say="${esc(d.ru)}" aria-label="Tinglash">${I.play}</button></div></div>`).join("")}</div>
-    <section class="live cardbox"><h3>Jonli nutqda eshiting</h3><p>Bu iboralarni kino lavhalari, seriallar va intervyularda haqiqiy odamlar qanday aytishini ko‘ring. Video shu yerda, ibora aytilgan joydan ochiladi.</p>
-      <div class="row">${l.phrases.map(p => `<button class="chip" data-yg="${esc(p)}">${I.video}${esc(p)}</button>`).join("")}</div></section>
+    <section class="kino cardbox" id="kino"></section>
     ${nextTab(l, "dialog")}`;
     $("#trBtn").onclick = () => { showTr = !showTr; draw(); };
     $("#slowBtn").onclick = () => { S.settings.slow = !S.settings.slow; TIL.audio.setSettings(S.settings); save(); draw(); };
@@ -3065,9 +3237,65 @@ function lessonDialog(P, l){
       if (all) markPart(l, "dialog");
     };
     bindNext(P);
+    drawKino($("#kino", P), l);
   };
   draw();
   setTimeout(() => markPart(l, "dialog"), 15000);
+}
+
+/* --- kino lavhalari: guruh o‘zi topgan sahnalar (YouTube’dan o‘ynaydi, hech narsa nusxalanmaydi) --- */
+function ytId(u){
+  u = String(u || "").trim();
+  const m = u.match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/|\/live\/)([A-Za-z0-9_-]{11})/) || u.match(/^([A-Za-z0-9_-]{11})$/);
+  return m ? m[1] : "";
+}
+function ytStart(u){ const m = String(u).match(/[?&#]t=(?:(\d+)m)?(\d+)s?/); return m ? (+(m[1]||0)) * 60 + (+m[2]) : 0; }
+function parseTime(t){ t = String(t || "").trim(); if (!t) return null; const p = t.split(/[:.]/).map(Number); if (p.some(isNaN)) return null; return p.reduce((a, x) => a * 60 + x, 0); }
+const fmtTime = s => Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+const ytSearch = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(plain(q) + (isDe ? " Film Szene" : " отрывок из фильма"));
+const clipCard = (v, st, title, sub, extra) => `<div class="clip">
+      <button class="clip-play" data-v="${esc(v)}" data-s="${st}" aria-label="${esc(title)}"><img src="https://i.ytimg.com/vi/${esc(v)}/mqdefault.jpg" alt="" loading="lazy"><span>${I.play}</span></button>
+      <div class="clip-t"><b>${esc(title)}</b><small>${esc(sub)}</small><a class="clip-yt" href="https://www.youtube.com/watch?v=${esc(v)}${st ? "&t=" + st + "s" : ""}" target="_blank" rel="noopener">YouTube’da ochish ↗</a>${extra || ""}</div></div>`;
+async function drawKino(K, l){
+  if (!K) return;
+  const head = `<h3>${I.video.replace("<svg", '<svg width="18" height="18" style="vertical-align:-3px"')} Kino lavhalari</h3>`;
+  const films = ((TIL.films || {})[l.id] || []).filter(f => ytId(f.video));
+  const base = head + `<p>Shu dars mavzusidagi ${isDe ? "nemis" : "rus"} filmlari sahnalari. Rasmni bosing: video shu yerda o‘ynaydi.</p>
+    ${films.length ? `<div class="clips">${films.map(f => clipCard(ytId(f.video), +f.start || 0, f.title, f.start ? fmtTime(+f.start) + " dan" : "Filmdan lavha")).join("")}</div>` : `<p class="fc-tr">Bu dars uchun hozircha tayyor sahna yo‘q.</p>`}
+    <div class="row" style="margin-top:10px">${l.phrases.slice(0, 3).map(p => `<a class="chip" href="${ytSearch(p)}" target="_blank" rel="noopener">Filmlardan qidirish: ${esc(p)}</a>`).join("")}</div>
+    <div id="kinoGroup"></div>`;
+  K.innerHTML = base;
+  const bind = root => $$(".clip-play", root).forEach(b => b.onclick = () => {
+    stopAudio();
+    b.outerHTML = `<div class="clip-frame"><iframe src="https://www.youtube-nocookie.com/embed/${b.dataset.v}?start=${b.dataset.s}&autoplay=1&rel=0&playsinline=1" title="YouTube" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`;
+  });
+  bind(K);
+  if (!CL.configured || !CL.user()) return;
+  const G = $("#kinoGroup", K);
+  G.innerHTML = `<h4 style="margin:18px 0 6px">Guruh qo‘shgan sahnalar</h4><p class="fc-tr">Yuklanmoqda…</p>`;
+  let list = [];
+  try { list = await CL.clips(l.id); } catch(e){ G.innerHTML = `<p class="fc-tr">Guruh sahnalari yuklanmadi.</p>`; }
+  if (!document.body.contains(G)) return;
+  const me = CL.user().id;
+  G.innerHTML = `<h4 style="margin:18px 0 6px">Guruh qo‘shgan sahnalar</h4>
+    ${list.length ? `<div class="clips">${list.map(c => clipCard(c.video, c.start_s, c.phrase || "Sahna", fmtTime(c.start_s) + " dan", c.user_id === me || isAdmin() ? `<button class="clip-del" data-del="${c.id}">o‘chirish</button>` : "")).join("")}</div>`
+      : `<p class="fc-tr">Hali yo‘q. Yaxshi sahna topsangiz, qo‘shing (+5 XP).</p>`}
+    <details class="clip-add"><summary>+ Sahna qo‘shish</summary>
+      <p class="note">YouTube’da filmdan lavha toping, «Ulashish» tugmasi bilan havolani nusxalang va shu yerga qo‘ying. Ibora aytiladigan vaqtni yozing (masalan 1:25).</p>
+      <div class="field"><label>YouTube havolasi</label><input id="cU" inputmode="url" placeholder="https://youtu.be/…"></div>
+      <div class="row"><div class="field" style="flex:1"><label>Vaqt (daq:son)</label><input id="cT" placeholder="1:25"></div><div class="field" style="flex:2"><label>Film va ibora</label><input id="cP" list="cPl" placeholder="${esc(l.phrases[0] || "")}"><datalist id="cPl">${l.phrases.map(p => `<option value="${esc(p)}">`).join("")}</datalist></div></div>
+      <button class="btn primary" id="cAdd">Qo‘shish</button><p class="fc-tr" id="cErr" role="alert"></p></details>`;
+  bind(G);
+  $$("[data-del]", G).forEach(b => b.onclick = async () => { b.disabled = true; try { await CL.delClip(b.dataset.del); drawKino(K, l); } catch(e){ b.disabled = false; toast("O‘chirilmadi: " + e.message); } });
+  $("#cAdd", G).onclick = async () => {
+    const u = $("#cU", G).value, v = ytId(u), tt = $("#cT", G).value.trim();
+    const st = tt ? parseTime(tt) : ytStart(u), ph = $("#cP", G).value.trim().slice(0, 200);
+    if (!v) return $("#cErr", G).textContent = "Havola YouTube videosiga o‘xshamaydi.";
+    if (st === null) return $("#cErr", G).textContent = "Vaqtni 1:25 ko‘rinishida yozing.";
+    $("#cAdd", G).disabled = true;
+    try { await CL.addClip({ lesson: l.id, video: v, start_s: Math.max(0, Math.round(st || 0)), phrase: ph }); toast("Sahna qo‘shildi"); addXP(5); drawKino(K, l); }
+    catch(e){ $("#cAdd", G).disabled = false; $("#cErr", G).textContent = "Qo‘shilmadi: " + e.message; }
+  };
 }
 
 /* --- savol generatorlari --- */
@@ -3582,7 +3810,7 @@ function viewProfile(){
   <div class="cardbox prose"><p>Saytdagi ovozlar avvalo haqiqiy odamlarning ochiq litsenziyali yozuvlaridan olinadi:</p>
     <ul><li><a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> (Vikilug‘at talaffuzlari) va <a href="https://lingualibre.org" target="_blank" rel="noopener">Lingua Libre</a>: so‘zlar, CC BY-SA.</li>
     <li><a href="https://tatoeba.org" target="_blank" rel="noopener">Tatoeba</a>: gaplar, faqat ochiq litsenziyali yozuvlar (CC BY va boshqalar).</li>
-    <li><a href="https://youglish.com" target="_blank" rel="noopener">YouGlish</a>: iboralarning YouTube videolaridagi (kino, serial, intervyu) jonli talaffuzi. Videolar YouTube pleerida o‘ynaydi: <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube shartlari</a>, <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google maxfiylik siyosati</a>.</li></ul>
+    <li>Kino lavhalari YouTube pleerida o‘ynaydi, saytga hech narsa nusxalanmaydi: <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube shartlari</a>, <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google maxfiylik siyosati</a>.</li></ul>
     <p>Har bir yozuv ijro etilganda muallifi ekranda ko‘rsatiladi. Jonli yozuv topilmasa, brauzerning sintez ovozi ishlatiladi.</p></div>
   <div class="section-h"><h2>Boshidan boshlash</h2></div>
   <div class="cardbox"><p>Barcha natijalar o‘chiriladi.</p><button class="btn sm bad" id="rst">Taraqqiyotni o‘chirish</button><div id="rstC"></div></div>`;
@@ -3612,7 +3840,7 @@ function viewGuide(){
     <ol><li><b>10 daqiqa:</b> takrorlash (Takrorlash bo‘limi). Buni hech qachon o‘tkazib yubormang.</li>
     <li><b>15–20 daqiqa:</b> yangi dars: so‘zlar, grammatika, dialog.</li>
     <li><b>10 daqiqa:</b> mashq va uy vazifasi.</li>
-    <li><b>10–20 daqiqa:</b> tinglash: dialoglarni sekin va tez tinglang, «Videoda» tugmasi orqali jonli nutqni eshiting.</li></ol>
+    <li><b>10–20 daqiqa:</b> tinglash: dialoglarni sekin va tez tinglang, «Kino lavhalari» bo‘limida filmlardagi jonli nutqni eshiting.</li></ol>
     <h3>Darajalar: qayerga qancha vaqt</h3>
     <div class="cmp-wrap"><table class="cefr"><thead><tr><th>Daraja</th><th>Nima qila olasiz</th><th>Taxminan</th></tr></thead><tbody>
       <tr><td><b>A1</b></td><td>Tanishish, do‘kon, yo‘l so‘rash, shifokorga murojaat</td><td>2–3 oy</td></tr>
