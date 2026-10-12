@@ -6712,6 +6712,7 @@ function grade(id, ok, soft){
   c.due = addDays(todayStr(), BOX_DAYS[c.box]);
   c.seen = 1; save();
 }
+const openWords = () => ALL_WORDS.filter(w => lvlOpen(LESSON[w.lesson].level));
 const known = () => ALL_WORDS.filter(w => (S.cards[w.id]||{}).box >= 3).length;
 const learning = () => ALL_WORDS.filter(w => { const c = S.cards[w.id]; return c && c.box > 0 && c.box < 3; }).length;
 const dueCards = () => ALL_WORDS.filter(w => { const c = S.cards[w.id]; return c && c.seen && c.due <= todayStr(); });
@@ -6927,7 +6928,7 @@ function viewHome(){
     <div class="todo">${todo.map((x,i) => `<button data-todo="${i}" class="${x.done ? "done" : ""}"><span class="ck"></span><span><b>${esc(x.t)}</b><small>${esc(x.s)}</small></span></button>`).join("")}</div>
   </section>
 
-  <div class="section-h"><h2>Yo‘l xaritasi</h2><span>${k} / ${ALL_WORDS.length} so‘z</span></div>
+  <div class="section-h"><h2>Yo‘l xaritasi</h2><span>${k} / ${openWords().length} so‘z</span></div>
   ${roads}
   ${later.map(L => `
     <div class="lvl-h locked"><span class="tag">${L.id}</span><div><b>${L.name}</b><span>${L.desc} ${L.words}.</span></div></div>
@@ -7548,14 +7549,14 @@ function viewReview(){
 
 /* ===================== LUG‘AT ===================== */
 function viewDict(){
-  app.innerHTML = `<div class="thead"><div class="eyebrow">${LVL_IDS.filter(v => LV(v).length && lvlOpen(v)).join(" · ")}</div><h1>Lug‘at</h1><p>${ALL_WORDS.length} ta so‘z va ibora. ${C.adj}, o‘zbekcha${isDe ? "" : " yoki o‘qilishi"} bo‘yicha qidiring.</p></div>
+  app.innerHTML = `<div class="thead"><div class="eyebrow">${LVL_IDS.filter(v => LV(v).length && lvlOpen(v)).join(" · ")}</div><h1>Lug‘at</h1><p>${openWords().length} ta so‘z va ibora. ${C.adj}, o‘zbekcha${isDe ? "" : " yoki o‘qilishi"} bo‘yicha qidiring.</p></div>
   <div class="dtools"><input class="search" id="q" placeholder="Qidirish: дом, uy, dom…" aria-label="Qidirish"><select id="fl" aria-label="Dars"><option value="">Barcha darslar</option>${C.lessons.filter(l => lvlOpen(l.level)).map(l => `<option value="${l.id}">${l.level} · ${l.n}. ${esc(l.title)}</option>`).join("")}</select></div>
   <div class="legend"><span><span class="kdot k"></span>bilasiz</span><span><span class="kdot l"></span>o‘rganilmoqda</span><span><span class="kdot"></span>yangi</span></div>
   <div class="dict-wrap"><table class="dict"><thead><tr><th>${C.adj}</th><th>O‘zbekcha</th><th></th></tr></thead><tbody id="dt"></tbody></table></div>`;
   const draw = () => {
     const q = $("#q").value.trim().toLowerCase(), f = $("#fl").value;
     const nq = normRu(q);
-    const rows = ALL_WORDS.filter(w => (!f || w.lesson === f) && (!q || normRu(w.ru).includes(nq) || w.uz.toLowerCase().includes(q) || translit(w.ru).toLowerCase().includes(q))).slice(0, 200);
+    const rows = openWords().filter(w => (!f || w.lesson === f) && (!q || normRu(w.ru).includes(nq) || w.uz.toLowerCase().includes(q) || translit(w.ru).toLowerCase().includes(q))).slice(0, 200);
     $("#dt").innerHTML = rows.map(w => { const c = S.cards[w.id]; const dc = c ? (c.box >= 3 ? "k" : "l") : ""; return `<tr><td class="w"><button data-say="${esc(w.ru)}" aria-label="Tinglash">${I.play}</button>${wordHTML(w)} ${gTag(w.g)}<small>${esc(translit(w.ru))}</small></td><td>${esc(w.uz)}</td><td><span class="kdot ${dc}"></span></td></tr>`; }).join("") || `<tr><td colspan="3">Hech narsa topilmadi.</td></tr>`;
   };
   $("#q").oninput = draw; $("#fl").onchange = draw; draw();
