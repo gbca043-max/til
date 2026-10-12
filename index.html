@@ -5,17 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>TIL: rus tili noldan</title>
 <meta name="description" content="O‘zbek tilida so‘zlashuvchilar uchun rus tilini noldan o‘rganish: darslar, kartochkalar, uy vazifalari, imtihonlar.">
-<script>
-/* ===== GURUH REJIMI SOZLAMALARI (admin to‘ldiradi) =====
-   supabaseUrl: Supabase → Project Settings → API (Data API) → Project URL
-   supabaseKey: o‘sha joydagi "anon public" yoki "publishable" kalit (secret/service_role kalitini HECH QACHON qo‘ymang!)
-   users: kirish sahifasidagi tayyor ism tugmalari */
-window.TIL_CONFIG = {
-  supabaseUrl: "",
-  supabaseKey: "",
-  users: ["Yorqin", "Sardor", "Abdulhay"]
-};
-</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700;800&display=swap">
@@ -400,6 +389,17 @@ mark{background:var(--saffron-soft);color:var(--saffron);font-weight:800;border-
 @media (max-width:400px){.stat .v{font-size:16px}.stat{padding:9px 8px}.tab{font-size:11px}.stats{gap:6px}}
 
 </style>
+<script>
+/* ===== GURUH REJIMI SOZLAMALARI (admin to‘ldiradi) =====
+   supabaseUrl: Supabase → Project Settings → API (Data API) → Project URL
+   supabaseKey: o‘sha joydagi "anon public" yoki "publishable" kalit (secret/service_role kalitini HECH QACHON qo‘ymang!)
+   users: kirish sahifasidagi tayyor ism tugmalari */
+window.TIL_CONFIG = {
+  supabaseUrl: "https://wbwiavtkkjxamkvgooqb.supabase.co",
+  supabaseKey: "sb_publishable_U0FiCYajb6YTHainWLHQJQ_ACFK5xoq",
+  users: ["Yorqin", "Sardor", "Abdulhay"]
+};
+</script>
 </head>
 <body>
 <div class="tile-strip" aria-hidden="true"></div>
@@ -1511,6 +1511,7 @@ TIL.cloud = (function(){
     configured, slug,
     user: () => session && session.user,
     login, logout,
+    myRole: () => rest("roles?select=user_id,role").then(a => a || []),
     myProfile: () => rest("profiles?select=*&id=eq." + session.user.id).then(a => a && a[0] || null),
     profiles: () => rest("profiles?select=id,name,xp,week_xp,last_week_xp,week_key,today_xp,day,streak,words,lessons,a1_passed,weekly_score,last_seen&order=xp.desc"),
     upsertProfile: p => rest("profiles?on_conflict=id", { method:"POST", headers:{ Prefer:"resolution=merge-duplicates,return=minimal" }, body: Object.assign({ id: session.user.id }, p) }),
@@ -1714,8 +1715,19 @@ const gTag = g => g ? `<span class="gtag g-${g}" title="${GN[g]} jinsi">${{m:"m"
 const wordHTML = w => `<span class="${w.g ? "g-" + w.g : ""}">${esc(w.ru)}</span>`;
 
 /* ---------- guruh: natijalarni bulutga yuborish ---------- */
-let pushT = null, guest = false;
-try { guest = localStorage.getItem("til.guest") === "1"; } catch(e){}
+let pushT = null;
+/* Rollar: "admin" reytingda yo‘q, hamma joyga erkin kiradi; "observer" o‘zi reytingni ko‘radi, lekin guruh uni ko‘rmaydi. */
+let ROLE = "", HIDDEN = [];
+const roleKey = () => "til.role." + (CL.user() || {}).id;
+try { const r = JSON.parse(localStorage.getItem(roleKey()) || "null"); if (r){ ROLE = r.role; HIDDEN = r.hidden; } } catch(e){}
+const isAdmin = () => ROLE === "admin";
+async function loadRole(){
+  try {
+    const rows = await CL.myRole(), me = CL.user().id;
+    ROLE = (rows.find(r => r.user_id === me) || {}).role || ""; HIDDEN = rows.map(r => r.user_id);
+    localStorage.setItem(roleKey(), JSON.stringify({ role:ROLE, hidden:HIDDEN }));
+  } catch(e){ /* internet yo‘q: oldingi qiymat qoladi */ }
+}
 function weekXP(wk){ let s = 0; for (let i=0;i<7;i++) s += S.days[addDays(wk, i)] || 0; return s; }
 const loginName = () => { const u = CL.user(); if (!u) return ""; const n = u.email.split("@")[0]; return n[0].toUpperCase() + n.slice(1); };
 function statsRow(){
@@ -1723,11 +1735,12 @@ function statsRow(){
   return { name: S.name || loginName(), xp:S.xp, week_xp:weekXP(wk), last_week_xp:weekXP(addDays(wk, -7)), week_key:wk, today_xp:S.days[t] || 0, day:t,
     streak:streak().n, words:known(), lessons:doneLessons(), a1_passed:!!(S.exams.A1||{}).passed, weekly_score:(S.weekly[wk]||{}).score ?? null, last_seen:new Date().toISOString(), state:S };
 }
-function schedulePush(){ if (!CL.configured || !CL.user()) return; clearTimeout(pushT); pushT = setTimeout(pushNow, 3000); }
-async function pushNow(){ clearTimeout(pushT); if (!CL.configured || !CL.user()) return; try { await CL.upsertProfile(statsRow()); } catch(e){ /* internet yo‘q: keyingi safar yuboriladi */ } }
+function schedulePush(){ if (!CL.configured || !CL.user() || isAdmin()) return; clearTimeout(pushT); pushT = setTimeout(pushNow, 3000); }
+async function pushNow(){ clearTimeout(pushT); if (!CL.configured || !CL.user() || isAdmin()) return; try { await CL.upsertProfile(statsRow()); } catch(e){ /* internet yo‘q: keyingi safar yuboriladi */ } }
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") pushNow(); });
 async function afterLogin(typed){
   KEY = "til.state." + CL.user().id;
+  await loadRole();
   let cloud = null;
   try { const p = await CL.myProfile(); if (p && p.state) cloud = Object.assign(fresh(), p.state); } catch(e){}
   const cands = [cloud, loadLocal(KEY)].filter(Boolean);
@@ -1735,7 +1748,6 @@ async function afterLogin(typed){
   S = cands.sort((a, b) => b.xp - a.xp)[0] || fresh();
   if (!S.name) S.name = typed.trim();
   S.settings = Object.assign(fresh().settings, S.settings || {}); TIL.audio.setSettings(S.settings);
-  try { localStorage.removeItem("til.guest"); } catch(e){} guest = false;
   save(); await pushNow();
 }
 
@@ -1761,6 +1773,7 @@ function renderNav(){
 $("#brand").onclick = () => { history_.length = 0; go({ v:"home" }, false); };
 
 function render(){
+  if (CL.configured && !CL.user() && route.v !== "login") route = { v:"login" };
   renderNav();
   const v = route.v;
   if (v === "home") return viewHome();
@@ -2319,7 +2332,7 @@ function viewWeeklyIntro(){
   bindBack();
   const W = $("#w");
   if (!ls.length){ W.innerHTML = `<div class="empty"><h3>Avval darslarni boshlang</h3><p>Nazorat o‘tilgan mavzulardan tuziladi.</p></div>`; return; }
-  if (res){ W.innerHTML = `<div class="result"><div class="big">${res.score}%</div><p>Bu haftalik natijangiz (${fmtDate(res.date)}). Keyingi nazorat dushanba kuni ochiladi.</p></div>${weeklyHistory()}`; return; }
+  if (res && !isAdmin()){ W.innerHTML = `<div class="result"><div class="big">${res.score}%</div><p>Bu haftalik natijangiz (${fmtDate(res.date)}). Keyingi nazorat dushanba kuni ochiladi.</p></div>${weeklyHistory()}`; return; }
   W.innerHTML = `<div class="cardbox"><h3>Mavzular</h3><p>${ls.map(l => esc(l.title)).join(", ")}</p><button class="btn primary wide" id="st">Boshlash</button></div>${weeklyHistory()}`;
   $("#st").onclick = () => {
     const words = ls.flatMap(l => l.W);
@@ -2375,13 +2388,12 @@ function viewCert(){
 
 /* ===================== GURUH: KIRISH ===================== */
 function viewLogin(){
-  app.innerHTML = `<div class="thead"><div class="eyebrow">Guruh</div><h1>Kirish</h1><p>Ismingizni tanlang va PIN kodni kiriting. PIN kodni guruh admini beradi.</p></div>
+  app.innerHTML = `<div class="thead"><div class="eyebrow">Guruh</div><h1>Kirish</h1><p>Ismingizni tanlang va PIN kodni kiriting. PIN kodni guruh admini beradi. Saytdan faqat kirgandan keyin foydalanish mumkin.</p></div>
   <div class="cardbox"><form id="lf" autocomplete="on">
     ${(CFG.users || []).length ? `<div class="row">${CFG.users.map(n => `<button type="button" class="chip" data-n="${esc(n)}">${esc(n)}</button>`).join("")}</div>` : ""}
-    <div class="field"><label for="ln">Ism (lotincha)</label><input id="ln" autocomplete="username" autocapitalize="words" required></div>
+    <div class="field"><label for="ln">Login (lotincha)</label><input id="ln" autocomplete="username" autocapitalize="words" required></div>
     <div class="field"><label for="lp">PIN kod</label><input id="lp" type="password" inputmode="numeric" autocomplete="current-password" required></div>
-    <button class="btn primary wide" type="submit" id="lbtn">Kirish</button><p class="fc-tr" id="lerr" role="alert"></p></form></div>
-  <button class="btn ghost wide" id="guestBtn">Kirmasdan o‘qish (natijalar reytingga tushmaydi)</button>`;
+    <button class="btn primary wide" type="submit" id="lbtn">Kirish</button><p class="fc-tr" id="lerr" role="alert"></p></form></div>`;
   $$("[data-n]").forEach(b => b.onclick = () => { $("#ln").value = b.dataset.n; $$("[data-n]").forEach(x => x.setAttribute("aria-pressed", x === b)); $("#lp").focus(); });
   $("#lf").onsubmit = async e => {
     e.preventDefault();
@@ -2390,7 +2402,6 @@ function viewLogin(){
     try { await CL.login(n, p); await afterLogin(n); toast("Xush kelibsiz, " + (S.name || n) + "!"); history_.length = 0; go({ v:"home" }, false); }
     catch(err){ btn.disabled = false; $("#lerr").textContent = err.status === 400 ? "Ism yoki PIN noto‘g‘ri. Adminga murojaat qiling." : "Ulanib bo‘lmadi: " + err.message + ". Internetni tekshiring."; }
   };
-  $("#guestBtn").onclick = () => { try { localStorage.setItem("til.guest", "1"); } catch(e){} guest = true; go({ v:"home" }, false); };
 }
 
 /* ===================== GURUH: REYTING VA DUELLAR ===================== */
@@ -2426,13 +2437,18 @@ function viewRank(){
 }
 function drawRank(){
   const R = $("#rk"); if (!R || !rankCache) return;
-  const me = CL.user().id, { ps, ds, rs } = rankCache;
+  const me = CL.user().id, { ds, rs } = rankCache;
+  const hid = id => HIDDEN.includes(id);
+  /* admin reytingda ko‘rinmaydi; yashirin a’zo faqat o‘ziga va adminga ko‘rinadi (buni server ham tekshiradi) */
+  const ps = rankCache.ps.filter(p => !(isAdmin() && p.id === me));
+  const players = ps.filter(p => !hid(p.id));
   const val = p => ({ week:p.week, words:p.words, streak:p.streakNow, lessons:p.lessons, xp:p.xp })[board];
   const rows = ps.slice().sort((a, b) => val(b) - val(a) || b.xp - a.xp);
   const unit = BOARDS.find(b => b[0] === board)[2];
-  const champ = ps.slice().sort((a, b) => b.last - a.last)[0];
-  const goal = Math.max(1, ps.length) * 350, sum = ps.reduce((a, p) => a + p.week, 0);
-  const todayN = ps.filter(p => p.today).length;
+  const champ = players.slice().sort((a, b) => b.last - a.last)[0];
+  const goal = Math.max(1, players.length) * 350, sum = players.reduce((a, p) => a + p.week, 0);
+  const todayN = players.filter(p => p.today).length;
+  const canDuel = !ROLE && !hid(me);
   const nameOf = id => (ps.find(p => p.id === id) || {}).name || "?";
   const res = id => rs.filter(r => r.duel_id === id);
   const mine = ds.filter(d => d.creator === me || d.opponent === me);
@@ -2449,13 +2465,14 @@ function drawRank(){
   R.innerHTML = `
     ${champ && champ.last > 0 ? `<div class="today" style="margin-top:0"><h2>${I.trophy.replace("<svg", '<svg width="20" height="20" style="vertical-align:-4px"')} O‘tgan hafta g‘olibi: ${esc(champ.name)}</h2><p class="sub">${champ.last} XP. Bu hafta kim uni quvib o‘tadi?</p></div>` : ""}
     <div class="goal" style="margin-top:12px"><b>Guruh maqsadi</b><div class="gbar"><i style="width:${Math.min(100, sum / goal * 100)}%"></i></div><span>${sum} / ${goal} XP</span></div>
-    <div class="freeze">Bu hafta hammamiz birga ${goal} XP to‘plashimiz kerak. Bugun ${todayN} / ${ps.length} kishi o‘qidi.</div>
+    <div class="freeze">Bu hafta ${canDuel ? "hammamiz birga" : "guruh birga"} ${goal} XP to‘plashi kerak. Bugun ${todayN} / ${players.length} kishi o‘qidi.</div>
+    ${isAdmin() ? `<div class="freeze">Siz adminsiz: reytingda ko‘rinmaysiz, natijalaringiz hech kimga yuborilmaydi.</div>` : ROLE === "observer" ? `<div class="freeze">Siz guruhni ko‘rasiz, lekin guruh sizni ko‘rmaydi. Natijalaringiz faqat sizga ko‘rinadi.</div>` : ""}
     <div class="tabs" style="grid-template-columns:repeat(5,1fr);margin-top:14px;position:static" role="tablist">${BOARDS.map(([k, l]) => `<button class="tab" role="tab" aria-selected="${board === k}" data-b="${k}">${l}</button>`).join("")}</div>
-    <ol class="lb">${rows.map((p, i) => `<li class="${p.id === me ? "me" : ""}"><span class="pos">${i + 1}</span><span class="nm"><b>${esc(p.name)}${p.id === me ? " (siz)" : ""}</b><small>${p.today ? '<span class="kdot k"></span> bugun o‘qidi' : '<span class="kdot"></span> bugun hali o‘qimadi'}${p.a1_passed ? " · A1 ✓" : ""}</small></span><span class="vl">${val(p)}<small>${unit}</small></span></li>`).join("")}</ol>
-    <div class="section-h"><h2>Duellar</h2><span>10 savol, bir xil test</span></div>
+    <ol class="lb">${rows.map((p, i) => `<li class="${p.id === me ? "me" : ""}"><span class="pos">${i + 1}</span><span class="nm"><b>${esc(p.name)}${p.id === me ? " (siz)" : ""}${hid(p.id) ? ' <span class="pill">yashirin</span>' : ""}</b><small>${p.today ? '<span class="kdot k"></span> bugun o‘qidi' : '<span class="kdot"></span> bugun hali o‘qimadi'}${p.a1_passed ? " · A1 ✓" : ""}</small></span><span class="vl">${val(p)}<small>${unit}</small></span></li>`).join("")}</ol>
+    ${canDuel ? `<div class="section-h"><h2>Duellar</h2><span>10 savol, bir xil test</span></div>
     <div class="cardbox"><p>Do‘stingizni chaqiring: ikkalangizga bir xil 10 ta savol tushadi. Ko‘p to‘g‘ri javob bergan yutadi, teng bo‘lsa tezrog‘i.</p>
-      <div class="row">${ps.filter(p => p.id !== me).map(p => `<button class="chip" data-vs="${p.id}">${I.swords}${esc(p.name)}</button>`).join("") || '<span class="fc-tr">Guruhda boshqa a’zo hali yo‘q.</span>'}</div>
-      ${mine.length ? `<div style="margin-top:10px">${mine.map(duelRow).join("")}</div>` : ""}</div>
+      <div class="row">${players.filter(p => p.id !== me).map(p => `<button class="chip" data-vs="${p.id}">${I.swords}${esc(p.name)}</button>`).join("") || '<span class="fc-tr">Guruhda boshqa a’zo hali yo‘q.</span>'}</div>
+      ${mine.length ? `<div style="margin-top:10px">${mine.map(duelRow).join("")}</div>` : ""}</div>` : ""}
     <button class="btn ghost wide" id="refresh">Yangilash</button>`;
   $$("[data-b]").forEach(b => b.onclick = () => { board = b.dataset.b; drawRank(); });
   $("#refresh").onclick = () => viewRank();
@@ -2497,7 +2514,7 @@ function viewProfile(){
   app.innerHTML = `<div class="thead"><div class="eyebrow">Profil</div><h1>${S.name ? esc(S.name) : "Sizning profilingiz"}</h1><p>${S.xp} XP · ${st.n} kun ketma-ket · ${known()} so‘z</p></div>
   <div class="cardbox"><div class="field"><label for="nm">Ismingiz (sertifikat uchun)</label><input id="nm" value="${esc(S.name)}" autocomplete="name"></div>
     <div class="field"><label for="gl">Kunlik maqsad</label><select id="gl">${[[20,"Yengil · 20 XP (~10 daq)"],[50,"Jiddiy · 50 XP (~30 daq)"],[100,"Kuchli · 100 XP (~60 daq)"]].map(([v, t]) => `<option value="${v}" ${S.goal === v ? "selected" : ""}>${t}</option>`).join("")}</select></div></div>
-  ${CL.configured ? `<div class="section-h"><h2>Guruh</h2></div><div class="cardbox">${CL.user() ? `<p>Siz guruhga <b>${esc(loginName())}</b> sifatida kirgansiz. Natijalaringiz reytingga va boshqa qurilmalarga yuboriladi.</p><button class="btn sm ghost" id="logout">Chiqish</button>` : `<p>Siz guruhga kirmagansiz. Natijalaringiz reytingga tushmaydi.</p><button class="btn sm primary" id="toLogin">Guruhga kirish</button>`}</div>` : ""}
+  ${CL.configured ? `<div class="section-h"><h2>Guruh</h2></div><div class="cardbox">${CL.user() ? `<p>Siz <b>${esc(loginName())}</b> sifatida kirgansiz${isAdmin() ? " (admin)" : ""}. ${isAdmin() ? "Natijalaringiz faqat shu brauzerda saqlanadi va reytingga tushmaydi." : ROLE === "observer" ? "Natijalaringiz saqlanadi, lekin guruh ularni ko‘rmaydi." : "Natijalaringiz reytingga va boshqa qurilmalarga yuboriladi."}</p><button class="btn sm ghost" id="logout">Chiqish</button>` : `<p>Siz guruhga kirmagansiz. Natijalaringiz reytingga tushmaydi.</p><button class="btn sm primary" id="toLogin">Guruhga kirish</button>`}</div>` : ""}
   <div class="section-h"><h2>Sozlamalar</h2></div>
   <div class="cardbox">
     <label class="switch">Jonli ovozlarni qidirish (internet kerak)<input type="checkbox" id="s_live" ${S.settings.live ? "checked" : ""}></label>
@@ -2568,9 +2585,9 @@ function viewGuide(){
   bindBack();
 }
 
-if (CL.configured && !CL.user() && !guest) route = { v:"login" };
+if (CL.configured && !CL.user()) route = { v:"login" };
 render();
-if (CL.user()) pushNow();
+if (CL.user()) loadRole().then(() => { pushNow(); if (route.v === "rank" && rankCache) drawRank(); });
 })();
 
 </script>
