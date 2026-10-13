@@ -427,6 +427,35 @@ body.noscroll{overflow:hidden}
 .yg-w{min-height:220px}
 .yg-note{font-size:12px;color:var(--muted);margin-top:10px}
 .bubble .yg-b{color:var(--turq)}
+/* Liga */
+.stop.liga .dot{background:linear-gradient(135deg,#1f2a5c,#7a2e8f);color:#ffd36b;font-size:13px}
+.stop.liga .card{border:1.5px solid rgba(122,46,143,.35)}
+.lg-run{-webkit-user-select:none;user-select:none}
+.lg-run input{-webkit-user-select:text;user-select:text}
+.lg-rules h3{margin-top:14px}
+.lg-stages{padding-left:20px;margin:6px 0}
+.lg-stages li{margin:6px 0}.lg-stages b{display:block}.lg-stages span{color:var(--muted);font-size:14px}.lg-stages em{font-style:normal;font-size:12px;font-weight:800;color:var(--turq);display:block}
+.lg-timer{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:14px}
+.lg-timer i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--bad),#e9a23b,var(--good));transform-origin:left;animation:lgT linear forwards}
+@keyframes lgT{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.lg-fb{min-height:22px;margin:10px 0 0;font-weight:700}
+.lg-ear{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.lg-line{min-height:48px;border:2px dashed var(--line);border-radius:14px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.lg-pool{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.lg-pool .chip,.lg-line .chip{font-size:16px;padding:9px 13px}
+.lg-blitz{display:flex;align-items:baseline;gap:14px;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.lg-blitz b{font-family:var(--f-display);font-size:34px;color:var(--bad)}
+.lg-blitz span{font-weight:800}
+.lg-combo{color:#b8860b;letter-spacing:.06em}
+.lg-stage{background:var(--surface);border-radius:20px;padding:22px 18px;box-shadow:var(--shadow);text-align:center}
+.lg-stage h2{font-family:var(--f-display);font-size:30px;margin:4px 0 6px}
+.lg-stage .btn{margin-top:10px}
+.lg-jk{border:2px solid #b8860b;color:#b8860b;font-weight:800}
+.lg-big{font-family:var(--f-display);font-size:56px;font-weight:700;color:var(--lapis)}
+.lg-race{display:flex;justify-content:space-between;gap:10px;background:var(--surface-2);border-radius:14px;padding:10px 14px;margin:12px 0;font-size:15px}
+.lg-tbl{width:100%;border-collapse:collapse}.lg-tbl td{padding:7px 4px;border-bottom:1px solid var(--line)}.lg-tbl td:last-child{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
+.lg-tbl tr.tot td{font-size:18px;border-bottom:0}
+.lg-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
 
 </style>
 <script>
@@ -6509,7 +6538,7 @@ TIL.cloud = (function(){
     login, logout,
     myRole: () => rest("roles?select=user_id,role").then(a => a || []),
     myProfile: () => rest("profiles?select=*&id=eq." + session.user.id).then(a => a && a[0] || null),
-    profiles: () => rest("profiles?select=id,name,xp,week_xp,last_week_xp,week_key,today_xp,day,streak,words,lessons,a1_passed,weekly_score,last_seen&order=xp.desc"),
+    profiles: () => rest("profiles?select=id,name,xp,week_xp,last_week_xp,week_key,today_xp,day,streak,words,lessons,a1_passed,weekly_score,last_seen,tour:state->tour&order=xp.desc"),
     upsertProfile: p => rest("profiles?on_conflict=id", { method:"POST", headers:{ Prefer:"resolution=merge-duplicates,return=minimal" }, body: Object.assign({ id: session.user.id }, p) }),
     duels: () => rest("duels?select=*&order=created_at.desc&limit=30"),
     results: ids => ids.length ? rest("duel_results?select=*&duel_id=in.(" + ids.join(",") + ")") : Promise.resolve([]),
@@ -6664,7 +6693,7 @@ const LV = v => C.lessons.filter(l => l.level === v);
 /* ---------- holat (faqat shu brauzerda saqlanadi) ---------- */
 const CL = TIL.cloud, CFG = window.TIL_CONFIG || {};
 let KEY = (CL.configured && CL.user()) ? "til.state." + CL.user().id : "til.state.v1";
-const fresh = () => ({ name:"", xp:0, goal:50, days:{}, cards:{}, lessons:{}, alpha:{}, exams:{}, weekly:{}, settings:{ live:true, slow:false, translit:true }, created: todayStr() });
+const fresh = () => ({ name:"", xp:0, goal:50, days:{}, cards:{}, lessons:{}, alpha:{}, exams:{}, weekly:{}, tour:{}, settings:{ live:true, slow:false, translit:true }, created: todayStr() });
 function loadLocal(k){ try { const raw = localStorage.getItem(k); if (raw) return Object.assign(fresh(), JSON.parse(raw)); } catch(e){} return null; }
 let S = loadLocal(KEY) || fresh();
 S.settings = Object.assign(fresh().settings, S.settings || {});
@@ -6679,7 +6708,7 @@ const passed = v => !!(S.exams[exk(v)] || {}).passed;
 /* A2 A1 imtihonidan keyin ochiladi; admin hamma joyga kira oladi */
 const lvlOpen = v => v === "A1" || isAdmin() || passed(LVL_IDS[LVL_IDS.indexOf(v) - 1]);
 const WKK = wk => C.id === "ru" ? wk : C.id + ":" + wk;
-const fixS = () => { S[AK] = S[AK] || {}; S.exams = S.exams || {}; S.weekly = S.weekly || {}; };
+const fixS = () => { S.tour = S.tour || {}; S[AK] = S[AK] || {}; S.exams = S.exams || {}; S.weekly = S.weekly || {}; };
 fixS();
 
 function addXP(n){
@@ -6837,8 +6866,8 @@ async function afterLogin(typed){
 /* ===================== NAVIGATSIYA ===================== */
 let route = { v:"home" };
 const history_ = [];
-function go(r, push){ if (push !== false) history_.push(route); route = r; stopAudio(); closeVideo(); render(); window.scrollTo(0,0); }
-function back(){ route = history_.pop() || { v:"home" }; stopAudio(); closeVideo(); render(); window.scrollTo(0,0); }
+function go(r, push){ if (push !== false) history_.push(route); route = r; LG = null; stopAudio(); closeVideo(); render(); window.scrollTo(0,0); }
+function back(){ route = history_.pop() || { v:"home" }; LG = null; stopAudio(); closeVideo(); render(); window.scrollTo(0,0); }
 
 function renderNav(){
   const due = dueCards().length;
@@ -6875,6 +6904,7 @@ function render(){
   if (v === "login") return viewLogin();
   if (v === "rank") return viewRank();
   if (v === "duel") return viewDuel();
+  if (v === "liga") return viewLiga();
 }
 const backBtn = (label) => `<button class="back" id="backBtn">${I.back}${label || "Orqaga"}</button>`;
 const bindBack = () => { const b = $("#backBtn"); if (b) b.onclick = back; };
@@ -6898,6 +6928,8 @@ function viewHome(){
     const PN = { cards:"So‘z kartochkalari", grammar:"Grammatika", dialog:"Dialog", practice:"Mashq (80% dan yuqori)", hwOK:"Uy vazifasi" };
     todo.push({ t:`${nxL.level} · ${nxL.n}-dars: ${nxL.title}`, s:"Keyingi qadam: " + PN[nextPart], go:{ v:"lesson", id:nxL.id, tab: nextPart === "hwOK" ? "hw" : nextPart }, done:false });
   } else if (/^exam/.test(nx || "")) todo.push({ t:`${nx.slice(4)} imtihonini topshiring`, s:"30 savol, o‘tish bali 80%", go:{v:"exam", lvl:nx.slice(4)}, done:false });
+  const openRound = rounds().find(r => roundReady(r) && lvlOpen(r.lvl) && !(RT(r.id) && RT(r.id).done) && !isAdmin());
+  if (openRound) todo.unshift({ t:`Liga: ${openRound.k}-raund ochiq!`, s:"7 bosqich, raqiblar sizni kutyapti", go:{ v:"liga", id:openRound.id }, done:false });
   todo.push({ t: due ? `${due} ta so‘zni takrorlang` : "Takrorlash", s: due ? "Unutmaslik uchun aynan bugun" : "Bugun takrorlanadigan so‘z yo‘q", go:{v:"review"}, done: !due && Object.keys(S.cards).length > 0 });
   if (dl > 0 || Object.keys(S.lessons).length) todo.push({ t:"Haftalik nazorat", s: wk ? `Bu hafta: ${wk.score}%` : "Haftada bir marta, 15 savol", go:{v:"weekly"}, done: !!wk });
 
@@ -6906,7 +6938,13 @@ function viewHome(){
     const L = LEVELS.find(x => x.id === v), open = lvlOpen(v), ex = S.exams[exk(v)] || {};
     const head = `<div class="lvl-h${open ? "" : " locked"}"><span class="tag">${v}</span><div><b>${L.name}</b><span>${L.desc}${open ? "" : " " + L.words + "."}</span></div></div>`;
     if (!open) return head + `<div class="locked-box"><b>${LV(v).length} dars · ${LV(v).reduce((a, l) => a + l.W.length, 0)} so‘z.</b> ${LVL_IDS[i - 1]} imtihonidan o‘tgach ochiladi.</div>`;
-    const road = (i === 0 ? [alphaStop] : []).concat(LV(v).map(l => stopHTML({ id:l.id, n:l.n, title:l.title, ru:l.ruTitle, pct:lessonPct(l), next: nx === l.id, words:l.W.length })));
+    const road = (i === 0 ? [alphaStop] : []).concat(LV(v).flatMap((l, j) => {
+      const out = [stopHTML({ id:l.id, n:l.n, title:l.title, ru:l.ruTitle, pct:lessonPct(l), next: nx === l.id, words:l.W.length })];
+      const rd = (j + 1) % ROUND_N === 0 && roundOf(C.id + "-" + v + "-" + (j + 1) / ROUND_N);
+      if (rd){ const t = RT(rd.id), ok = roundReady(rd);
+        out.push(stopHTML({ id:"liga:" + rd.id, n:"R" + rd.k, title:`Liga · ${rd.k}-raund`, ru: t && t.done ? `Natija: ${t.total} ball` : ok ? "Ochiq! 7 bosqich, bitta urinish" : `${ROUND_N} ta dars tugagach ochiladi`, pct: t && t.done ? 100 : 0, next: ok && !(t && t.done), exam:true, liga:true })); }
+      return out;
+    }));
     road.push(stopHTML({ id:"exam" + v, n:v, title:v + " imtihoni va sertifikat", ru: ex.best ? `Eng yaxshi natija: ${ex.best}%` : "30 savol · o‘tish bali 80%", pct: ex.passed ? 100 : 0, next: nx === "exam" + v, exam:true, last:true }));
     return head + `<div class="road">${road.join("")}</div>`;
   }).join("");
@@ -6940,11 +6978,12 @@ function viewHome(){
     const id = b.dataset.stop;
     if (id === "alpha") go({ v:"alpha" });
     else if (/^exam/.test(id)) go({ v:"exam", lvl:id.slice(4) });
+    else if (/^liga:/.test(id)) go({ v:"liga", id:id.slice(5) });
     else go({ v:"lesson", id });
   });
 }
 function stopHTML(o){
-  const cls = ["stop", o.pct >= 100 ? "done" : "", o.next ? "next" : "", o.pct > 0 && o.pct < 100 ? "part" : "", o.exam ? "exam" : "", o.last ? "last" : ""].join(" ");
+  const cls = ["stop", o.liga ? "liga" : "", o.pct >= 100 ? "done" : "", o.next ? "next" : "", o.pct > 0 && o.pct < 100 ? "part" : "", o.exam ? "exam" : "", o.last ? "last" : ""].join(" ");
   return `<button class="${cls}" data-stop="${o.id}">
     <span class="dot">${o.pct >= 100 && !o.exam ? "✓" : o.n}</span>
     <span class="card"><h3>${esc(o.title)}</h3><span class="ru">${o.ru}</span>
@@ -7625,6 +7664,347 @@ function viewCert(lvl){
     <p class="note" style="margin-top:12px">Ekran rasmini olib, do‘stlaringizga yuboring. Bu sertifikat TIL saytida o‘qiganingizni ko‘rsatadi; davlat imtihoni o‘rnini bosmaydi.</p>`;
 }
 
+/* ===================== LIGA: har 3 darsdan keyin raund ===================== */
+/* Har bir daraja bitta mavsum. Har 3 darsdan keyin raund ochiladi: 7 bosqich, har birida vaqt chegarasi.
+   Joker (×2), lider bilan jonli poyga, boshqa oynaga o‘tsangiz savol 0 ball va bu hammaga ko‘rinadi.
+   Raund o‘rinlari mavsum ochkosini beradi: 1-o‘rin 10, 2-o‘rin 6, 3-o‘rin 3, qatnashgan 1. */
+const ROUND_N = 3;
+const PLACE_PTS = [10, 6, 3];
+const STAGES = [
+  { k:"blitz", t:"Blits", s:"60 soniya, iloji boricha ko‘p so‘z. Ketma-ket to‘g‘ri javob kombo beradi: ×2, keyin ×3. Xato komboni yo‘qotadi.", max:150 },
+  { k:"ear", t:"Quloq", s:"Matn yo‘q, faqat ovoz. Gapni eshiting va ma’nosini toping. Ovoz tugagach vaqt boshlanadi.", max:100 },
+  { k:"dict", t:"Diktant", s:"So‘zni eshiting va yozing. Kichik xato yarim ball.", max:100 },
+  { k:"gram", t:"Grammatika", s:"Darslardagi qoidalar. Tez javob qo‘shimcha ball beradi.", max:100 },
+  { k:"build", t:"Gap yig‘ish", s:"Bo‘laklarni to‘g‘ri tartibda bosing. Tarjima yordam beradi, lekin vaqt qisqa.", max:100 },
+  { k:"err", t:"Xatoni top", s:"Uchta gapdan bittasi to‘g‘ri. Ona tilida gapiradigan odamdek bir qarashda ko‘ring.", max:100 },
+  { k:"voice", t:"Notiq", s:"Gapni ovoz chiqarib o‘qing, sayt eshitib baholaydi. Mikrofon kerak.", max:100 }
+];
+const BONUS = { fair:30, clean:50 };
+const JOKER_MIN = 70;
+
+function rounds(){
+  return LVL_IDS.flatMap(v => {
+    const L = LV(v), out = [];
+    for (let k = 1; k * ROUND_N <= L.length; k++) out.push({ id: C.id + "-" + v + "-" + k, lvl: v, k, lessons: L.slice((k - 1) * ROUND_N, k * ROUND_N) });
+    return out;
+  });
+}
+const roundOf = id => rounds().find(r => r.id === id);
+const roundReady = r => isAdmin() || (lvlOpen(r.lvl) && r.lessons.every(l => lessonPct(l) === 100));
+const RT = id => (S.tour = S.tour || {})[id];
+const rName = r => `${r.lvl} · ${r.k}-raund`;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+/* --- savollar --- */
+const cleanT = s => normRu(s).replace(/[^\p{L}\p{N}\s]/gu, "").replace(/\s+/g, " ").trim();
+function lgQuestions(r){
+  const W = r.lessons.flatMap(l => l.W), D = r.lessons.flatMap(l => l.D);
+  const sent = D.filter(d => { const n = d.ru.split(" ").length; return n >= 3 && n <= 9; });
+  const short = D.filter(d => { const n = d.ru.split(" ").length; return n >= 2 && n <= 6; });
+  const wordsOk = W.filter(w => !/\.\.\.|…|\//.test(w.plain) && w.plain.length <= 14);
+  const ear = sample(sent, 6).map(d => ({ kind:"choice", audio:d.ru, limit:12, prompt:"", options: shuffle([d.uz].concat(sample(sent.filter(x => x.uz !== d.uz), 3).map(x => x.uz))), answer:d.uz }));
+  const dict = sample(wordsOk.filter(w => w.plain.split(" ").length <= 2), 5).map(w => ({ kind:"type", audio:w.ru, limit:20, prompt:"", answer:w.plain, hint:w.uz }));
+  const gram = sample(r.lessons.flatMap(l => l.test), 6).map(t => ({ kind:"choice", limit:15, prompt:esc(t.q), options:shuffle(t.o), answer:t.o[0] }));
+  const build = sample(sent.filter(d => { const n = d.ru.split(" ").length; return n >= 4 && n <= 8; }), 4).map(d => ({ kind:"order", limit:30, prompt:esc(d.uz), answer:d.ru }));
+  const ms = r.lessons.flatMap(l => l.grammar.mistakes || []);
+  const err = sample(ms, Math.min(5, ms.length)).map(m => {
+    const other = sample(ms.filter(x => x !== m && x[0] !== m[1]), 1).map(x => x[0]);
+    return { kind:"choice", limit:12, prompt:"Qaysi gap to‘g‘ri?", options:shuffle([m[1], m[0]].concat(other)), answer:m[1] };
+  });
+  const voice = sample(short.length >= 4 ? short : sent, 4).map(d => SR ? { kind:"voice", limit:15, prompt:esc(d.ru), sub:esc(d.uz), answer:d.ru } : { kind:"type", audio:d.ru, limit:25, prompt:"", answer:d.ru, hint:d.uz });
+  return { blitz: shuffle(W), ear, dict, gram, build, err, voice };
+}
+
+/* --- tinglash (Notiq) --- */
+function listenOnce(ms){
+  return new Promise(res => {
+    let r; try { r = new SR(); } catch(e){ return res(null); }
+    r.lang = C.tag; r.interimResults = false; r.maxAlternatives = 3;
+    let done = false;
+    const fin = v => { if (done) return; done = true; try { r.abort(); } catch(e){} res(v); };
+    r.onresult = e => fin([...e.results[0]].map(a => a.transcript));
+    r.onerror = e => fin(e.error === "not-allowed" || e.error === "service-not-allowed" ? false : []);
+    r.onend = () => fin([]);
+    try { r.start(); } catch(e){ fin(null); }
+    setTimeout(() => fin([]), ms);
+  });
+}
+function sim(a, b){ a = cleanT(a); b = cleanT(b); if (!a || !b) return 0; return 1 - lev(a, b) / Math.max(a.length, b.length); }
+
+/* --- ishlash vaqtidagi holat --- */
+let LG = null;
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden || !LG) return;
+  LG.T.leaves = (LG.T.leaves || 0) + 1; save();
+  if (LG.onLeave) LG.onLeave();
+  setTimeout(() => toast("Boshqa oynaga o‘tdingiz: savol 0 ball. Bu natijada ko‘rinadi.", "gold"), 300);
+});
+const timerHTML = s => `<div class="lg-timer"><i style="animation-duration:${s}s"></i></div>`;
+
+function lgAsk(box, q, head){
+  return new Promise(res => {
+    if (!LG) return;
+    let done = false, t0 = 0, tid = 0;
+    const finish = (frac, el) => {
+      if (done) return; done = true; clearTimeout(tid); if (LG) LG.onLeave = null;
+      const left = t0 ? Math.max(0, q.limit * 1000 - (Date.now() - t0)) / (q.limit * 1000) : 0;
+      const bar = $(".lg-timer i", box); if (bar) bar.style.animationPlayState = "paused";
+      setTimeout(() => res({ frac, left }), frac === 1 ? 450 : 1300);
+    };
+    LG.onLeave = () => { const t = $("#lgFb", box); if (t) t.textContent = "Boshqa oynaga o‘tildi: 0 ball"; finish(0); };
+    const optsHTML = () => `<div class="opts">${q.options.map((o, i) => `<button class="opt" data-o="${i}">${esc(o)}</button>`).join("")}</div>`;
+    box.innerHTML = `${head}<div class="qcard lg-q">
+      ${q.audio ? `<div class="lg-ear"><button class="spk" id="lgPlay">${I.play}<span>Yana tinglash</span></button><span class="fc-tr" id="lgWait">Tinglang…</span></div>` : ""}
+      ${q.prompt ? `<div class="qtext">${q.prompt}${q.sub ? `<small>${q.sub}</small>` : ""}</div>` : ""}
+      <div id="lgBody"></div><p class="lg-fb" id="lgFb" role="status"></p><div id="lgT"></div></div>`;
+    const body = $("#lgBody", box), fb = $("#lgFb", box);
+    const start = () => {
+      if (done) return;
+      t0 = Date.now(); $("#lgT", box).innerHTML = timerHTML(q.limit);
+      const w = $("#lgWait", box); if (w) w.textContent = "";
+      tid = setTimeout(() => { fb.textContent = "Vaqt tugadi. To‘g‘ri javob: " + q.answer; lock(); finish(0); }, q.limit * 1000);
+      if (q.kind === "type"){ const i = $("#lgIn", box); i.disabled = false; i.focus(); }
+      if (q.kind === "choice") $$(".opt", box).forEach(b => b.disabled = false);
+    };
+    const lock = () => $$("button, input", body).forEach(x => x.disabled = true);
+    if (q.kind === "choice"){
+      body.innerHTML = optsHTML();
+      $$(".opt", body).forEach(b => { b.disabled = true; b.onclick = () => {
+        const ok = q.options[+b.dataset.o] === q.answer; lock();
+        b.classList.add(ok ? "right" : "wrong");
+        if (!ok) $$(".opt", body).forEach(x => { if (q.options[+x.dataset.o] === q.answer) x.classList.add("right"); });
+        finish(ok ? 1 : 0);
+      }; });
+    } else if (q.kind === "type"){
+      body.innerHTML = `<form id="lgF" autocomplete="off"><input class="tin" id="lgIn" lang="${C.id}" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${C.typeLbl}…" disabled><button class="btn primary wide" style="margin-top:10px">Tekshirish</button></form>${keyboardHTML()}`;
+      const inp = $("#lgIn", box); inp.onpaste = e => e.preventDefault(); inp.ondrop = e => e.preventDefault();
+      bindKeyboard(inp);
+      $("#lgF", box).onsubmit = e => {
+        e.preventDefault(); if (!t0 || done) return;
+        const a = cleanT(inp.value), want = cleanT(q.answer), d = lev(a, want);
+        const frac = a === want ? 1 : (a && d <= Math.max(1, Math.floor(want.length * 0.15)) ? 0.5 : 0);
+        inp.classList.add(frac === 1 ? "right" : "wrong"); inp.disabled = true;
+        fb.innerHTML = frac === 1 ? "To‘g‘ri!" : (frac ? "Deyarli: " : "To‘g‘ri javob: ") + esc(q.answer) + (q.hint ? ` <span class="fc-tr">(${esc(q.hint)})</span>` : "");
+        finish(frac);
+      };
+    } else if (q.kind === "order"){
+      const tokens = q.answer.split(" "), pool = shuffle(tokens.map((t, i) => ({ t, i })));
+      let picked = [];
+      const draw = () => {
+        body.innerHTML = `<div class="lg-line">${picked.map((p, j) => `<button class="chip" data-u="${j}">${esc(p.t)}</button>`).join("") || '<span class="fc-tr">Bo‘laklarni tartib bilan bosing</span>'}</div>
+          <div class="lg-pool">${pool.map((p, j) => picked.includes(p) ? "" : `<button class="chip" data-p="${j}">${esc(p.t)}</button>`).join("")}</div>
+          <button class="btn primary wide" id="lgOk" ${picked.length === tokens.length ? "" : "disabled"}>Tayyor</button>`;
+        $$("[data-p]", body).forEach(b => b.onclick = () => { if (done || !t0) return; picked.push(pool[+b.dataset.p]); draw(); });
+        $$("[data-u]", body).forEach(b => b.onclick = () => { if (done) return; picked.splice(+b.dataset.u, 1); draw(); });
+        $("#lgOk", body).onclick = () => {
+          const ok = picked.map(p => cleanT(p.t)).join(" ") === tokens.map(cleanT).join(" ");
+          lock(); fb.innerHTML = ok ? "To‘g‘ri!" : "To‘g‘ri tartib: " + esc(q.answer); finish(ok ? 1 : 0);
+        };
+      };
+      draw();
+    } else if (q.kind === "voice"){
+      body.innerHTML = `<button class="btn primary wide" id="lgMic">${I.mic} Gapirish</button><p class="fc-tr" id="lgHeard"></p>`;
+      let tries = 0;
+      $("#lgMic", body).onclick = async () => {
+        if (done) return; const b = $("#lgMic", body); b.disabled = true; b.innerHTML = '<span class="recdot"></span> Eshityapman…';
+        const alts = await listenOnce(Math.max(2000, q.limit * 1000 - (Date.now() - t0) - 300));
+        if (done) return;
+        if (alts === false || alts === null){ fb.textContent = "Mikrofon ishlamadi. Brauzerga mikrofon ruxsatini bering."; b.disabled = false; b.innerHTML = I.mic + " Yana urinish"; return; }
+        const best = Math.max(0, ...alts.map(a => sim(a, q.answer)));
+        $("#lgHeard", body).textContent = alts[0] ? "Eshitildi: «" + alts[0] + "»" : "Hech narsa eshitilmadi.";
+        tries++;
+        if (best >= 0.8){ fb.textContent = "Zo‘r talaffuz!"; finish(1); }
+        else if (tries < 2 && best < 0.8){ fb.textContent = best >= 0.55 ? "Yaqin! Yana bir marta aniqroq ayting." : "Tushunilmadi. Yana bir marta."; b.disabled = false; b.innerHTML = I.mic + " Yana urinish"; }
+        else { fb.textContent = best >= 0.55 ? "Qisman tushunildi: yarim ball." : "Tushunilmadi."; finish(best >= 0.55 ? 0.5 : 0); }
+      };
+    }
+    if (q.audio){
+      const play = () => speak(q.audio, null, "f");
+      $("#lgPlay", box).onclick = play;
+      play().then(start);
+    } else start();
+  });
+}
+
+function lgBlitz(box, words, head){
+  return new Promise(res => {
+    if (!LG) return;
+    let pts = 0, combo = 0, i = 0, n = 0, ok = 0, over = false;
+    const end = Date.now() + 60000;
+    const finish = () => { if (over) return; over = true; clearInterval(clk); if (LG) LG.onLeave = null; res({ pts: Math.max(0, Math.min(150, Math.round(pts))), info: `${ok} / ${n} to‘g‘ri` }); };
+    LG.onLeave = () => { pts -= 10; combo = 0; };
+    box.innerHTML = `${head}<div class="qcard lg-q"><div class="lg-blitz"><b id="bzT">60</b><span id="bzP">0 ball</span><span id="bzC" class="lg-combo"></span></div><div id="bzQ"></div></div>`;
+    const clk = setInterval(() => { if (!LG || !$("#bzT")) return finish(); const s = Math.max(0, Math.ceil((end - Date.now()) / 1000)); $("#bzT").textContent = s; if (s <= 0) finish(); }, 200);
+    const next = () => {
+      if (over) return;
+      const w = words[i++ % words.length], opts = shuffle(distract(w, "ru", 3, words));
+      $("#bzQ").innerHTML = `<div class="qtext">${esc(w.uz)}</div><div class="opts">${opts.map((o, j) => `<button class="opt" data-o="${j}">${esc(o)}</button>`).join("")}</div>`;
+      $$("#bzQ .opt").forEach(b => b.onclick = () => {
+        if (over) return; n++;
+        const good = opts[+b.dataset.o] === w.ru;
+        $$("#bzQ .opt").forEach(x => x.disabled = true);
+        b.classList.add(good ? "right" : "wrong");
+        if (good){ ok++; combo++; pts += 4 * (combo >= 6 ? 3 : combo >= 3 ? 2 : 1); } else { combo = 0; pts -= 2; }
+        $("#bzP").textContent = Math.max(0, Math.round(pts)) + " ball";
+        $("#bzC").textContent = combo >= 6 ? "KOMBO ×3" : combo >= 3 ? "KOMBO ×2" : "";
+        setTimeout(next, good ? 180 : 650);
+      });
+    };
+    next();
+  });
+}
+
+/* --- raqiblar (profillardan) --- */
+function rivalsFor(id){
+  const me = CL.user() ? CL.user().id : "";
+  const ps = (rankCache ? rankCache.ps : []).filter(p => p.id !== me && !(HIDDEN || []).includes(p.id));
+  return ps.map(p => ({ name: p.name, t: (p.tour || {})[id] })).filter(x => x.t && x.t.done);
+}
+const stageSum = (t, upto) => STAGES.slice(0, upto).reduce((a, s) => a + ((t.stages || {})[s.k] || 0), 0);
+
+/* --- ko‘rinish --- */
+function viewLiga(){
+  const r = roundOf(route.id);
+  if (!r) return go({ v:"home" }, false);
+  app.innerHTML = `${backBtn("Yo‘l xaritasi")}<div class="thead"><div class="eyebrow">Liga · ${r.lvl} mavsumi</div><h1>${r.k}-raund</h1>
+    <p>${r.lessons.map(l => `${l.n}. ${esc(l.title)}`).join(" · ")}</p></div><div id="lg" class="lg"></div>`;
+  bindBack();
+  const box = $("#lg"), T = RT(r.id);
+  if (!roundReady(r)){ box.innerHTML = `<div class="empty"><h3>Raund hali yopiq</h3><p>Avval shu uchta darsni 100% tugating. Keyin raund ochiladi va hamma bir xil sharoitda bellashadi.</p></div>`; return; }
+  if (T && T.done) return lgResult(box, r);
+  const loadR = (CL.configured && CL.user()) ? loadRank().catch(() => null) : Promise.resolve(null);
+  if (T && !T.done){
+    box.innerHTML = `<div class="cardbox"><h3>Raund to‘xtab qolgan</h3><p>Siz raundni boshlagansiz, lekin tugatmagansiz. Tugallanmagan bosqich 0 ball bilan yopiladi, qolganini davom ettirasiz. Raundni boshidan boshlash mumkin emas.</p><button class="btn primary wide" id="lgGo">Davom ettirish</button></div>`;
+    $("#lgGo").onclick = () => loadR.then(() => lgRun(box, r));
+    return;
+  }
+  const best = () => { const rv = rivalsFor(r.id).sort((a, b) => b.t.total - a.t.total)[0]; return rv ? `<div class="freeze">Hozirgi lider: <b>${esc(rv.name)}</b>, ${rv.t.total} ball. Uni yengish uchun ${rv.t.total + 1} kerak.</div>` : `<div class="freeze">Bu raundni hali hech kim o‘ynamadi. Birinchi bo‘lib rekord qo‘ying!</div>`; };
+  box.innerHTML = `<div class="cardbox lg-rules"><h3>7 bosqich · bitta urinish</h3>
+    <ol class="lg-stages">${STAGES.map(s => `<li><b>${s.t}</b><span>${s.s}</span><em>${s.max} gacha</em></li>`).join("")}</ol>
+    <h3>Joker ×2</h3><p>Raundda bitta joker bor. Bosqich boshlanishidan oldin qo‘yasiz: shu bosqichda ${JOKER_MIN} va undan ko‘p ball olsangiz, ball ikki barobar bo‘ladi. Kam olsangiz, bosqich 0 ball. Qaysi bosqichga tavakkal qilasiz?</p>
+    <h3>Bonuslar</h3><p><b>Halol o‘yin +${BONUS.fair}</b>: raund davomida boshqa oyna yoki ilovaga bir marta ham o‘tmasangiz.<br><b>Toza raund +${BONUS.clean}</b>: hamma bosqichda 60 dan yuqori ball.</p>
+    <h3>Qoidalar</h3><p>Har savolga vaqt beriladi, tarjimonga qarashga ulgurmaysiz. Boshqa oynaga o‘tsangiz, o‘sha savol 0 ball va bu hammaga ko‘rinadi. Matnni nusxalash va qo‘yish o‘chirilgan. Boshlaganingizdan keyin raundni qayta o‘ynab bo‘lmaydi. Tinch joy va quloqchin tavsiya qilinadi.</p>
+    <h3>Mavsum</h3><p>Raund g‘olibi +100 XP va kubok oladi. O‘rinlar mavsum ochkosini beradi: 1-o‘rin ${PLACE_PTS[0]}, 2-o‘rin ${PLACE_PTS[1]}, 3-o‘rin ${PLACE_PTS[2]}, qatnashgan 1. Har kim raund ballining o‘ndan birini XP sifatida oladi.</p>
+    <div id="lgBest"></div>
+    <button class="btn primary wide" id="lgGo">Raundni boshlash</button></div>`;
+  loadR.then(() => { const b = $("#lgBest"); if (b) b.innerHTML = best(); });
+  $("#lgGo").onclick = () => {
+    if (!confirm("Raund bir marta o‘ynaladi. Hozir boshlaysizmi?")) return;
+    S.tour = S.tour || {}; S.tour[r.id] = { at: new Date().toISOString(), stages:{}, leaves:0, joker:null }; save();
+    loadR.then(() => lgRun(box, r));
+  };
+}
+
+async function lgRun(box, r){
+  const T = RT(r.id), Q = lgQuestions(r);
+  const leader = rivalsFor(r.id).sort((a, b) => b.t.total - a.t.total)[0];
+  LG = { T, onLeave:null };
+  box.classList.add("lg-run");
+  box.oncontextmenu = e => e.preventDefault();
+  try {
+    for (let si = 0; si < STAGES.length; si++){
+      const st = STAGES[si];
+      if (T.stages[st.k] !== undefined) continue;
+      if (T.cur === st.k){ T.stages[st.k] = 0; T.cur = null; save(); continue; } // to‘xtab qolgan bosqich
+      const mine = stageSum(T, si);
+      const race = leader ? `<div class="lg-race"><span>Siz <b>${mine}</b></span><span>${esc(leader.name)} <b>${stageSum(leader.t, si)}</b></span></div>` : "";
+      const joker = await new Promise(res => {
+        box.innerHTML = `<div class="lg-stage"><div class="eyebrow">${si + 1} / ${STAGES.length} bosqich</div><h2>${st.t}</h2><p>${st.s}</p>${race}
+          <button class="btn primary wide" id="sGo">Boshlash</button>
+          ${T.joker ? `<p class="fc-tr">Joker ${STAGES.find(s => s.k === T.joker).t} bosqichida ishlatilgan.</p>` : `<button class="btn wide lg-jk" id="sJk">Joker ×2 bilan boshlash</button><p class="fc-tr">${JOKER_MIN}+ ball: ikki barobar. Kam bo‘lsa: 0.</p>`}</div>`;
+        $("#sGo").onclick = () => res(false);
+        const j = $("#sJk"); if (j) j.onclick = () => res(true);
+      });
+      if (joker){ T.joker = st.k; }
+      T.cur = st.k; save();
+      const head = `<div class="qmeta"><span>${st.t}${joker ? ' <span class="pill warn">Joker ×2</span>' : ""}</span><span>${si + 1} / ${STAGES.length}</span></div>`;
+      let pts;
+      if (st.k === "blitz") pts = (await lgBlitz(box, Q.blitz, head)).pts;
+      else {
+        const qs = Q[st.k]; let sum = 0;
+        for (let i = 0; i < qs.length; i++){
+          const res = await lgAsk(box, qs[i], head.replace(`${si + 1} / ${STAGES.length}`, `${i + 1} / ${qs.length}`));
+          sum += (100 / qs.length) * res.frac * (0.6 + 0.4 * res.left);
+        }
+        pts = Math.round(sum);
+      }
+      const raw = pts;
+      if (joker) pts = raw >= JOKER_MIN ? raw * 2 : 0;
+      T.stages[st.k] = pts; T.raw = Object.assign(T.raw || {}, { [st.k]: raw }); T.cur = null; save();
+      await new Promise(res => {
+        box.innerHTML = `<div class="lg-stage"><div class="eyebrow">${st.t}</div><div class="lg-big">${pts}</div>
+          <p>${joker ? (raw >= JOKER_MIN ? `Joker o‘ynadi! ${raw} × 2` : `Joker kuydi: ${raw} ball edi, ${JOKER_MIN} kerak edi.`) : "ball"}</p>
+          ${leader ? `<div class="lg-race"><span>Siz <b>${stageSum(T, si + 1)}</b></span><span>${esc(leader.name)} <b>${stageSum(leader.t, si + 1)}</b></span></div>` : ""}
+          <button class="btn primary wide" id="sNx">${si + 1 < STAGES.length ? "Keyingi bosqich" : "Natija"}</button></div>`;
+        $("#sNx").onclick = res;
+      });
+    }
+  } finally { LG = null; box.classList.remove("lg-run"); }
+  const sum = STAGES.reduce((a, s) => a + (T.stages[s.k] || 0), 0);
+  T.bonus = { fair: (T.leaves || 0) === 0 ? BONUS.fair : 0, clean: STAGES.every(s => ((T.raw || {})[s.k] ?? T.stages[s.k] ?? 0) >= 60) ? BONUS.clean : 0 };
+  T.total = sum + T.bonus.fair + T.bonus.clean; T.done = true; T.date = todayStr(); save();
+  addXP(Math.round(T.total / 10));
+  pushNow().then(() => (CL.configured && CL.user()) ? loadRank() : null).catch(() => null).then(() => lgResult(box, r));
+}
+
+/* raund jadvali: o‘rinlar, kubok, bosqich qirollari */
+function roundTable(r){
+  const me = CL.user() ? CL.user().id : "me";
+  const ps = rankCache ? rankCache.ps.filter(p => !(isAdmin() && p.id === me)) : [];
+  const players = ps.filter(p => !(HIDDEN || []).includes(p.id));
+  const mineT = RT(r.id);
+  let rows = ps.map(p => ({ id: p.id, name: p.name, t: p.id === me ? mineT : (p.tour || {})[r.id], hid: (HIDDEN || []).includes(p.id) }));
+  if (!rows.find(x => x.id === me) && mineT) rows.push({ id: me, name: S.name || loginName() || "Siz", t: mineT, hid: true });
+  const done = rows.filter(x => x.t && x.t.done).sort((a, b) => b.t.total - a.t.total);
+  const ranked = done.filter(x => !x.hid);
+  const allIn = players.length > 1 && players.every(p => { const t = p.id === me ? mineT : (p.tour || {})[r.id]; return t && t.done; });
+  const kings = {};
+  if (ranked.length > 1) STAGES.forEach(s => { const b = ranked.slice().sort((a, c) => ((c.t.raw || {})[s.k] ?? c.t.stages[s.k]) - ((a.t.raw || {})[s.k] ?? a.t.stages[s.k]))[0]; if (b && ((b.t.raw || {})[s.k] ?? b.t.stages[s.k]) > 0) (kings[b.id] = kings[b.id] || []).push(s.t); });
+  const waiting = players.filter(p => !done.find(x => x.id === p.id)).map(p => p.name);
+  return { done, ranked, allIn, kings, waiting, champ: allIn && ranked[0] ? ranked[0] : null };
+}
+
+function lgResult(box, r){
+  const T = RT(r.id), tb = roundTable(r), me = CL.user() ? CL.user().id : "me";
+  if (tb.champ && tb.champ.id === me && !T.champ){ T.champ = true; addXP(100); save(); toast("Siz raund chempionisiz! +100 XP", "gold"); }
+  const place = tb.ranked.findIndex(x => x.id === me);
+  box.innerHTML = `<div class="result"><div class="eyebrow">Sizning natijangiz</div><div class="big">${T.total}</div>
+      <p>${[place >= 0 ? `${place + 1}-o‘rin` + (tb.allIn ? "" : " (hozircha)") : "", (T.leaves || 0) ? `<span class="g-f">⚠ ${T.leaves} marta boshqa oynaga o‘tdi</span>` : "halol o‘yin"].filter(Boolean).join(" · ")}</p></div>
+    <div class="cardbox" style="margin-top:12px"><table class="lg-tbl">${STAGES.map(s => `<tr><td>${s.t}${T.joker === s.k ? ' <span class="pill warn">×2</span>' : ""}</td><td>${T.stages[s.k] ?? 0}</td></tr>`).join("")}
+      <tr><td>Halol o‘yin</td><td>${T.bonus.fair ? "+" + T.bonus.fair : "0"}</td></tr><tr><td>Toza raund</td><td>${T.bonus.clean ? "+" + T.bonus.clean : "0"}</td></tr>
+      <tr class="tot"><td>Jami</td><td>${T.total}</td></tr></table></div>
+    <div class="section-h"><h2>Raund jadvali</h2></div>
+    <div class="cardbox">${tb.done.length ? `<ol class="lb">${tb.done.map(x => `<li class="${x.id === me ? "me" : ""}"><span class="pos">${tb.champ && tb.champ.id === x.id ? "🏆" : (tb.ranked.indexOf(x) + 1 || "–")}</span>
+        <span class="nm"><b>${esc(x.name)}${x.id === me ? " (siz)" : ""}${x.hid ? ` <span class="pill">${isAdmin() && x.id === me ? "admin" : "yashirin"}</span>` : ""}</b><small class="lg-tags">${(tb.kings[x.id] || []).map(k => `<span class="pill ok">${k} qiroli</span>`).join(" ")}${x.t.joker ? ` Joker: ${STAGES.find(s => s.k === x.t.joker).t}` : ""}${x.t.leaves ? ` · <span class="g-f">⚠ ${x.t.leaves}</span>` : " · halol"}</small></span>
+        <span class="vl">${x.t.total}<small>ball</small></span></li>`).join("")}</ol>` : `<p class="fc-tr">Guruh natijalari internet bo‘lganda chiqadi.</p>`}
+      ${tb.waiting.length ? `<p class="fc-tr">Hali o‘ynamagan: ${tb.waiting.map(esc).join(", ")}. Hamma o‘ynagach, chempion aniqlanadi.</p>` : tb.champ ? `<p><b>Raund chempioni: ${esc(tb.champ.name)}</b></p>` : ""}</div>
+    ${isAdmin() ? `<button class="btn ghost wide" id="lgAgain">Admin: raundni qayta o‘ynash</button>` : ""}
+    <button class="btn primary wide" id="lgHome" style="margin-top:10px">Yo‘l xaritasiga</button>`;
+  $("#lgHome").onclick = () => go({ v:"home" });
+  const a = $("#lgAgain"); if (a) a.onclick = () => { delete S.tour[r.id]; save(); viewLiga(); };
+}
+
+/* mavsum jadvali (reyting sahifasi uchun) */
+function seasonHTML(){
+  if (!rankCache) return "";
+  const me = CL.user() ? CL.user().id : "";
+  const out = LVL_IDS.filter(v => LV(v).length && lvlOpen(v)).map(v => {
+    const rs = rounds().filter(r => r.lvl === v);
+    const tabs = rs.map(r => ({ r, tb: roundTable(r) })).filter(x => x.tb.done.length);
+    if (!tabs.length) return "";
+    const pts = {};
+    tabs.forEach(({ tb }) => tb.ranked.forEach((x, i) => {
+      const p = pts[x.id] = pts[x.id] || { name: x.name, pts: 0, cups: 0, sum: 0 };
+      p.pts += tb.allIn ? (PLACE_PTS[i] || 1) : 1; p.sum += x.t.total; if (tb.champ && tb.champ.id === x.id) p.cups++;
+    }));
+    const rows = Object.entries(pts).sort((a, b) => b[1].pts - a[1].pts || b[1].sum - a[1].sum);
+    return `<div class="section-h"><h2>Liga · ${v} mavsumi</h2><span>${tabs.length} / ${rs.length} raund</span></div>
+      <div class="cardbox"><ol class="lb">${rows.map(([id, p], i) => `<li class="${id === me ? "me" : ""}"><span class="pos">${i + 1}</span><span class="nm"><b>${esc(p.name)}${id === me ? " (siz)" : ""}</b><small>${"🏆".repeat(p.cups)} ${p.sum} raund bali</small></span><span class="vl">${p.pts}<small>ochko</small></span></li>`).join("")}</ol>
+      <div class="row" style="margin-top:8px">${rs.map(r => `<button class="chip" data-liga="${r.id}">${r.k}-raund${RT(r.id) && RT(r.id).done ? " ✓" : ""}</button>`).join("")}</div></div>`;
+  }).join("");
+  return out;
+}
+
 /* ===================== GURUH: KIRISH ===================== */
 function viewLogin(){
   app.innerHTML = `<div class="thead"><div class="eyebrow">Guruh</div><h1>Kirish</h1><p>Ismingizni tanlang va PIN kodni kiriting. PIN kodni guruh admini beradi. Saytdan faqat kirgandan keyin foydalanish mumkin.</p></div>
@@ -7652,7 +8032,7 @@ function adjust(p){
   const last = p.week_key === wk ? p.last_week_xp : p.week_key === prev ? p.week_xp : 0;
   const today = p.day === todayStr() && p.today_xp > 0;
   const streakNow = (p.day === todayStr() || p.day === addDays(todayStr(), -1)) ? p.streak : 0;
-  return Object.assign({}, p, { week, last, today, streakNow });
+  return Object.assign({}, p, { week, last, today, streakNow, tour: p.tour || (p.state || {}).tour || {} });
 }
 async function loadRank(){
   const [ps, ds] = await Promise.all([CL.profiles(), CL.duels()]);
@@ -7708,12 +8088,14 @@ function drawRank(){
     ${isAdmin() ? `<div class="freeze">Siz adminsiz: reytingda ko‘rinmaysiz, natijalaringiz hech kimga yuborilmaydi.</div>` : ROLE === "observer" ? `<div class="freeze">Siz guruhni ko‘rasiz, lekin guruh sizni ko‘rmaydi. Natijalaringiz faqat sizga ko‘rinadi.</div>` : ""}
     <div class="tabs" style="grid-template-columns:repeat(5,1fr);margin-top:14px;position:static" role="tablist">${BOARDS.map(([k, l]) => `<button class="tab" role="tab" aria-selected="${board === k}" data-b="${k}">${l}</button>`).join("")}</div>
     <ol class="lb">${rows.map((p, i) => `<li class="${p.id === me ? "me" : ""}"><span class="pos">${i + 1}</span><span class="nm"><b>${esc(p.name)}${p.id === me ? " (siz)" : ""}${hid(p.id) ? ' <span class="pill">yashirin</span>' : ""}</b><small>${p.today ? '<span class="kdot k"></span> bugun o‘qidi' : '<span class="kdot"></span> bugun hali o‘qimadi'}${p.a1_passed ? " · A1 ✓" : ""}</small></span><span class="vl">${val(p)}<small>${unit}</small></span></li>`).join("")}</ol>
+    ${seasonHTML()}
     ${canDuel ? `<div class="section-h"><h2>Duellar</h2><span>10 savol, bir xil test</span></div>
     <div class="cardbox"><p>Do‘stingizni chaqiring: ikkalangizga bir xil 10 ta savol tushadi. Ko‘p to‘g‘ri javob bergan yutadi, teng bo‘lsa tezrog‘i.</p>
       <div class="row">${players.filter(p => p.id !== me).map(p => `<button class="chip" data-vs="${p.id}">${I.swords}${esc(p.name)}</button>`).join("") || '<span class="fc-tr">Guruhda boshqa a’zo hali yo‘q.</span>'}</div>
       ${mine.length ? `<div style="margin-top:10px">${mine.map(duelRow).join("")}</div>` : ""}</div>` : ""}
     <button class="btn ghost wide" id="refresh">Yangilash</button>`;
   $$("[data-b]").forEach(b => b.onclick = () => { board = b.dataset.b; drawRank(); });
+  $$("[data-liga]").forEach(b => b.onclick = () => go({ v:"liga", id:b.dataset.liga }));
   $("#refresh").onclick = () => viewRank();
   $$("[data-vs]").forEach(b => b.onclick = async () => {
     b.disabled = true;
